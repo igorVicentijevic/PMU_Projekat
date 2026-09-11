@@ -13,4 +13,18 @@
     <string name="news_time_28_minutes">PRE 28 MIN</string>
     <string name="news_park_title">Novi park uz Savu otvara prostor za sport, odmor i kulturu</string>
     <string name="news_technology_title">Domaći tim razvio alat koji štedi sate svakodnevnog rada</string>
+    <string name="latest_kicker">PREGLED</string>
+    <string name="latest_title">Najnovije</string>
+    <string name="compact_layout">Promeni gustinu prikaza</string>
+    <string name="refresh">Osveži</string>
+    <string name="refreshing">Osvežavam…</string>
+    <string name="updated_now">Ažurirano upravo sada</string>
+    <string name="category_all">Sve</string>
+    <string name="category_serbia">Srbija</string>
+    <string name="category_world">Svet</string>
+    <string name="category_technology">Tehnologija</string>
+    <string name="category_business">Biznis</string>
+    <string name="category_culture">Kultura</string>
+    <string name="category_sport">Sport</string>
+    <string name="category_health">Zdravlje</string>
 </resources>
