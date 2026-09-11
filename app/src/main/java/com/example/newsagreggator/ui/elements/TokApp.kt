@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.newsagreggator.R
+import com.example.newsagreggator.ui.elements.screens.ForYouScreen
 import com.example.newsagreggator.ui.elements.screens.PlaceholderScreen
 import com.example.newsagreggator.ui.elements.screens.SavedScreen
 import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
@@ -43,6 +44,13 @@ fun TokApp(modifier: Modifier = Modifier) {
     var selectedTab by rememberSaveable { mutableStateOf(TokTab.Home) }
     var compactLayout by rememberSaveable { mutableStateOf(false) }
     var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
+    val followedCategories = remember {
+        setOf(
+            R.string.category_serbia,
+            R.string.category_technology,
+            R.string.category_world,
+        )
+    }
     val toggleSaved: (Int) -> Unit = { articleId ->
         savedArticleIds = if (articleId in savedArticleIds) {
             savedArticleIds - articleId
@@ -98,10 +106,14 @@ fun TokApp(modifier: Modifier = Modifier) {
                 onCompactLayoutChange = { compactLayout = it },
                 modifier = Modifier.padding(innerPadding),
             )
-            TokTab.ForYou -> PlaceholderScreen(
-                kickerResId = R.string.for_you_kicker,
-                titleResId = R.string.nav_for_you,
-                bodyResId = R.string.for_you_placeholder,
+            TokTab.ForYou -> ForYouScreen(
+                articles = sampleNewsArticles.filter {
+                    it.categoryResId in followedCategories
+                },
+                followedCategories = followedCategories,
+                savedArticleIds = savedArticleIds,
+                compactLayout = compactLayout,
+                onToggleSaved = toggleSaved,
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.Saved -> SavedScreen(

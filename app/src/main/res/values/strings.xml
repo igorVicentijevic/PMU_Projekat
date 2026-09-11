@@ -18,6 +18,9 @@
     <string name="nav_settings">Podešavanja</string>
     <string name="for_you_kicker">SAMO ZA TEBE</string>
     <string name="for_you_placeholder">Priče iz kategorija koje pratiš uskoro će biti prikazane ovde.</string>
+    <string name="for_you_subtitle">Priče iz kategorija koje pratiš.</string>
+    <string name="for_you_empty_title">Izaberi teme koje pratiš</string>
+    <string name="for_you_empty_body">Kada izabereš omiljene kategorije, personalizovane vesti pojaviće se ovde.</string>
     <string name="saved_kicker">TVOJA BIBLIOTEKA</string>
     <string name="saved_placeholder">Vesti koje sačuvaš uskoro će biti dostupne ovde.</string>
     <string name="saved_subtitle">Dostupno i bez interneta.</string>
