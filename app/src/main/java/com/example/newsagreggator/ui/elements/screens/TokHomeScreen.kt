@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
@@ -77,17 +76,15 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
         },
         onClose = { coroutineScope.launch { drawerState.close() } },
     ) {
-        Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 12.dp)
-            ) {
-                TokTopBar(
-                    onMenuClick = { coroutineScope.launch { drawerState.open() } }
-                )
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp, vertical = 12.dp)
+        ) {
+            TokTopBar(
+                onMenuClick = { coroutineScope.launch { drawerState.open() } }
+            )
             Spacer(modifier = Modifier.height(34.dp))
             Text(
                 text = stringResource(R.string.home_eyebrow),
@@ -186,8 +183,7 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
-                Spacer(modifier = Modifier.height(24.dp))
-            }
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

@@ -12,6 +12,16 @@
     <string name="drawer_categories">KATEGORIJE</string>
     <string name="drawer_offline_title">Offline režim</string>
     <string name="drawer_offline_subtitle">Poslednje vesti su sačuvane</string>
+    <string name="nav_home">Početna</string>
+    <string name="nav_for_you">Za vas</string>
+    <string name="nav_saved">Sačuvano</string>
+    <string name="nav_settings">Podešavanja</string>
+    <string name="for_you_kicker">SAMO ZA TEBE</string>
+    <string name="for_you_placeholder">Priče iz kategorija koje pratiš uskoro će biti prikazane ovde.</string>
+    <string name="saved_kicker">TVOJA BIBLIOTEKA</string>
+    <string name="saved_placeholder">Vesti koje sačuvaš uskoro će biti dostupne ovde.</string>
+    <string name="settings_kicker">PO TVOM RITMU</string>
+    <string name="settings_placeholder">Podešavanja izgleda i sadržaja biće dodata u sledećim koracima.</string>
     <string name="trending_kicker">U FOKUSU</string>
     <string name="trending_title">U trendu sada</string>
     <string name="daily_digest">Dnevni pregled →</string>

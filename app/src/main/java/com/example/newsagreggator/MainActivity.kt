@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
+import com.example.newsagreggator.ui.elements.TokApp
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NewsAgreggatorTheme {
-                TokHomeScreen()
+                TokApp()
             }
         }
     }
