@@ -14,17 +14,22 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.newsagreggator.R
 import com.example.newsagreggator.ui.elements.screens.ForYouScreen
 import com.example.newsagreggator.ui.elements.screens.DigestScreen
@@ -34,6 +39,8 @@ import com.example.newsagreggator.ui.elements.screens.SettingsScreen
 import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
 import com.example.newsagreggator.ui.model.NewsCardUiModel
 import com.example.newsagreggator.ui.model.sampleNewsArticles
+import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
+import kotlinx.coroutines.launch
 
 private enum class TokTab(
     @StringRes val labelResId: Int,
@@ -64,6 +71,8 @@ fun TokApp(
     var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
     var readArticleIds by remember { mutableStateOf(emptySet<Int>()) }
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
     var followedCategories by remember {
         mutableStateOf(
             setOf(
@@ -74,10 +83,35 @@ fun TokApp(
         )
     }
     val toggleSaved: (Int) -> Unit = { articleId ->
-        savedArticleIds = if (articleId in savedArticleIds) {
+        val wasSaved = articleId in savedArticleIds
+        savedArticleIds = if (wasSaved) {
             savedArticleIds - articleId
         } else {
             savedArticleIds + articleId
+        }
+        coroutineScope.launch {
+            val result = snackbarHostState.showSnackbar(
+                message = context.getString(
+                    if (wasSaved) {
+                        R.string.article_removed_from_saved
+                    } else {
+                        R.string.article_saved
+                    }
+                ),
+                actionLabel = context.getString(R.string.undo),
+                withDismissAction = true,
+            )
+            val expectedSavedState = !wasSaved
+            if (
+                result == SnackbarResult.ActionPerformed &&
+                (articleId in savedArticleIds) == expectedSavedState
+            ) {
+                savedArticleIds = if (wasSaved) {
+                    savedArticleIds + articleId
+                } else {
+                    savedArticleIds - articleId
+                }
+            }
         }
     }
     val readArticle: (NewsCardUiModel) -> Unit = { article ->
@@ -89,6 +123,7 @@ fun TokApp(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface,
@@ -229,4 +264,15 @@ private fun launchShareChooser(
             context.getString(R.string.share_article_chooser),
         )
     )
+}
+
+@Preview(name = "Tok aplikacija", showBackground = true)
+@Composable
+private fun TokAppPreview() {
+    NewsAgreggatorTheme(darkTheme = false) {
+        TokApp(
+            darkTheme = false,
+            onDarkThemeChange = {},
+        )
+    }
 }

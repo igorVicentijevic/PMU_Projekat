@@ -102,6 +102,9 @@
     <string name="news_world_summary">Novi plan povezuje javni prevoz, energetsku efikasnost i lokalnu proizvodnju energije.</string>
     <string name="save_article">Sačuvaj vest</string>
     <string name="remove_saved_article">Ukloni iz sačuvanih</string>
+    <string name="article_saved">Vest je sačuvana</string>
+    <string name="article_removed_from_saved">Vest je uklonjena</string>
+    <string name="undo">Poništi</string>
     <string name="read_article">Pročitaj</string>
     <string name="share_article">Podeli vest</string>
     <string name="share_article_chooser">Podeli vest preko</string>
