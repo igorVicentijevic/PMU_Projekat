@@ -20,12 +20,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,8 +50,12 @@ fun SettingsScreen(
     darkTheme: Boolean,
     compactLayout: Boolean,
     followedCategories: Set<Int>,
+    refreshIntervalMinutes: Int,
+    breakingNewsEnabled: Boolean,
     onDarkThemeChange: (Boolean) -> Unit,
     onCompactLayoutChange: (Boolean) -> Unit,
+    onRefreshIntervalChange: (Int) -> Unit,
+    onBreakingNewsChange: (Boolean) -> Unit,
     onToggleCategory: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -109,6 +119,39 @@ fun SettingsScreen(
         }
         Spacer(modifier = Modifier.height(28.dp))
         Text(
+            text = stringResource(R.string.settings_content_notifications),
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleLarge,
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(22.dp),
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            tonalElevation = 1.dp,
+        ) {
+            Column {
+                RefreshIntervalRow(
+                    selectedIntervalMinutes = refreshIntervalMinutes,
+                    onIntervalSelected = onRefreshIntervalChange,
+                )
+                HorizontalDivider(
+                    modifier = Modifier.padding(start = 72.dp),
+                    color = MaterialTheme.colorScheme.outline,
+                )
+                SettingToggleRow(
+                    iconResId = R.drawable.ic_bell,
+                    titleResId = R.string.settings_breaking_news,
+                    descriptionResId = R.string.settings_breaking_news_description,
+                    checked = breakingNewsEnabled,
+                    onCheckedChange = onBreakingNewsChange,
+                    accentColor = TokCoral,
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(28.dp))
+        Text(
             text = stringResource(R.string.settings_favorite_categories),
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleLarge,
@@ -124,6 +167,94 @@ fun SettingsScreen(
             onToggleCategory = onToggleCategory,
         )
         Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+private data class RefreshIntervalOption(
+    val minutes: Int,
+    @StringRes val labelResId: Int,
+)
+
+private val refreshIntervalOptions = listOf(
+    RefreshIntervalOption(1, R.string.refresh_interval_1),
+    RefreshIntervalOption(5, R.string.refresh_interval_5),
+    RefreshIntervalOption(15, R.string.refresh_interval_15),
+    RefreshIntervalOption(30, R.string.refresh_interval_30),
+    RefreshIntervalOption(60, R.string.refresh_interval_60),
+)
+
+@Composable
+private fun RefreshIntervalRow(
+    selectedIntervalMinutes: Int,
+    onIntervalSelected: (Int) -> Unit,
+) {
+    var menuExpanded by remember { mutableStateOf(false) }
+    val selectedOption = refreshIntervalOptions.firstOrNull {
+        it.minutes == selectedIntervalMinutes
+    } ?: refreshIntervalOptions[2]
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(42.dp)
+                .clip(RoundedCornerShape(13.dp))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_refresh),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(21.dp),
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(R.string.settings_auto_refresh),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = stringResource(R.string.settings_auto_refresh_description),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+        Box {
+            Surface(
+                onClick = { menuExpanded = true },
+                shape = RoundedCornerShape(10.dp),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            ) {
+                Text(
+                    text = "${stringResource(selectedOption.labelResId)} ▾",
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            DropdownMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false },
+            ) {
+                refreshIntervalOptions.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(stringResource(option.labelResId)) },
+                        onClick = {
+                            onIntervalSelected(option.minutes)
+                            menuExpanded = false
+                        },
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -230,8 +361,12 @@ private fun SettingsLightPreview() {
                     R.string.category_technology,
                     R.string.category_world,
                 ),
+                refreshIntervalMinutes = 15,
+                breakingNewsEnabled = true,
                 onDarkThemeChange = {},
                 onCompactLayoutChange = {},
+                onRefreshIntervalChange = {},
+                onBreakingNewsChange = {},
                 onToggleCategory = {},
             )
         }
@@ -247,8 +382,12 @@ private fun SettingsDarkPreview() {
                 darkTheme = true,
                 compactLayout = true,
                 followedCategories = emptySet(),
+                refreshIntervalMinutes = 60,
+                breakingNewsEnabled = false,
                 onDarkThemeChange = {},
                 onCompactLayoutChange = {},
+                onRefreshIntervalChange = {},
+                onBreakingNewsChange = {},
                 onToggleCategory = {},
             )
         }

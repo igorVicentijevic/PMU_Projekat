@@ -47,6 +47,8 @@ fun TokApp(
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(TokTab.Home) }
     var compactLayout by rememberSaveable { mutableStateOf(false) }
+    var refreshIntervalMinutes by rememberSaveable { mutableStateOf(15) }
+    var breakingNewsEnabled by rememberSaveable { mutableStateOf(true) }
     var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
     var followedCategories by remember {
         mutableStateOf(
@@ -132,8 +134,12 @@ fun TokApp(
                 darkTheme = darkTheme,
                 compactLayout = compactLayout,
                 followedCategories = followedCategories,
+                refreshIntervalMinutes = refreshIntervalMinutes,
+                breakingNewsEnabled = breakingNewsEnabled,
                 onDarkThemeChange = onDarkThemeChange,
                 onCompactLayoutChange = { compactLayout = it },
+                onRefreshIntervalChange = { refreshIntervalMinutes = it },
+                onBreakingNewsChange = { breakingNewsEnabled = it },
                 onToggleCategory = { category ->
                     followedCategories = if (category in followedCategories) {
                         followedCategories - category
