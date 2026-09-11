@@ -51,6 +51,7 @@ fun TokHomeScreen(
     onToggleSaved: (Int) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
+    onOpenHistory: () -> Unit,
     onCompactLayoutChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -80,6 +81,12 @@ fun TokHomeScreen(
         onCategorySelected = { category ->
             selectedCategory = category
             coroutineScope.launch { drawerState.close() }
+        },
+        onHistoryClick = {
+            coroutineScope.launch {
+                drawerState.close()
+                onOpenHistory()
+            }
         },
         onClose = { coroutineScope.launch { drawerState.close() } },
     ) {
@@ -204,6 +211,7 @@ private fun TokHomeScreenPreview() {
                 onToggleSaved = {},
                 onReadArticle = {},
                 onShareArticle = {},
+                onOpenHistory = {},
                 onCompactLayoutChange = {},
             )
         }

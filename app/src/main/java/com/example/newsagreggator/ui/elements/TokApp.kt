@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.newsagreggator.R
 import com.example.newsagreggator.ui.elements.screens.ForYouScreen
+import com.example.newsagreggator.ui.elements.screens.HistoryScreen
 import com.example.newsagreggator.ui.elements.screens.SavedScreen
 import com.example.newsagreggator.ui.elements.screens.SettingsScreen
 import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
@@ -50,6 +51,7 @@ fun TokApp(
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(TokTab.Home) }
+    var historyVisible by rememberSaveable { mutableStateOf(false) }
     var compactLayout by rememberSaveable { mutableStateOf(false) }
     var refreshIntervalMinutes by rememberSaveable { mutableStateOf(15) }
     var breakingNewsEnabled by rememberSaveable { mutableStateOf(true) }
@@ -89,7 +91,10 @@ fun TokApp(
                 TokTab.entries.forEach { tab ->
                     NavigationBarItem(
                         selected = tab == selectedTab,
-                        onClick = { selectedTab = tab },
+                        onClick = {
+                            selectedTab = tab
+                            historyVisible = false
+                        },
                         icon = {
                             BadgedBox(
                                 badge = {
@@ -118,7 +123,18 @@ fun TokApp(
             }
         },
     ) { innerPadding ->
-        when (selectedTab) {
+        if (historyVisible) {
+            HistoryScreen(
+                articles = sampleNewsArticles.filter { it.id in readArticleIds },
+                savedArticleIds = savedArticleIds,
+                compactLayout = compactLayout,
+                onBack = { historyVisible = false },
+                onClearHistory = { readArticleIds = emptySet() },
+                onToggleSaved = toggleSaved,
+                onShareArticle = shareArticle,
+                modifier = Modifier.padding(innerPadding),
+            )
+        } else when (selectedTab) {
             TokTab.Home -> TokHomeScreen(
                 savedArticleIds = savedArticleIds,
                 readArticleIds = readArticleIds,
@@ -126,6 +142,7 @@ fun TokApp(
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onShareArticle = shareArticle,
+                onOpenHistory = { historyVisible = true },
                 onCompactLayoutChange = { compactLayout = it },
                 modifier = Modifier.padding(innerPadding),
             )
