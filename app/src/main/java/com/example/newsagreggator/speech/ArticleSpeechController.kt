@@ -18,14 +18,23 @@ enum class SpeechActionResult {
     Failed,
 }
 
+data class SpeechArticle(
+    val articleId: Int,
+    val text: String,
+)
+
 class ArticleSpeechController(context: Context) : TextToSpeech.OnInitListener {
     private val mainHandler = Handler(Looper.getMainLooper())
     private var textToSpeech: TextToSpeech? = null
     private var ready = false
     private var unavailable = false
-    private var currentUtteranceId: String? = null
+    private val activeUtteranceIds = mutableSetOf<String>()
+    private val articleIdsByUtterance = mutableMapOf<String, Int>()
 
     var speakingArticleId by mutableStateOf<Int?>(null)
+        private set
+
+    var isDigestSpeaking by mutableStateOf(false)
         private set
 
     init {
@@ -50,15 +59,21 @@ class ArticleSpeechController(context: Context) : TextToSpeech.OnInitListener {
 
         engine.setOnUtteranceProgressListener(
             object : UtteranceProgressListener() {
-                override fun onStart(utteranceId: String?) = Unit
+                override fun onStart(utteranceId: String?) {
+                    mainHandler.post {
+                        articleIdsByUtterance[utteranceId]?.let { articleId ->
+                            speakingArticleId = articleId
+                        }
+                    }
+                }
 
                 override fun onDone(utteranceId: String?) {
-                    clearCompletedUtterance(utteranceId)
+                    completeUtterance(utteranceId)
                 }
 
                 @Deprecated("Deprecated in Android")
                 override fun onError(utteranceId: String?) {
-                    clearCompletedUtterance(utteranceId)
+                    completeUtterance(utteranceId)
                 }
             }
         )
@@ -74,12 +89,11 @@ class ArticleSpeechController(context: Context) : TextToSpeech.OnInitListener {
 
         val engine = textToSpeech ?: return SpeechActionResult.Failed
         if (speakingArticleId == articleId) {
-            engine.stop()
-            currentUtteranceId = null
-            speakingArticleId = null
+            stopPlayback(engine)
             return SpeechActionResult.Stopped
         }
 
+        stopPlayback(engine)
         val utteranceId = "article-$articleId-${System.nanoTime()}"
         val result = engine.speak(
             text,
@@ -88,13 +102,47 @@ class ArticleSpeechController(context: Context) : TextToSpeech.OnInitListener {
             utteranceId,
         )
         if (result == TextToSpeech.ERROR) {
-            currentUtteranceId = null
-            speakingArticleId = null
+            clearPlaybackState()
             return SpeechActionResult.Failed
         }
 
-        currentUtteranceId = utteranceId
+        activeUtteranceIds += utteranceId
+        articleIdsByUtterance[utteranceId] = articleId
         speakingArticleId = articleId
+        return SpeechActionResult.Started
+    }
+
+    fun toggleDigest(articles: List<SpeechArticle>): SpeechActionResult {
+        if (unavailable) return SpeechActionResult.Unavailable
+        if (!ready) return SpeechActionResult.Initializing
+
+        val engine = textToSpeech ?: return SpeechActionResult.Failed
+        if (isDigestSpeaking) {
+            stopPlayback(engine)
+            return SpeechActionResult.Stopped
+        }
+        if (articles.isEmpty()) return SpeechActionResult.Failed
+
+        stopPlayback(engine)
+        articles.forEachIndexed { index, article ->
+            val utteranceId =
+                "digest-${article.articleId}-$index-${System.nanoTime()}"
+            val result = engine.speak(
+                article.text,
+                if (index == 0) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD,
+                null,
+                utteranceId,
+            )
+            if (result == TextToSpeech.ERROR) {
+                stopPlayback(engine)
+                return SpeechActionResult.Failed
+            }
+            activeUtteranceIds += utteranceId
+            articleIdsByUtterance[utteranceId] = article.articleId
+        }
+
+        isDigestSpeaking = true
+        speakingArticleId = articles.first().articleId
         return SpeechActionResult.Started
     }
 
@@ -102,18 +150,32 @@ class ArticleSpeechController(context: Context) : TextToSpeech.OnInitListener {
         textToSpeech?.stop()
         textToSpeech?.shutdown()
         textToSpeech = null
-        currentUtteranceId = null
-        speakingArticleId = null
+        clearPlaybackState()
         ready = false
     }
 
-    private fun clearCompletedUtterance(utteranceId: String?) {
-        if (utteranceId != currentUtteranceId) return
+    private fun completeUtterance(utteranceId: String?) {
         mainHandler.post {
-            if (utteranceId == currentUtteranceId) {
-                currentUtteranceId = null
-                speakingArticleId = null
+            if (utteranceId == null || utteranceId !in activeUtteranceIds) {
+                return@post
+            }
+            activeUtteranceIds -= utteranceId
+            articleIdsByUtterance.remove(utteranceId)
+            if (activeUtteranceIds.isEmpty()) {
+                clearPlaybackState()
             }
         }
+    }
+
+    private fun stopPlayback(engine: TextToSpeech) {
+        engine.stop()
+        clearPlaybackState()
+    }
+
+    private fun clearPlaybackState() {
+        activeUtteranceIds.clear()
+        articleIdsByUtterance.clear()
+        speakingArticleId = null
+        isDigestSpeaking = false
     }
 }

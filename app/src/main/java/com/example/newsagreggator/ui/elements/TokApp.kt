@@ -22,6 +22,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.newsagreggator.R
 import com.example.newsagreggator.speech.ArticleSpeechController
+import com.example.newsagreggator.speech.SpeechArticle
 import com.example.newsagreggator.speech.SpeechActionResult
 import com.example.newsagreggator.ui.elements.screens.ForYouScreen
 import com.example.newsagreggator.ui.elements.screens.DigestScreen
@@ -135,41 +137,56 @@ fun TokApp(
     val shareArticle: (NewsCardUiModel) -> Unit = { article ->
         launchShareChooser(context, article)
     }
-    val toggleSpeech: (NewsCardUiModel) -> Unit = { article ->
-        val speechText = buildString {
-            append(context.getString(article.titleResId))
-            append(". ")
-            append(context.getString(article.summaryResId))
-            append(". ")
-            append(context.getString(article.sourceResId))
+    val showSpeechError: (SpeechActionResult) -> Unit = { result ->
+        val messageResId = when (result) {
+            SpeechActionResult.Initializing -> R.string.tts_initializing
+            SpeechActionResult.Unavailable -> R.string.tts_unavailable
+            else -> R.string.tts_failed
         }
+        coroutineScope.launch {
+            snackbarHostState.showSnackbar(
+                message = context.getString(messageResId),
+                withDismissAction = true,
+            )
+        }
+    }
+    val toggleSpeech: (NewsCardUiModel) -> Unit = { article ->
+        val speechText = articleSpeechText(context, article)
         val speechResult = speechController.toggleArticle(article.id, speechText)
         when (speechResult) {
-            SpeechActionResult.Started -> {
-                readArticleIds = readArticleIds + article.id
-            }
-            SpeechActionResult.Stopped -> Unit
+            SpeechActionResult.Started,
+            SpeechActionResult.Stopped,
+            -> Unit
             SpeechActionResult.Initializing,
             SpeechActionResult.Unavailable,
             SpeechActionResult.Failed,
-            -> {
-                val messageResId = when (speechResult) {
-                    SpeechActionResult.Initializing -> R.string.tts_initializing
-                    SpeechActionResult.Unavailable -> R.string.tts_unavailable
-                    else -> R.string.tts_failed
-                }
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = context.getString(messageResId),
-                        withDismissAction = true,
-                    )
-                }
+            -> showSpeechError(speechResult)
+        }
+    }
+    val toggleDigestSpeech: (List<NewsCardUiModel>) -> Unit = { articles ->
+        val result = speechController.toggleDigest(
+            articles.map { article ->
+                SpeechArticle(
+                    articleId = article.id,
+                    text = articleSpeechText(context, article),
+                )
             }
+        )
+        if (
+            result != SpeechActionResult.Started &&
+            result != SpeechActionResult.Stopped
+        ) {
+            showSpeechError(result)
         }
     }
 
     DisposableEffect(speechController) {
         onDispose { speechController.shutdown() }
+    }
+    LaunchedEffect(speechController.speakingArticleId) {
+        speechController.speakingArticleId?.let { articleId ->
+            readArticleIds = readArticleIds + articleId
+        }
     }
 
     Scaffold(
@@ -235,11 +252,19 @@ fun TokApp(
                 savedArticleIds = savedArticleIds,
                 readArticleIds = readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
+                isDigestSpeaking = speechController.isDigestSpeaking,
                 compactLayout = compactLayout,
                 onBack = { secondaryScreen = null },
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
+                onToggleDigestSpeech = {
+                    toggleDigestSpeech(
+                        sampleNewsArticles
+                            .filter { it.categoryResId in followedCategories }
+                            .take(5)
+                    )
+                },
                 onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )
@@ -321,6 +346,17 @@ private fun launchOriginalArticle(
     } catch (_: ActivityNotFoundException) {
         false
     }
+}
+
+private fun articleSpeechText(
+    context: Context,
+    article: NewsCardUiModel,
+): String = buildString {
+    append(context.getString(article.titleResId))
+    append(". ")
+    append(context.getString(article.summaryResId))
+    append(". ")
+    append(context.getString(article.sourceResId))
 }
 
 private fun launchShareChooser(

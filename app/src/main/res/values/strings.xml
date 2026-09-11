@@ -114,6 +114,8 @@
     <string name="tts_initializing">Čitač teksta se još pokreće.</string>
     <string name="tts_unavailable">Srpski glas nije dostupan na ovom uređaju.</string>
     <string name="tts_failed">Nije moguće pokrenuti glasovno čitanje.</string>
+    <string name="digest_listen_all">Slušaj sve</string>
+    <string name="digest_stop_listening">Zaustavi pregled</string>
     <string name="no_category_news">Nema vesti u izabranoj kategoriji.</string>
     <string name="no_search_results">Nema rezultata za unetu pretragu.</string>
 </resources>

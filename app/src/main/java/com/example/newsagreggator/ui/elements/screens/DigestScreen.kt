@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,11 +43,13 @@ fun DigestScreen(
     savedArticleIds: Set<Int>,
     readArticleIds: Set<Int>,
     speakingArticleId: Int?,
+    isDigestSpeaking: Boolean,
     compactLayout: Boolean,
     onBack: () -> Unit,
     onToggleSaved: (Int) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
+    onToggleDigestSpeech: () -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -79,7 +82,11 @@ fun DigestScreen(
             style = MaterialTheme.typography.bodyMedium,
         )
         Spacer(modifier = Modifier.height(20.dp))
-        DigestHero(articleCount = articles.size)
+        DigestHero(
+            articleCount = articles.size,
+            isSpeaking = isDigestSpeaking,
+            onSpeechClick = onToggleDigestSpeech,
+        )
         Spacer(modifier = Modifier.height(22.dp))
         Text(
             text = stringResource(R.string.digest_selection),
@@ -115,54 +122,84 @@ fun DigestScreen(
 }
 
 @Composable
-private fun DigestHero(articleCount: Int) {
+private fun DigestHero(
+    articleCount: Int,
+    isSpeaking: Boolean,
+    onSpeechClick: () -> Unit,
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
     ) {
-        Row(
-            modifier = Modifier.padding(18.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(70.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary),
-                contentAlignment = Alignment.Center,
+        Column(modifier = Modifier.padding(18.dp)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    modifier = Modifier
+                        .size(70.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = articleCount.toString(),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                        Text(
+                            text = stringResource(R.string.digest_story_count, articleCount)
+                                .substringAfter(' '),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    }
+                }
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = articleCount.toString(),
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        text = stringResource(R.string.digest_duration),
+                        color = TokCoral,
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                    Text(
+                        text = stringResource(R.string.digest_flow_title),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleLarge,
                     )
                     Text(
-                        text = stringResource(R.string.digest_story_count, articleCount)
-                            .substringAfter(' '),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.labelSmall,
+                        text = stringResource(R.string.digest_flow_body),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
             }
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.digest_duration),
-                    color = TokCoral,
-                    style = MaterialTheme.typography.labelSmall,
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onSpeechClick,
+                enabled = articleCount > 0,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(
+                    painter = painterResource(
+                        if (isSpeaking) R.drawable.ic_stop else R.drawable.ic_volume
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
                 )
+                Spacer(modifier = Modifier.size(8.dp))
                 Text(
-                    text = stringResource(R.string.digest_flow_title),
+                    text = stringResource(
+                        if (isSpeaking) {
+                            R.string.digest_stop_listening
+                        } else {
+                            R.string.digest_listen_all
+                        }
+                    ),
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                Text(
-                    text = stringResource(R.string.digest_flow_body),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
@@ -213,11 +250,13 @@ private fun DigestContentPreview() {
                 savedArticleIds = setOf(1),
                 readArticleIds = setOf(2),
                 speakingArticleId = 1,
+                isDigestSpeaking = true,
                 compactLayout = true,
                 onBack = {},
                 onToggleSaved = {},
                 onReadArticle = {},
                 onToggleSpeech = {},
+                onToggleDigestSpeech = {},
                 onShareArticle = {},
             )
         }
@@ -234,11 +273,13 @@ private fun DigestEmptyPreview() {
                 savedArticleIds = emptySet(),
                 readArticleIds = emptySet(),
                 speakingArticleId = null,
+                isDigestSpeaking = false,
                 compactLayout = false,
                 onBack = {},
                 onToggleSaved = {},
                 onReadArticle = {},
                 onToggleSpeech = {},
+                onToggleDigestSpeech = {},
                 onShareArticle = {},
             )
         }
