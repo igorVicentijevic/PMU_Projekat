@@ -52,6 +52,7 @@ fun TokHomeScreen(
     onReadArticle: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     onOpenHistory: () -> Unit,
+    onOpenDigest: () -> Unit,
     onCompactLayoutChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -81,6 +82,12 @@ fun TokHomeScreen(
         onCategorySelected = { category ->
             selectedCategory = category
             coroutineScope.launch { drawerState.close() }
+        },
+        onDigestClick = {
+            coroutineScope.launch {
+                drawerState.close()
+                onOpenDigest()
+            }
         },
         onHistoryClick = {
             coroutineScope.launch {
@@ -143,7 +150,7 @@ fun TokHomeScreen(
                 ),
             )
             Spacer(modifier = Modifier.height(26.dp))
-            TrendingSection()
+            TrendingSection(onDigestClick = onOpenDigest)
             Spacer(modifier = Modifier.height(26.dp))
             LatestSection(
                 selectedCategory = selectedCategory,
@@ -212,6 +219,7 @@ private fun TokHomeScreenPreview() {
                 onReadArticle = {},
                 onShareArticle = {},
                 onOpenHistory = {},
+                onOpenDigest = {},
                 onCompactLayoutChange = {},
             )
         }

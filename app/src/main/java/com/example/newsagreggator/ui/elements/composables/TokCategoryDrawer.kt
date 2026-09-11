@@ -40,6 +40,7 @@ fun TokCategoryDrawer(
     drawerState: DrawerState,
     selectedCategory: Int,
     onCategorySelected: (Int) -> Unit,
+    onDigestClick: () -> Unit,
     onHistoryClick: () -> Unit,
     onClose: () -> Unit,
     content: @Composable () -> Unit,
@@ -62,6 +63,23 @@ fun TokCategoryDrawer(
                     Spacer(modifier = Modifier.height(24.dp))
                     DrawerGreeting()
                     Spacer(modifier = Modifier.height(20.dp))
+                    NavigationDrawerItem(
+                        label = {
+                            Text(
+                                text = stringResource(R.string.drawer_digest),
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        selected = false,
+                        onClick = onDigestClick,
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_spark),
+                                contentDescription = null,
+                            )
+                        },
+                        shape = RoundedCornerShape(14.dp),
+                    )
                     NavigationDrawerItem(
                         label = {
                             Text(

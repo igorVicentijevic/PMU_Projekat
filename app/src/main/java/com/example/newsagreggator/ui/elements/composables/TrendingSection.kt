@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,7 +57,10 @@ private val trendingArticles = listOf(
 )
 
 @Composable
-fun TrendingSection(modifier: Modifier = Modifier) {
+fun TrendingSection(
+    onDigestClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -75,12 +79,14 @@ fun TrendingSection(modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.titleLarge,
                 )
             }
-            Text(
-                text = stringResource(R.string.daily_digest),
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            TextButton(onClick = onDigestClick) {
+                Text(
+                    text = stringResource(R.string.daily_digest),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
         Spacer(modifier = Modifier.height(12.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {

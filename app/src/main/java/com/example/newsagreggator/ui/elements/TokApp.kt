@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.newsagreggator.R
 import com.example.newsagreggator.ui.elements.screens.ForYouScreen
+import com.example.newsagreggator.ui.elements.screens.DigestScreen
 import com.example.newsagreggator.ui.elements.screens.HistoryScreen
 import com.example.newsagreggator.ui.elements.screens.SavedScreen
 import com.example.newsagreggator.ui.elements.screens.SettingsScreen
@@ -44,6 +45,11 @@ private enum class TokTab(
     Settings(R.string.nav_settings, R.drawable.ic_settings),
 }
 
+private enum class SecondaryScreen {
+    History,
+    Digest,
+}
+
 @Composable
 fun TokApp(
     darkTheme: Boolean,
@@ -51,7 +57,7 @@ fun TokApp(
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(TokTab.Home) }
-    var historyVisible by rememberSaveable { mutableStateOf(false) }
+    var secondaryScreen by rememberSaveable { mutableStateOf<SecondaryScreen?>(null) }
     var compactLayout by rememberSaveable { mutableStateOf(false) }
     var refreshIntervalMinutes by rememberSaveable { mutableStateOf(15) }
     var breakingNewsEnabled by rememberSaveable { mutableStateOf(true) }
@@ -93,7 +99,7 @@ fun TokApp(
                         selected = tab == selectedTab,
                         onClick = {
                             selectedTab = tab
-                            historyVisible = false
+                            secondaryScreen = null
                         },
                         icon = {
                             BadgedBox(
@@ -123,18 +129,31 @@ fun TokApp(
             }
         },
     ) { innerPadding ->
-        if (historyVisible) {
-            HistoryScreen(
-                articles = sampleNewsArticles.filter { it.id in readArticleIds },
+        when (secondaryScreen) {
+            SecondaryScreen.History -> HistoryScreen(
+                    articles = sampleNewsArticles.filter { it.id in readArticleIds },
+                    savedArticleIds = savedArticleIds,
+                    compactLayout = compactLayout,
+                    onBack = { secondaryScreen = null },
+                    onClearHistory = { readArticleIds = emptySet() },
+                    onToggleSaved = toggleSaved,
+                    onShareArticle = shareArticle,
+                    modifier = Modifier.padding(innerPadding),
+                )
+            SecondaryScreen.Digest -> DigestScreen(
+                articles = sampleNewsArticles
+                    .filter { it.categoryResId in followedCategories }
+                    .take(5),
                 savedArticleIds = savedArticleIds,
+                readArticleIds = readArticleIds,
                 compactLayout = compactLayout,
-                onBack = { historyVisible = false },
-                onClearHistory = { readArticleIds = emptySet() },
+                onBack = { secondaryScreen = null },
                 onToggleSaved = toggleSaved,
+                onReadArticle = readArticle,
                 onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )
-        } else when (selectedTab) {
+            null -> when (selectedTab) {
             TokTab.Home -> TokHomeScreen(
                 savedArticleIds = savedArticleIds,
                 readArticleIds = readArticleIds,
@@ -142,7 +161,8 @@ fun TokApp(
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onShareArticle = shareArticle,
-                onOpenHistory = { historyVisible = true },
+                onOpenHistory = { secondaryScreen = SecondaryScreen.History },
+                onOpenDigest = { secondaryScreen = SecondaryScreen.Digest },
                 onCompactLayoutChange = { compactLayout = it },
                 modifier = Modifier.padding(innerPadding),
             )
@@ -187,6 +207,7 @@ fun TokApp(
                 },
                 modifier = Modifier.padding(innerPadding),
             )
+            }
         }
     }
 }
