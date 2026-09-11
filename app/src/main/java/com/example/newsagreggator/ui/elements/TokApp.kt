@@ -5,6 +5,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -14,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -21,7 +24,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.newsagreggator.R
 import com.example.newsagreggator.ui.elements.screens.PlaceholderScreen
+import com.example.newsagreggator.ui.elements.screens.SavedScreen
 import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
+import com.example.newsagreggator.ui.model.sampleNewsArticles
 
 private enum class TokTab(
     @StringRes val labelResId: Int,
@@ -36,6 +41,15 @@ private enum class TokTab(
 @Composable
 fun TokApp(modifier: Modifier = Modifier) {
     var selectedTab by rememberSaveable { mutableStateOf(TokTab.Home) }
+    var compactLayout by rememberSaveable { mutableStateOf(false) }
+    var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
+    val toggleSaved: (Int) -> Unit = { articleId ->
+        savedArticleIds = if (articleId in savedArticleIds) {
+            savedArticleIds - articleId
+        } else {
+            savedArticleIds + articleId
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -49,10 +63,20 @@ fun TokApp(modifier: Modifier = Modifier) {
                         selected = tab == selectedTab,
                         onClick = { selectedTab = tab },
                         icon = {
-                            Icon(
-                                painter = painterResource(tab.iconResId),
-                                contentDescription = null,
-                            )
+                            BadgedBox(
+                                badge = {
+                                    if (tab == TokTab.Saved && savedArticleIds.isNotEmpty()) {
+                                        Badge {
+                                            Text(savedArticleIds.size.toString())
+                                        }
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(tab.iconResId),
+                                    contentDescription = null,
+                                )
+                            }
                         },
                         label = { Text(stringResource(tab.labelResId)) },
                         colors = NavigationBarItemDefaults.colors(
@@ -67,17 +91,23 @@ fun TokApp(modifier: Modifier = Modifier) {
         },
     ) { innerPadding ->
         when (selectedTab) {
-            TokTab.Home -> TokHomeScreen(modifier = Modifier.padding(innerPadding))
+            TokTab.Home -> TokHomeScreen(
+                savedArticleIds = savedArticleIds,
+                compactLayout = compactLayout,
+                onToggleSaved = toggleSaved,
+                onCompactLayoutChange = { compactLayout = it },
+                modifier = Modifier.padding(innerPadding),
+            )
             TokTab.ForYou -> PlaceholderScreen(
                 kickerResId = R.string.for_you_kicker,
                 titleResId = R.string.nav_for_you,
                 bodyResId = R.string.for_you_placeholder,
                 modifier = Modifier.padding(innerPadding),
             )
-            TokTab.Saved -> PlaceholderScreen(
-                kickerResId = R.string.saved_kicker,
-                titleResId = R.string.nav_saved,
-                bodyResId = R.string.saved_placeholder,
+            TokTab.Saved -> SavedScreen(
+                articles = sampleNewsArticles.filter { it.id in savedArticleIds },
+                compactLayout = compactLayout,
+                onRemoveSaved = toggleSaved,
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.Settings -> PlaceholderScreen(

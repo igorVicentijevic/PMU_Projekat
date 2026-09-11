@@ -20,6 +20,11 @@
     <string name="for_you_placeholder">Priče iz kategorija koje pratiš uskoro će biti prikazane ovde.</string>
     <string name="saved_kicker">TVOJA BIBLIOTEKA</string>
     <string name="saved_placeholder">Vesti koje sačuvaš uskoro će biti dostupne ovde.</string>
+    <string name="saved_subtitle">Dostupno i bez interneta.</string>
+    <string name="saved_offline_title">Offline spremno</string>
+    <string name="saved_offline_body">Sačuvane priče ostaju na ovom uređaju.</string>
+    <string name="saved_empty_title">Još nema sačuvanih vesti</string>
+    <string name="saved_empty_body">Dodirni oznaku na kartici vesti da je sačuvaš za kasnije.</string>
     <string name="settings_kicker">PO TVOM RITMU</string>
     <string name="settings_placeholder">Podešavanja izgleda i sadržaja biće dodata u sledećim koracima.</string>
     <string name="trending_kicker">U FOKUSU</string>

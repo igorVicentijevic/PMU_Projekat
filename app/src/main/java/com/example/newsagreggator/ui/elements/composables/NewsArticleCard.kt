@@ -1,7 +1,5 @@
 package com.example.newsagreggator.ui.elements.composables
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,16 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
-
-data class NewsCardUiModel(
-    val id: Int,
-    @DrawableRes val imageResId: Int,
-    @StringRes val categoryResId: Int,
-    @StringRes val sourceResId: Int,
-    @StringRes val timeResId: Int,
-    @StringRes val titleResId: Int,
-    @StringRes val summaryResId: Int,
-)
+import com.example.newsagreggator.ui.model.NewsCardUiModel
 
 @Composable
 fun NewsArticleCard(

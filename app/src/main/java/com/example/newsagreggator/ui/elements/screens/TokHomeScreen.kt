@@ -21,7 +21,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -34,28 +33,32 @@ import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
 import com.example.newsagreggator.ui.elements.composables.LatestSection
 import com.example.newsagreggator.ui.elements.composables.NewsArticleCard
-import com.example.newsagreggator.ui.elements.composables.NewsCardUiModel
 import com.example.newsagreggator.ui.elements.composables.TokTopBar
 import com.example.newsagreggator.ui.elements.composables.TokCategoryDrawer
 import com.example.newsagreggator.ui.elements.composables.TrendingSection
+import com.example.newsagreggator.ui.model.sampleNewsArticles
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Composable
-fun TokHomeScreen(modifier: Modifier = Modifier) {
+fun TokHomeScreen(
+    savedArticleIds: Set<Int>,
+    compactLayout: Boolean,
+    onToggleSaved: (Int) -> Unit,
+    onCompactLayoutChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var query by rememberSaveable { mutableStateOf("") }
     var selectedCategory by rememberSaveable { mutableStateOf(R.string.category_all) }
-    var compactLayout by rememberSaveable { mutableStateOf(false) }
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
-    var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val resources = LocalContext.current.resources
     val serbianLocale = Locale.forLanguageTag("sr-Latn-RS")
     val normalizedQuery = query.trim().lowercase(serbianLocale)
-    val visibleArticles = latestArticles.filter { article ->
+    val visibleArticles = sampleNewsArticles.filter { article ->
         val matchesCategory =
             selectedCategory == R.string.category_all ||
                 selectedCategory == article.categoryResId
@@ -136,7 +139,7 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
                 compactLayout = compactLayout,
                 isRefreshing = isRefreshing,
                 onCategorySelected = { selectedCategory = it },
-                onCompactLayoutClick = { compactLayout = !compactLayout },
+                onCompactLayoutClick = { onCompactLayoutChange(!compactLayout) },
                 onRefreshClick = {
                     if (!isRefreshing) {
                         coroutineScope.launch {
@@ -159,13 +162,7 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
                             article = article,
                             compact = compactLayout,
                             isSaved = article.id in savedArticleIds,
-                            onSaveClick = {
-                                savedArticleIds = if (article.id in savedArticleIds) {
-                                    savedArticleIds - article.id
-                                } else {
-                                    savedArticleIds + article.id
-                                }
-                            },
+                            onSaveClick = { onToggleSaved(article.id) },
                         )
                     }
                 }
@@ -188,42 +185,17 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
     }
 }
 
-private val latestArticles = listOf(
-    NewsCardUiModel(
-        id = 1,
-        imageResId = R.drawable.news_park,
-        categoryResId = R.string.category_serbia,
-        sourceResId = R.string.news_source_danas,
-        timeResId = R.string.news_time_12_minutes_short,
-        titleResId = R.string.news_park_title,
-        summaryResId = R.string.news_park_summary,
-    ),
-    NewsCardUiModel(
-        id = 2,
-        imageResId = R.drawable.news_technology,
-        categoryResId = R.string.category_technology,
-        sourceResId = R.string.news_source_netokracija,
-        timeResId = R.string.news_time_28_minutes_short,
-        titleResId = R.string.news_technology_title,
-        summaryResId = R.string.news_technology_summary,
-    ),
-    NewsCardUiModel(
-        id = 3,
-        imageResId = R.drawable.news_world,
-        categoryResId = R.string.category_world,
-        sourceResId = R.string.news_source_reuters,
-        timeResId = R.string.news_time_41_minutes_short,
-        titleResId = R.string.news_world_title,
-        summaryResId = R.string.news_world_summary,
-    ),
-)
-
 @Preview(showBackground = true)
 @Composable
 private fun TokHomeScreenPreview() {
     NewsAgreggatorTheme {
         Surface {
-            TokHomeScreen()
+            TokHomeScreen(
+                savedArticleIds = emptySet(),
+                compactLayout = false,
+                onToggleSaved = {},
+                onCompactLayoutChange = {},
+            )
         }
     }
 }
