@@ -12,11 +12,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +37,7 @@ import com.example.newsagreggator.ui.elements.composables.LatestSection
 import com.example.newsagreggator.ui.elements.composables.NewsArticleCard
 import com.example.newsagreggator.ui.elements.composables.NewsCardUiModel
 import com.example.newsagreggator.ui.elements.composables.TokTopBar
+import com.example.newsagreggator.ui.elements.composables.TokCategoryDrawer
 import com.example.newsagreggator.ui.elements.composables.TrendingSection
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import kotlinx.coroutines.delay
@@ -49,6 +52,7 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
     var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
     val coroutineScope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val resources = LocalContext.current.resources
     val serbianLocale = Locale.forLanguageTag("sr-Latn-RS")
     val normalizedQuery = query.trim().lowercase(serbianLocale)
@@ -64,15 +68,26 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
         matchesCategory && matchesQuery
     }
 
-    Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 12.dp)
-        ) {
-            TokTopBar()
+    TokCategoryDrawer(
+        drawerState = drawerState,
+        selectedCategory = selectedCategory,
+        onCategorySelected = { category ->
+            selectedCategory = category
+            coroutineScope.launch { drawerState.close() }
+        },
+        onClose = { coroutineScope.launch { drawerState.close() } },
+    ) {
+        Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
+            ) {
+                TokTopBar(
+                    onMenuClick = { coroutineScope.launch { drawerState.open() } }
+                )
             Spacer(modifier = Modifier.height(34.dp))
             Text(
                 text = stringResource(R.string.home_eyebrow),
@@ -171,7 +186,8 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         }
     }
 }

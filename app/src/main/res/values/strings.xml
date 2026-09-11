@@ -5,7 +5,13 @@
     <string name="home_subtitle">Najvažnije priče, bez buke.</string>
     <string name="search_news">Pretraži vesti</string>
     <string name="open_categories">Otvori kategorije</string>
+    <string name="close_categories">Zatvori kategorije</string>
     <string name="notifications">Obaveštenja</string>
+    <string name="drawer_greeting">Zdravo!</string>
+    <string name="drawer_subtitle">Izaberi svoj tok vesti</string>
+    <string name="drawer_categories">KATEGORIJE</string>
+    <string name="drawer_offline_title">Offline režim</string>
+    <string name="drawer_offline_subtitle">Poslednje vesti su sačuvane</string>
     <string name="trending_kicker">U FOKUSU</string>
     <string name="trending_title">U trendu sada</string>
     <string name="daily_digest">Dnevni pregled →</string>

@@ -39,17 +39,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
 
-private val newsCategories = listOf(
-    R.string.category_all,
-    R.string.category_serbia,
-    R.string.category_world,
-    R.string.category_technology,
-    R.string.category_business,
-    R.string.category_culture,
-    R.string.category_sport,
-    R.string.category_health,
-)
-
 @Composable
 fun LatestSection(
     selectedCategory: Int,
@@ -149,7 +138,7 @@ fun LatestSection(
         }
         Spacer(modifier = Modifier.height(12.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(newsCategories) { category ->
+            items(newsCategoryResIds) { category ->
                 FilterChip(
                     selected = category == selectedCategory,
                     onClick = { onCategorySelected(category) },

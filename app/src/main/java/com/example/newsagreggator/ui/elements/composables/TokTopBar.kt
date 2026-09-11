@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,15 +25,18 @@ import com.example.newsagreggator.ui.theme.TokCoral
 import com.example.newsagreggator.ui.theme.TokGreen
 
 @Composable
-fun TokTopBar(modifier: Modifier = Modifier) {
+fun TokTopBar(
+    onMenuClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
+        IconButton(
+            onClick = onMenuClick,
             modifier = Modifier.size(42.dp),
-            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_menu),
