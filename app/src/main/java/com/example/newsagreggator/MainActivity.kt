@@ -49,6 +49,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.newsagreggator.ui.elements.composables.NewsArticleCard
+import com.example.newsagreggator.ui.elements.composables.NewsCardUiModel
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import com.example.newsagreggator.ui.theme.TokGreen
 import kotlinx.coroutines.delay
@@ -72,6 +74,7 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
     var selectedCategory by rememberSaveable { mutableStateOf(R.string.category_all) }
     var compactLayout by rememberSaveable { mutableStateOf(false) }
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
+    var isArticleSaved by rememberSaveable { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
@@ -145,6 +148,25 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
                     }
                 },
             )
+            Spacer(modifier = Modifier.height(14.dp))
+            if (
+                selectedCategory == R.string.category_all ||
+                selectedCategory == R.string.category_serbia
+            ) {
+                NewsArticleCard(
+                    article = featuredArticle,
+                    compact = compactLayout,
+                    isSaved = isArticleSaved,
+                    onSaveClick = { isArticleSaved = !isArticleSaved },
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.no_category_news),
+                    modifier = Modifier.padding(vertical = 28.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
@@ -170,6 +192,15 @@ private val trendingArticles = listOf(
         timeResId = R.string.news_time_28_minutes,
         titleResId = R.string.news_technology_title,
     ),
+)
+
+private val featuredArticle = NewsCardUiModel(
+    imageResId = R.drawable.news_park,
+    categoryResId = R.string.category_serbia,
+    sourceResId = R.string.news_source_danas,
+    timeResId = R.string.news_time_12_minutes_short,
+    titleResId = R.string.news_park_title,
+    summaryResId = R.string.news_park_summary,
 )
 
 private val newsCategories = listOf(

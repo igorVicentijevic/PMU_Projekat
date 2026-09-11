@@ -27,4 +27,10 @@
     <string name="category_culture">Kultura</string>
     <string name="category_sport">Sport</string>
     <string name="category_health">Zdravlje</string>
+    <string name="news_source_danas">Danas</string>
+    <string name="news_time_12_minutes_short">pre 12 min</string>
+    <string name="news_park_summary">Zelena oaza sa više od 300 novih stabala biće otvorena za posetioce ovog vikenda.</string>
+    <string name="save_article">Sačuvaj vest</string>
+    <string name="remove_saved_article">Ukloni iz sačuvanih</string>
+    <string name="no_category_news">Nema vesti u izabranoj kategoriji.</string>
 </resources>
