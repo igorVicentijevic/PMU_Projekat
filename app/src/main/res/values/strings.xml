@@ -106,6 +106,7 @@
     <string name="article_removed_from_saved">Vest je uklonjena</string>
     <string name="undo">Poništi</string>
     <string name="read_article">Pročitaj</string>
+    <string name="article_open_failed">Nije moguće otvoriti originalnu vest.</string>
     <string name="share_article">Podeli vest</string>
     <string name="share_article_chooser">Podeli vest preko</string>
     <string name="no_category_news">Nema vesti u izabranoj kategoriji.</string>

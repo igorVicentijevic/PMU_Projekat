@@ -1,7 +1,9 @@
 package com.example.newsagreggator.ui.elements
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
@@ -115,7 +117,16 @@ fun TokApp(
         }
     }
     val readArticle: (NewsCardUiModel) -> Unit = { article ->
-        readArticleIds = readArticleIds + article.id
+        if (launchOriginalArticle(context, article)) {
+            readArticleIds = readArticleIds + article.id
+        } else {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = context.getString(R.string.article_open_failed),
+                    withDismissAction = true,
+                )
+            }
+        }
     }
     val shareArticle: (NewsCardUiModel) -> Unit = { article ->
         launchShareChooser(context, article)
@@ -244,6 +255,21 @@ fun TokApp(
             )
             }
         }
+    }
+}
+
+private fun launchOriginalArticle(
+    context: Context,
+    article: NewsCardUiModel,
+): Boolean {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url)).apply {
+        addCategory(Intent.CATEGORY_BROWSABLE)
+    }
+    return try {
+        context.startActivity(intent)
+        true
+    } catch (_: ActivityNotFoundException) {
+        false
     }
 }
 
