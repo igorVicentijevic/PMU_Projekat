@@ -4,4 +4,13 @@
     <string name="home_greeting">Dobro jutro.</string>
     <string name="home_subtitle">Najvažnije priče, bez buke.</string>
     <string name="search_news">Pretraži vesti</string>
+    <string name="trending_kicker">U FOKUSU</string>
+    <string name="trending_title">U trendu sada</string>
+    <string name="daily_digest">Dnevni pregled →</string>
+    <string name="news_category_serbia">SRBIJA</string>
+    <string name="news_category_technology">TEHNOLOGIJA</string>
+    <string name="news_time_12_minutes">PRE 12 MIN</string>
+    <string name="news_time_28_minutes">PRE 28 MIN</string>
+    <string name="news_park_title">Novi park uz Savu otvara prostor za sport, odmor i kulturu</string>
+    <string name="news_technology_title">Domaći tim razvio alat koji štedi sate svakodnevnog rada</string>
 </resources>
