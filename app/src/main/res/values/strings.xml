@@ -109,6 +109,11 @@
     <string name="article_open_failed">Nije moguće otvoriti originalnu vest.</string>
     <string name="share_article">Podeli vest</string>
     <string name="share_article_chooser">Podeli vest preko</string>
+    <string name="speak_article">Čitaj naglas</string>
+    <string name="stop_speaking">Zaustavi čitanje</string>
+    <string name="tts_initializing">Čitač teksta se još pokreće.</string>
+    <string name="tts_unavailable">Srpski glas nije dostupan na ovom uređaju.</string>
+    <string name="tts_failed">Nije moguće pokrenuti glasovno čitanje.</string>
     <string name="no_category_news">Nema vesti u izabranoj kategoriji.</string>
     <string name="no_search_results">Nema rezultata za unetu pretragu.</string>
 </resources>

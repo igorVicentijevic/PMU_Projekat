@@ -40,10 +40,12 @@ import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 fun HistoryScreen(
     articles: List<NewsCardUiModel>,
     savedArticleIds: Set<Int>,
+    speakingArticleId: Int?,
     compactLayout: Boolean,
     onBack: () -> Unit,
     onClearHistory: () -> Unit,
     onToggleSaved: (Int) -> Unit,
+    onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -127,8 +129,10 @@ fun HistoryScreen(
                         compact = compactLayout,
                         isSaved = article.id in savedArticleIds,
                         isRead = true,
+                        isSpeaking = article.id == speakingArticleId,
                         onSaveClick = { onToggleSaved(article.id) },
                         onReadClick = {},
+                        onSpeechClick = { onToggleSpeech(article) },
                         onShareClick = { onShareArticle(article) },
                     )
                 }
@@ -182,10 +186,12 @@ private fun HistoryContentPreview() {
             HistoryScreen(
                 articles = sampleNewsArticles.take(2),
                 savedArticleIds = setOf(1),
+                speakingArticleId = 1,
                 compactLayout = true,
                 onBack = {},
                 onClearHistory = {},
                 onToggleSaved = {},
+                onToggleSpeech = {},
                 onShareArticle = {},
             )
         }
@@ -200,10 +206,12 @@ private fun HistoryEmptyPreview() {
             HistoryScreen(
                 articles = emptyList(),
                 savedArticleIds = emptySet(),
+                speakingArticleId = null,
                 compactLayout = false,
                 onBack = {},
                 onClearHistory = {},
                 onToggleSaved = {},
+                onToggleSpeech = {},
                 onShareArticle = {},
             )
         }

@@ -41,10 +41,12 @@ fun DigestScreen(
     articles: List<NewsCardUiModel>,
     savedArticleIds: Set<Int>,
     readArticleIds: Set<Int>,
+    speakingArticleId: Int?,
     compactLayout: Boolean,
     onBack: () -> Unit,
     onToggleSaved: (Int) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
+    onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -99,8 +101,10 @@ fun DigestScreen(
                         compact = compactLayout,
                         isSaved = article.id in savedArticleIds,
                         isRead = article.id in readArticleIds,
+                        isSpeaking = article.id == speakingArticleId,
                         onSaveClick = { onToggleSaved(article.id) },
                         onReadClick = { onReadArticle(article) },
+                        onSpeechClick = { onToggleSpeech(article) },
                         onShareClick = { onShareArticle(article) },
                     )
                 }
@@ -208,10 +212,12 @@ private fun DigestContentPreview() {
                 articles = sampleNewsArticles,
                 savedArticleIds = setOf(1),
                 readArticleIds = setOf(2),
+                speakingArticleId = 1,
                 compactLayout = true,
                 onBack = {},
                 onToggleSaved = {},
                 onReadArticle = {},
+                onToggleSpeech = {},
                 onShareArticle = {},
             )
         }
@@ -227,10 +233,12 @@ private fun DigestEmptyPreview() {
                 articles = emptyList(),
                 savedArticleIds = emptySet(),
                 readArticleIds = emptySet(),
+                speakingArticleId = null,
                 compactLayout = false,
                 onBack = {},
                 onToggleSaved = {},
                 onReadArticle = {},
+                onToggleSpeech = {},
                 onShareArticle = {},
             )
         }

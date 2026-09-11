@@ -36,9 +36,11 @@ fun ForYouScreen(
     followedCategories: Set<Int>,
     savedArticleIds: Set<Int>,
     readArticleIds: Set<Int>,
+    speakingArticleId: Int?,
     compactLayout: Boolean,
     onToggleSaved: (Int) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
+    onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -82,8 +84,10 @@ fun ForYouScreen(
                         compact = compactLayout,
                         isSaved = article.id in savedArticleIds,
                         isRead = article.id in readArticleIds,
+                        isSpeaking = article.id == speakingArticleId,
                         onSaveClick = { onToggleSaved(article.id) },
                         onReadClick = { onReadArticle(article) },
+                        onSpeechClick = { onToggleSpeech(article) },
                         onShareClick = { onShareArticle(article) },
                     )
                 }
@@ -160,9 +164,11 @@ private fun ForYouScreenContentPreview() {
                 ),
                 savedArticleIds = setOf(1),
                 readArticleIds = setOf(2),
+                speakingArticleId = 1,
                 compactLayout = true,
                 onToggleSaved = {},
                 onReadArticle = {},
+                onToggleSpeech = {},
                 onShareArticle = {},
             )
         }
@@ -179,9 +185,11 @@ private fun ForYouScreenEmptyPreview() {
                 followedCategories = emptySet(),
                 savedArticleIds = emptySet(),
                 readArticleIds = emptySet(),
+                speakingArticleId = null,
                 compactLayout = false,
                 onToggleSaved = {},
                 onReadArticle = {},
+                onToggleSpeech = {},
                 onShareArticle = {},
             )
         }

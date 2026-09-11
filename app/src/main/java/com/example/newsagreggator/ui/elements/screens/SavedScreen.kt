@@ -35,9 +35,11 @@ import com.example.newsagreggator.ui.model.NewsCardUiModel
 fun SavedScreen(
     articles: List<NewsCardUiModel>,
     readArticleIds: Set<Int>,
+    speakingArticleId: Int?,
     compactLayout: Boolean,
     onRemoveSaved: (Int) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
+    onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -100,8 +102,10 @@ fun SavedScreen(
                         compact = compactLayout,
                         isSaved = true,
                         isRead = article.id in readArticleIds,
+                        isSpeaking = article.id == speakingArticleId,
                         onSaveClick = { onRemoveSaved(article.id) },
                         onReadClick = { onReadArticle(article) },
+                        onSpeechClick = { onToggleSpeech(article) },
                         onShareClick = { onShareArticle(article) },
                     )
                 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -47,8 +48,10 @@ fun NewsArticleCard(
     compact: Boolean,
     isSaved: Boolean,
     isRead: Boolean,
+    isSpeaking: Boolean,
     onSaveClick: () -> Unit,
     onReadClick: () -> Unit,
+    onSpeechClick: () -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -69,16 +72,20 @@ fun NewsArticleCard(
             CompactCardContent(
                 article = article,
                 isSaved = isSaved,
+                isSpeaking = isSpeaking,
                 onSaveClick = onSaveClick,
                 onReadClick = onReadClick,
+                onSpeechClick = onSpeechClick,
                 onShareClick = onShareClick,
             )
         } else {
             StandardCardContent(
                 article = article,
                 isSaved = isSaved,
+                isSpeaking = isSpeaking,
                 onSaveClick = onSaveClick,
                 onReadClick = onReadClick,
+                onSpeechClick = onSpeechClick,
                 onShareClick = onShareClick,
             )
         }
@@ -89,8 +96,10 @@ fun NewsArticleCard(
 private fun StandardCardContent(
     article: NewsCardUiModel,
     isSaved: Boolean,
+    isSpeaking: Boolean,
     onSaveClick: () -> Unit,
     onReadClick: () -> Unit,
+    onSpeechClick: () -> Unit,
     onShareClick: () -> Unit,
 ) {
     Column {
@@ -122,7 +131,9 @@ private fun StandardCardContent(
             HorizontalDivider(color = MaterialTheme.colorScheme.outline)
             ArticleActions(
                 compact = false,
+                isSpeaking = isSpeaking,
                 onReadClick = onReadClick,
+                onSpeechClick = onSpeechClick,
                 onShareClick = onShareClick,
             )
         }
@@ -133,8 +144,10 @@ private fun StandardCardContent(
 private fun CompactCardContent(
     article: NewsCardUiModel,
     isSaved: Boolean,
+    isSpeaking: Boolean,
     onSaveClick: () -> Unit,
     onReadClick: () -> Unit,
+    onSpeechClick: () -> Unit,
     onShareClick: () -> Unit,
 ) {
     Box(
@@ -172,7 +185,9 @@ private fun CompactCardContent(
                 Spacer(modifier = Modifier.weight(1f))
                 ArticleActions(
                     compact = true,
+                    isSpeaking = isSpeaking,
                     onReadClick = onReadClick,
+                    onSpeechClick = onSpeechClick,
                     onShareClick = onShareClick,
                 )
             }
@@ -282,7 +297,9 @@ private fun ArticleImage(
 @Composable
 private fun ArticleActions(
     compact: Boolean,
+    isSpeaking: Boolean,
     onReadClick: () -> Unit,
+    onSpeechClick: () -> Unit,
     onShareClick: () -> Unit,
 ) {
     Row(
@@ -313,16 +330,46 @@ private fun ArticleActions(
                 modifier = Modifier.size(if (compact) 13.dp else 17.dp),
             )
         }
-        IconButton(
-            onClick = onShareClick,
-            modifier = Modifier.size(if (compact) 28.dp else 36.dp),
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_share),
-                contentDescription = stringResource(R.string.share_article),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(if (compact) 15.dp else 18.dp),
-            )
+        Row {
+            IconButton(
+                onClick = onSpeechClick,
+                modifier = Modifier
+                    .size(if (compact) 28.dp else 36.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (isSpeaking) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            Color.Transparent
+                        }
+                    ),
+            ) {
+                Icon(
+                    painter = painterResource(
+                        if (isSpeaking) R.drawable.ic_stop else R.drawable.ic_volume
+                    ),
+                    contentDescription = stringResource(
+                        if (isSpeaking) R.string.stop_speaking else R.string.speak_article
+                    ),
+                    tint = if (isSpeaking) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    modifier = Modifier.size(if (compact) 15.dp else 18.dp),
+                )
+            }
+            IconButton(
+                onClick = onShareClick,
+                modifier = Modifier.size(if (compact) 28.dp else 36.dp),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_share),
+                    contentDescription = stringResource(R.string.share_article),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(if (compact) 15.dp else 18.dp),
+                )
+            }
         }
     }
 }
@@ -364,8 +411,10 @@ private fun StandardNewsCardPreview() {
                 compact = false,
                 isSaved = false,
                 isRead = false,
+                isSpeaking = false,
                 onSaveClick = {},
                 onReadClick = {},
+                onSpeechClick = {},
                 onShareClick = {},
             )
         }
@@ -382,8 +431,10 @@ private fun CompactNewsCardPreview() {
                 compact = true,
                 isSaved = true,
                 isRead = true,
+                isSpeaking = true,
                 onSaveClick = {},
                 onReadClick = {},
+                onSpeechClick = {},
                 onShareClick = {},
             )
         }

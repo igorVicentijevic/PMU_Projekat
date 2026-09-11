@@ -47,9 +47,11 @@ import java.util.Locale
 fun TokHomeScreen(
     savedArticleIds: Set<Int>,
     readArticleIds: Set<Int>,
+    speakingArticleId: Int?,
     compactLayout: Boolean,
     onToggleSaved: (Int) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
+    onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     onOpenHistory: () -> Unit,
     onOpenDigest: () -> Unit,
@@ -181,8 +183,10 @@ fun TokHomeScreen(
                             compact = compactLayout,
                             isSaved = article.id in savedArticleIds,
                             isRead = article.id in readArticleIds,
+                            isSpeaking = article.id == speakingArticleId,
                             onSaveClick = { onToggleSaved(article.id) },
                             onReadClick = { onReadArticle(article) },
+                            onSpeechClick = { onToggleSpeech(article) },
                             onShareClick = { onShareArticle(article) },
                         )
                     }
@@ -214,9 +218,11 @@ private fun TokHomeScreenPreview() {
             TokHomeScreen(
                 savedArticleIds = emptySet(),
                 readArticleIds = emptySet(),
+                speakingArticleId = null,
                 compactLayout = false,
                 onToggleSaved = {},
                 onReadArticle = {},
+                onToggleSpeech = {},
                 onShareArticle = {},
                 onOpenHistory = {},
                 onOpenDigest = {},

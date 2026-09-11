@@ -21,6 +21,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.newsagreggator.R
+import com.example.newsagreggator.speech.ArticleSpeechController
+import com.example.newsagreggator.speech.SpeechActionResult
 import com.example.newsagreggator.ui.elements.screens.ForYouScreen
 import com.example.newsagreggator.ui.elements.screens.DigestScreen
 import com.example.newsagreggator.ui.elements.screens.HistoryScreen
@@ -73,6 +76,7 @@ fun TokApp(
     var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
     var readArticleIds by remember { mutableStateOf(emptySet<Int>()) }
     val context = LocalContext.current
+    val speechController = remember(context) { ArticleSpeechController(context) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     var followedCategories by remember {
@@ -131,6 +135,42 @@ fun TokApp(
     val shareArticle: (NewsCardUiModel) -> Unit = { article ->
         launchShareChooser(context, article)
     }
+    val toggleSpeech: (NewsCardUiModel) -> Unit = { article ->
+        val speechText = buildString {
+            append(context.getString(article.titleResId))
+            append(". ")
+            append(context.getString(article.summaryResId))
+            append(". ")
+            append(context.getString(article.sourceResId))
+        }
+        val speechResult = speechController.toggleArticle(article.id, speechText)
+        when (speechResult) {
+            SpeechActionResult.Started -> {
+                readArticleIds = readArticleIds + article.id
+            }
+            SpeechActionResult.Stopped -> Unit
+            SpeechActionResult.Initializing,
+            SpeechActionResult.Unavailable,
+            SpeechActionResult.Failed,
+            -> {
+                val messageResId = when (speechResult) {
+                    SpeechActionResult.Initializing -> R.string.tts_initializing
+                    SpeechActionResult.Unavailable -> R.string.tts_unavailable
+                    else -> R.string.tts_failed
+                }
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(messageResId),
+                        withDismissAction = true,
+                    )
+                }
+            }
+        }
+    }
+
+    DisposableEffect(speechController) {
+        onDispose { speechController.shutdown() }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -179,10 +219,12 @@ fun TokApp(
             SecondaryScreen.History -> HistoryScreen(
                     articles = sampleNewsArticles.filter { it.id in readArticleIds },
                     savedArticleIds = savedArticleIds,
+                    speakingArticleId = speechController.speakingArticleId,
                     compactLayout = compactLayout,
                     onBack = { secondaryScreen = null },
                     onClearHistory = { readArticleIds = emptySet() },
                     onToggleSaved = toggleSaved,
+                    onToggleSpeech = toggleSpeech,
                     onShareArticle = shareArticle,
                     modifier = Modifier.padding(innerPadding),
                 )
@@ -192,10 +234,12 @@ fun TokApp(
                     .take(5),
                 savedArticleIds = savedArticleIds,
                 readArticleIds = readArticleIds,
+                speakingArticleId = speechController.speakingArticleId,
                 compactLayout = compactLayout,
                 onBack = { secondaryScreen = null },
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
+                onToggleSpeech = toggleSpeech,
                 onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )
@@ -203,9 +247,11 @@ fun TokApp(
             TokTab.Home -> TokHomeScreen(
                 savedArticleIds = savedArticleIds,
                 readArticleIds = readArticleIds,
+                speakingArticleId = speechController.speakingArticleId,
                 compactLayout = compactLayout,
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
+                onToggleSpeech = toggleSpeech,
                 onShareArticle = shareArticle,
                 onOpenHistory = { secondaryScreen = SecondaryScreen.History },
                 onOpenDigest = { secondaryScreen = SecondaryScreen.Digest },
@@ -219,18 +265,22 @@ fun TokApp(
                 followedCategories = followedCategories,
                 savedArticleIds = savedArticleIds,
                 readArticleIds = readArticleIds,
+                speakingArticleId = speechController.speakingArticleId,
                 compactLayout = compactLayout,
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
+                onToggleSpeech = toggleSpeech,
                 onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.Saved -> SavedScreen(
                 articles = sampleNewsArticles.filter { it.id in savedArticleIds },
                 readArticleIds = readArticleIds,
+                speakingArticleId = speechController.speakingArticleId,
                 compactLayout = compactLayout,
                 onRemoveSaved = toggleSaved,
                 onReadArticle = readArticle,
+                onToggleSpeech = toggleSpeech,
                 onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )
