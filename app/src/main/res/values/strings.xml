@@ -4,6 +4,8 @@
     <string name="home_greeting">Dobro jutro.</string>
     <string name="home_subtitle">Najvažnije priče, bez buke.</string>
     <string name="search_news">Pretraži vesti</string>
+    <string name="open_categories">Otvori kategorije</string>
+    <string name="notifications">Obaveštenja</string>
     <string name="trending_kicker">U FOKUSU</string>
     <string name="trending_title">U trendu sada</string>
     <string name="daily_digest">Dnevni pregled →</string>

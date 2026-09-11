@@ -1,5 +1,12 @@
 package com.example.newsagreggator.ui.elements.composables
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,14 +21,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,6 +60,17 @@ fun LatestSection(
     onRefreshClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val refreshTransition = rememberInfiniteTransition(label = "refresh")
+    val refreshRotation by refreshTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 700, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "refreshRotation",
+    )
+
     Column(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -67,22 +90,57 @@ fun LatestSection(
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onCompactLayoutClick) {
-                    Text(
-                        text = if (compactLayout) "▦" else "☷",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.titleLarge,
-                    )
+                Surface(
+                    onClick = onCompactLayoutClick,
+                    modifier = Modifier.size(36.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    color = if (compactLayout) {
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    },
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = if (compactLayout) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.outline
+                        }
+                    ),
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            painter = painterResource(
+                                if (compactLayout) {
+                                    R.drawable.ic_cards
+                                } else {
+                                    R.drawable.ic_list
+                                }
+                            ),
+                            contentDescription = stringResource(R.string.compact_layout),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
                 }
                 TextButton(
                     onClick = onRefreshClick,
                     enabled = !isRefreshing,
                 ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_refresh),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(17.dp)
+                            .graphicsLayer {
+                                rotationZ = if (isRefreshing) refreshRotation else 0f
+                            },
+                    )
                     Text(
                         text = if (isRefreshing) {
                             stringResource(R.string.refreshing)
                         } else {
-                            "↻ ${stringResource(R.string.refresh)}"
+                            stringResource(R.string.refresh)
                         },
                         fontWeight = FontWeight.Bold,
                     )
