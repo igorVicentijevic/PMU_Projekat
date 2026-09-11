@@ -1,5 +1,7 @@
 package com.example.newsagreggator.ui.elements
 
+import android.content.Context
+import android.content.Intent
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.newsagreggator.R
@@ -27,6 +30,7 @@ import com.example.newsagreggator.ui.elements.screens.ForYouScreen
 import com.example.newsagreggator.ui.elements.screens.SavedScreen
 import com.example.newsagreggator.ui.elements.screens.SettingsScreen
 import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
+import com.example.newsagreggator.ui.model.NewsCardUiModel
 import com.example.newsagreggator.ui.model.sampleNewsArticles
 
 private enum class TokTab(
@@ -50,6 +54,8 @@ fun TokApp(
     var refreshIntervalMinutes by rememberSaveable { mutableStateOf(15) }
     var breakingNewsEnabled by rememberSaveable { mutableStateOf(true) }
     var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
+    var readArticleIds by remember { mutableStateOf(emptySet<Int>()) }
+    val context = LocalContext.current
     var followedCategories by remember {
         mutableStateOf(
             setOf(
@@ -65,6 +71,12 @@ fun TokApp(
         } else {
             savedArticleIds + articleId
         }
+    }
+    val readArticle: (NewsCardUiModel) -> Unit = { article ->
+        readArticleIds = readArticleIds + article.id
+    }
+    val shareArticle: (NewsCardUiModel) -> Unit = { article ->
+        launchShareChooser(context, article)
     }
 
     Scaffold(
@@ -109,8 +121,11 @@ fun TokApp(
         when (selectedTab) {
             TokTab.Home -> TokHomeScreen(
                 savedArticleIds = savedArticleIds,
+                readArticleIds = readArticleIds,
                 compactLayout = compactLayout,
                 onToggleSaved = toggleSaved,
+                onReadArticle = readArticle,
+                onShareArticle = shareArticle,
                 onCompactLayoutChange = { compactLayout = it },
                 modifier = Modifier.padding(innerPadding),
             )
@@ -120,14 +135,20 @@ fun TokApp(
                 },
                 followedCategories = followedCategories,
                 savedArticleIds = savedArticleIds,
+                readArticleIds = readArticleIds,
                 compactLayout = compactLayout,
                 onToggleSaved = toggleSaved,
+                onReadArticle = readArticle,
+                onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.Saved -> SavedScreen(
                 articles = sampleNewsArticles.filter { it.id in savedArticleIds },
+                readArticleIds = readArticleIds,
                 compactLayout = compactLayout,
                 onRemoveSaved = toggleSaved,
+                onReadArticle = readArticle,
+                onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.Settings -> SettingsScreen(
@@ -151,4 +172,23 @@ fun TokApp(
             )
         }
     }
+}
+
+private fun launchShareChooser(
+    context: Context,
+    article: NewsCardUiModel,
+) {
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(
+            Intent.EXTRA_TEXT,
+            "${context.getString(article.titleResId)}\n${article.url}",
+        )
+    }
+    context.startActivity(
+        Intent.createChooser(
+            shareIntent,
+            context.getString(R.string.share_article_chooser),
+        )
+    )
 }

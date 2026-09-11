@@ -35,8 +35,11 @@ fun ForYouScreen(
     articles: List<NewsCardUiModel>,
     followedCategories: Set<Int>,
     savedArticleIds: Set<Int>,
+    readArticleIds: Set<Int>,
     compactLayout: Boolean,
     onToggleSaved: (Int) -> Unit,
+    onReadArticle: (NewsCardUiModel) -> Unit,
+    onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -78,7 +81,10 @@ fun ForYouScreen(
                         article = article,
                         compact = compactLayout,
                         isSaved = article.id in savedArticleIds,
+                        isRead = article.id in readArticleIds,
                         onSaveClick = { onToggleSaved(article.id) },
+                        onReadClick = { onReadArticle(article) },
+                        onShareClick = { onShareArticle(article) },
                     )
                 }
             }
@@ -153,8 +159,11 @@ private fun ForYouScreenContentPreview() {
                     R.string.category_world,
                 ),
                 savedArticleIds = setOf(1),
+                readArticleIds = setOf(2),
                 compactLayout = true,
                 onToggleSaved = {},
+                onReadArticle = {},
+                onShareArticle = {},
             )
         }
     }
@@ -169,8 +178,11 @@ private fun ForYouScreenEmptyPreview() {
                 articles = emptyList(),
                 followedCategories = emptySet(),
                 savedArticleIds = emptySet(),
+                readArticleIds = emptySet(),
                 compactLayout = false,
                 onToggleSaved = {},
+                onReadArticle = {},
+                onShareArticle = {},
             )
         }
     }

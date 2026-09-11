@@ -11,4 +11,5 @@ data class NewsCardUiModel(
     @StringRes val timeResId: Int,
     @StringRes val titleResId: Int,
     @StringRes val summaryResId: Int,
+    val url: String,
 )

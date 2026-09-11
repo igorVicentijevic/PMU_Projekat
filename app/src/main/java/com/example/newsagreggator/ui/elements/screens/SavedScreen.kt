@@ -34,8 +34,11 @@ import com.example.newsagreggator.ui.model.NewsCardUiModel
 @Composable
 fun SavedScreen(
     articles: List<NewsCardUiModel>,
+    readArticleIds: Set<Int>,
     compactLayout: Boolean,
     onRemoveSaved: (Int) -> Unit,
+    onReadArticle: (NewsCardUiModel) -> Unit,
+    onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -96,7 +99,10 @@ fun SavedScreen(
                         article = article,
                         compact = compactLayout,
                         isSaved = true,
+                        isRead = article.id in readArticleIds,
                         onSaveClick = { onRemoveSaved(article.id) },
+                        onReadClick = { onReadArticle(article) },
+                        onShareClick = { onShareArticle(article) },
                     )
                 }
             }

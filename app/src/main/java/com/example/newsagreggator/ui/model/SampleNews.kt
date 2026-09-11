@@ -11,6 +11,7 @@ val sampleNewsArticles = listOf(
         timeResId = R.string.news_time_12_minutes_short,
         titleResId = R.string.news_park_title,
         summaryResId = R.string.news_park_summary,
+        url = "https://www.danas.rs/",
     ),
     NewsCardUiModel(
         id = 2,
@@ -20,6 +21,7 @@ val sampleNewsArticles = listOf(
         timeResId = R.string.news_time_28_minutes_short,
         titleResId = R.string.news_technology_title,
         summaryResId = R.string.news_technology_summary,
+        url = "https://www.netokracija.rs/",
     ),
     NewsCardUiModel(
         id = 3,
@@ -29,5 +31,6 @@ val sampleNewsArticles = listOf(
         timeResId = R.string.news_time_41_minutes_short,
         titleResId = R.string.news_world_title,
         summaryResId = R.string.news_world_summary,
+        url = "https://www.reuters.com/world/",
     ),
 )

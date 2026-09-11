@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,31 +34,53 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
 import com.example.newsagreggator.ui.model.NewsCardUiModel
+import com.example.newsagreggator.ui.model.sampleNewsArticles
+import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 
 @Composable
 fun NewsArticleCard(
     article: NewsCardUiModel,
     compact: Boolean,
     isSaved: Boolean,
+    isRead: Boolean,
     onSaveClick: () -> Unit,
+    onReadClick: () -> Unit,
+    onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(if (compact) 18.dp else 24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = if (isRead) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surface
+            },
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
     ) {
         if (compact) {
-            CompactCardContent(article, isSaved, onSaveClick)
+            CompactCardContent(
+                article = article,
+                isSaved = isSaved,
+                onSaveClick = onSaveClick,
+                onReadClick = onReadClick,
+                onShareClick = onShareClick,
+            )
         } else {
-            StandardCardContent(article, isSaved, onSaveClick)
+            StandardCardContent(
+                article = article,
+                isSaved = isSaved,
+                onSaveClick = onSaveClick,
+                onReadClick = onReadClick,
+                onShareClick = onShareClick,
+            )
         }
     }
 }
@@ -66,6 +90,8 @@ private fun StandardCardContent(
     article: NewsCardUiModel,
     isSaved: Boolean,
     onSaveClick: () -> Unit,
+    onReadClick: () -> Unit,
+    onShareClick: () -> Unit,
 ) {
     Column {
         ArticleImage(
@@ -94,6 +120,11 @@ private fun StandardCardContent(
             )
             Spacer(modifier = Modifier.height(14.dp))
             HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+            ArticleActions(
+                compact = false,
+                onReadClick = onReadClick,
+                onShareClick = onShareClick,
+            )
         }
     }
 }
@@ -103,6 +134,8 @@ private fun CompactCardContent(
     article: NewsCardUiModel,
     isSaved: Boolean,
     onSaveClick: () -> Unit,
+    onReadClick: () -> Unit,
+    onShareClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -124,7 +157,7 @@ private fun CompactCardContent(
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 12.dp, top = 12.dp, end = 42.dp, bottom = 12.dp),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.Top,
             ) {
                 ArticleMetadata(article)
                 Spacer(modifier = Modifier.height(6.dp))
@@ -133,8 +166,14 @@ private fun CompactCardContent(
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 3,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                ArticleActions(
+                    compact = true,
+                    onReadClick = onReadClick,
+                    onShareClick = onShareClick,
                 )
             }
         }
@@ -241,7 +280,57 @@ private fun ArticleImage(
 }
 
 @Composable
-private fun ArticleMetadata(article: NewsCardUiModel) {
+private fun ArticleActions(
+    compact: Boolean,
+    onReadClick: () -> Unit,
+    onShareClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TextButton(
+            onClick = onReadClick,
+            contentPadding = PaddingValues(
+                horizontal = 0.dp,
+                vertical = if (compact) 0.dp else 6.dp,
+            ),
+        ) {
+            Text(
+                text = stringResource(R.string.read_article),
+                fontWeight = FontWeight.Bold,
+                style = if (compact) {
+                    MaterialTheme.typography.labelSmall
+                } else {
+                    MaterialTheme.typography.bodyMedium
+                },
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow),
+                contentDescription = null,
+                modifier = Modifier.size(if (compact) 13.dp else 17.dp),
+            )
+        }
+        IconButton(
+            onClick = onShareClick,
+            modifier = Modifier.size(if (compact) 28.dp else 36.dp),
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_share),
+                contentDescription = stringResource(R.string.share_article),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(if (compact) 15.dp else 18.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ArticleMetadata(
+    article: NewsCardUiModel,
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -262,5 +351,41 @@ private fun ArticleMetadata(article: NewsCardUiModel) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.labelSmall,
         )
+    }
+}
+
+@Preview(name = "Kartica - standardna", showBackground = true)
+@Composable
+private fun StandardNewsCardPreview() {
+    NewsAgreggatorTheme {
+        Surface(modifier = Modifier.padding(16.dp)) {
+            NewsArticleCard(
+                article = sampleNewsArticles.first(),
+                compact = false,
+                isSaved = false,
+                isRead = false,
+                onSaveClick = {},
+                onReadClick = {},
+                onShareClick = {},
+            )
+        }
+    }
+}
+
+@Preview(name = "Kartica - kompaktna", showBackground = true)
+@Composable
+private fun CompactNewsCardPreview() {
+    NewsAgreggatorTheme {
+        Surface(modifier = Modifier.padding(16.dp)) {
+            NewsArticleCard(
+                article = sampleNewsArticles.first(),
+                compact = true,
+                isSaved = true,
+                isRead = true,
+                onSaveClick = {},
+                onReadClick = {},
+                onShareClick = {},
+            )
+        }
     }
 }

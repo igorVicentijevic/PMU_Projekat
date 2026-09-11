@@ -36,6 +36,7 @@ import com.example.newsagreggator.ui.elements.composables.NewsArticleCard
 import com.example.newsagreggator.ui.elements.composables.TokTopBar
 import com.example.newsagreggator.ui.elements.composables.TokCategoryDrawer
 import com.example.newsagreggator.ui.elements.composables.TrendingSection
+import com.example.newsagreggator.ui.model.NewsCardUiModel
 import com.example.newsagreggator.ui.model.sampleNewsArticles
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import kotlinx.coroutines.delay
@@ -45,8 +46,11 @@ import java.util.Locale
 @Composable
 fun TokHomeScreen(
     savedArticleIds: Set<Int>,
+    readArticleIds: Set<Int>,
     compactLayout: Boolean,
     onToggleSaved: (Int) -> Unit,
+    onReadArticle: (NewsCardUiModel) -> Unit,
+    onShareArticle: (NewsCardUiModel) -> Unit,
     onCompactLayoutChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -162,7 +166,10 @@ fun TokHomeScreen(
                             article = article,
                             compact = compactLayout,
                             isSaved = article.id in savedArticleIds,
+                            isRead = article.id in readArticleIds,
                             onSaveClick = { onToggleSaved(article.id) },
+                            onReadClick = { onReadArticle(article) },
+                            onShareClick = { onShareArticle(article) },
                         )
                     }
                 }
@@ -192,8 +199,11 @@ private fun TokHomeScreenPreview() {
         Surface {
             TokHomeScreen(
                 savedArticleIds = emptySet(),
+                readArticleIds = emptySet(),
                 compactLayout = false,
                 onToggleSaved = {},
+                onReadArticle = {},
+                onShareArticle = {},
                 onCompactLayoutChange = {},
             )
         }
