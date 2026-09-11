@@ -24,8 +24,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.newsagreggator.R
 import com.example.newsagreggator.ui.elements.screens.ForYouScreen
-import com.example.newsagreggator.ui.elements.screens.PlaceholderScreen
 import com.example.newsagreggator.ui.elements.screens.SavedScreen
+import com.example.newsagreggator.ui.elements.screens.SettingsScreen
 import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
 import com.example.newsagreggator.ui.model.sampleNewsArticles
 
@@ -40,15 +40,21 @@ private enum class TokTab(
 }
 
 @Composable
-fun TokApp(modifier: Modifier = Modifier) {
+fun TokApp(
+    darkTheme: Boolean,
+    onDarkThemeChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var selectedTab by rememberSaveable { mutableStateOf(TokTab.Home) }
     var compactLayout by rememberSaveable { mutableStateOf(false) }
     var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
-    val followedCategories = remember {
-        setOf(
+    var followedCategories by remember {
+        mutableStateOf(
+            setOf(
             R.string.category_serbia,
             R.string.category_technology,
             R.string.category_world,
+            )
         )
     }
     val toggleSaved: (Int) -> Unit = { articleId ->
@@ -122,10 +128,19 @@ fun TokApp(modifier: Modifier = Modifier) {
                 onRemoveSaved = toggleSaved,
                 modifier = Modifier.padding(innerPadding),
             )
-            TokTab.Settings -> PlaceholderScreen(
-                kickerResId = R.string.settings_kicker,
-                titleResId = R.string.nav_settings,
-                bodyResId = R.string.settings_placeholder,
+            TokTab.Settings -> SettingsScreen(
+                darkTheme = darkTheme,
+                compactLayout = compactLayout,
+                followedCategories = followedCategories,
+                onDarkThemeChange = onDarkThemeChange,
+                onCompactLayoutChange = { compactLayout = it },
+                onToggleCategory = { category ->
+                    followedCategories = if (category in followedCategories) {
+                        followedCategories - category
+                    } else {
+                        followedCategories + category
+                    }
+                },
                 modifier = Modifier.padding(innerPadding),
             )
         }

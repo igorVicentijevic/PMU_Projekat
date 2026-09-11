@@ -30,6 +30,14 @@
     <string name="saved_empty_body">Dodirni oznaku na kartici vesti da je sačuvaš za kasnije.</string>
     <string name="settings_kicker">PO TVOM RITMU</string>
     <string name="settings_placeholder">Podešavanja izgleda i sadržaja biće dodata u sledećim koracima.</string>
+    <string name="settings_subtitle">Prilagodi izgled i način prikaza vesti.</string>
+    <string name="settings_appearance">Izgled</string>
+    <string name="settings_dark_theme">Tamna tema</string>
+    <string name="settings_dark_theme_description">Prijatnije čitanje noću</string>
+    <string name="settings_compact_layout">Kompaktni prikaz</string>
+    <string name="settings_compact_layout_description">Prikaži više vesti na ekranu</string>
+    <string name="settings_favorite_categories">Omiljene kategorije</string>
+    <string name="settings_favorite_categories_description">Izaberi teme za sekciju „Za vas“.</string>
     <string name="trending_kicker">U FOKUSU</string>
     <string name="trending_title">U trendu sada</string>
     <string name="daily_digest">Dnevni pregled →</string>
