@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
 
 data class NewsCardUiModel(
+    val id: Int,
     @DrawableRes val imageResId: Int,
     @StringRes val categoryResId: Int,
     @StringRes val sourceResId: Int,

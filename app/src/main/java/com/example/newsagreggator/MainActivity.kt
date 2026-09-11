@@ -34,6 +34,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -43,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +57,7 @@ import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import com.example.newsagreggator.ui.theme.TokGreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,8 +77,22 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
     var selectedCategory by rememberSaveable { mutableStateOf(R.string.category_all) }
     var compactLayout by rememberSaveable { mutableStateOf(false) }
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
-    var isArticleSaved by rememberSaveable { mutableStateOf(false) }
+    var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
     val coroutineScope = rememberCoroutineScope()
+    val resources = LocalContext.current.resources
+    val serbianLocale = Locale.forLanguageTag("sr-Latn-RS")
+    val normalizedQuery = query.trim().lowercase(serbianLocale)
+    val visibleArticles = latestArticles.filter { article ->
+        val matchesCategory =
+            selectedCategory == R.string.category_all ||
+                selectedCategory == article.categoryResId
+        val matchesQuery =
+            normalizedQuery.isEmpty() ||
+                listOf(article.titleResId, article.summaryResId, article.sourceResId).any {
+                    resources.getString(it).lowercase(serbianLocale).contains(normalizedQuery)
+                }
+        matchesCategory && matchesQuery
+    }
 
     Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -149,19 +166,32 @@ fun TokHomeScreen(modifier: Modifier = Modifier) {
                 },
             )
             Spacer(modifier = Modifier.height(14.dp))
-            if (
-                selectedCategory == R.string.category_all ||
-                selectedCategory == R.string.category_serbia
-            ) {
-                NewsArticleCard(
-                    article = featuredArticle,
-                    compact = compactLayout,
-                    isSaved = isArticleSaved,
-                    onSaveClick = { isArticleSaved = !isArticleSaved },
-                )
+            if (visibleArticles.isNotEmpty()) {
+                Column(verticalArrangement = Arrangement.spacedBy(if (compactLayout) 10.dp else 18.dp)) {
+                    visibleArticles.forEach { article ->
+                        NewsArticleCard(
+                            article = article,
+                            compact = compactLayout,
+                            isSaved = article.id in savedArticleIds,
+                            onSaveClick = {
+                                savedArticleIds = if (article.id in savedArticleIds) {
+                                    savedArticleIds - article.id
+                                } else {
+                                    savedArticleIds + article.id
+                                }
+                            },
+                        )
+                    }
+                }
             } else {
                 Text(
-                    text = stringResource(R.string.no_category_news),
+                    text = stringResource(
+                        if (normalizedQuery.isEmpty()) {
+                            R.string.no_category_news
+                        } else {
+                            R.string.no_search_results
+                        }
+                    ),
                     modifier = Modifier.padding(vertical = 28.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium,
@@ -194,13 +224,34 @@ private val trendingArticles = listOf(
     ),
 )
 
-private val featuredArticle = NewsCardUiModel(
-    imageResId = R.drawable.news_park,
-    categoryResId = R.string.category_serbia,
-    sourceResId = R.string.news_source_danas,
-    timeResId = R.string.news_time_12_minutes_short,
-    titleResId = R.string.news_park_title,
-    summaryResId = R.string.news_park_summary,
+private val latestArticles = listOf(
+    NewsCardUiModel(
+        id = 1,
+        imageResId = R.drawable.news_park,
+        categoryResId = R.string.category_serbia,
+        sourceResId = R.string.news_source_danas,
+        timeResId = R.string.news_time_12_minutes_short,
+        titleResId = R.string.news_park_title,
+        summaryResId = R.string.news_park_summary,
+    ),
+    NewsCardUiModel(
+        id = 2,
+        imageResId = R.drawable.news_technology,
+        categoryResId = R.string.category_technology,
+        sourceResId = R.string.news_source_netokracija,
+        timeResId = R.string.news_time_28_minutes_short,
+        titleResId = R.string.news_technology_title,
+        summaryResId = R.string.news_technology_summary,
+    ),
+    NewsCardUiModel(
+        id = 3,
+        imageResId = R.drawable.news_world,
+        categoryResId = R.string.category_world,
+        sourceResId = R.string.news_source_reuters,
+        timeResId = R.string.news_time_41_minutes_short,
+        titleResId = R.string.news_world_title,
+        summaryResId = R.string.news_world_summary,
+    ),
 )
 
 private val newsCategories = listOf(

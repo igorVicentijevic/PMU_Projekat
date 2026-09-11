@@ -28,9 +28,17 @@
     <string name="category_sport">Sport</string>
     <string name="category_health">Zdravlje</string>
     <string name="news_source_danas">Danas</string>
+    <string name="news_source_netokracija">Netokracija</string>
+    <string name="news_source_reuters">Reuters</string>
     <string name="news_time_12_minutes_short">pre 12 min</string>
+    <string name="news_time_28_minutes_short">pre 28 min</string>
+    <string name="news_time_41_minutes_short">pre 41 min</string>
     <string name="news_park_summary">Zelena oaza sa više od 300 novih stabala biće otvorena za posetioce ovog vikenda.</string>
+    <string name="news_technology_summary">Platforma zasnovana na veštačkoj inteligenciji privukla je pažnju regionalnih kompanija.</string>
+    <string name="news_world_title">Evropski gradovi ubrzavaju prelazak na čistu energiju</string>
+    <string name="news_world_summary">Novi plan povezuje javni prevoz, energetsku efikasnost i lokalnu proizvodnju energije.</string>
     <string name="save_article">Sačuvaj vest</string>
     <string name="remove_saved_article">Ukloni iz sačuvanih</string>
     <string name="no_category_news">Nema vesti u izabranoj kategoriji.</string>
+    <string name="no_search_results">Nema rezultata za unetu pretragu.</string>
 </resources>
