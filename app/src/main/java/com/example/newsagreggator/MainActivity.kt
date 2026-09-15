@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.newsagreggator.ui.elements.TokApp
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val tokViewModel: TokViewModel = viewModel()
-            val uiState by tokViewModel.uiState.collectAsState()
+            val uiState by tokViewModel.uiState.collectAsStateWithLifecycle()
             val systemDarkTheme = isSystemInDarkTheme()
             val darkTheme = uiState.darkThemeOverride ?: systemDarkTheme
 

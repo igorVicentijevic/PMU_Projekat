@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -30,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.newsagreggator.R
 import com.example.newsagreggator.speech.ArticleSpeechController
@@ -71,7 +71,7 @@ fun TokApp(
     modifier: Modifier = Modifier,
     tokViewModel: TokViewModel = viewModel(),
 ) {
-    val uiState by tokViewModel.uiState.collectAsState()
+    val uiState by tokViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val speechController = remember(context) { ArticleSpeechController(context) }
     val snackbarHostState = remember { SnackbarHostState() }
