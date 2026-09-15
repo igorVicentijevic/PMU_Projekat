@@ -1,6 +1,7 @@
 package com.example.newsagreggator.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.newsagreggator.data.NewsRepository
 import com.example.newsagreggator.data.SampleNewsRepository
 import com.example.newsagreggator.ui.state.SecondaryScreen
@@ -10,6 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class TokViewModel(
     private val newsRepository: NewsRepository = SampleNewsRepository(),
@@ -26,8 +29,23 @@ class TokViewModel(
     }
 
     fun refreshArticles() {
+        if (_uiState.value.isRefreshing) return
+
         _uiState.update { currentState ->
-            currentState.copy(articles = newsRepository.getArticles())
+            currentState.copy(isRefreshing = true)
+        }
+        viewModelScope.launch {
+            try {
+                val articles = newsRepository.getArticles()
+                delay(700)
+                _uiState.update { currentState ->
+                    currentState.copy(articles = articles)
+                }
+            } finally {
+                _uiState.update { currentState ->
+                    currentState.copy(isRefreshing = false)
+                }
+            }
         }
     }
 

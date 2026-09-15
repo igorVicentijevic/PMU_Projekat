@@ -39,7 +39,6 @@ import com.example.newsagreggator.ui.elements.composables.TrendingSection
 import com.example.newsagreggator.ui.model.NewsCardUiModel
 import com.example.newsagreggator.ui.model.sampleNewsArticles
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -49,6 +48,7 @@ fun TokHomeScreen(
     readArticleIds: Set<Int>,
     speakingArticleId: Int?,
     compactLayout: Boolean,
+    isRefreshing: Boolean,
     onToggleSaved: (Int) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
@@ -61,7 +61,6 @@ fun TokHomeScreen(
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var selectedCategory by rememberSaveable { mutableStateOf(R.string.category_all) }
-    var isRefreshing by rememberSaveable { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val resources = LocalContext.current.resources
@@ -163,12 +162,7 @@ fun TokHomeScreen(
                 onCompactLayoutClick = { onCompactLayoutChange(!compactLayout) },
                 onRefreshClick = {
                     if (!isRefreshing) {
-                        coroutineScope.launch {
-                            isRefreshing = true
-                            onRefreshArticles()
-                            delay(700)
-                            isRefreshing = false
-                        }
+                        onRefreshArticles()
                     }
                 },
             )
@@ -222,6 +216,7 @@ private fun TokHomeScreenPreview() {
                 readArticleIds = emptySet(),
                 speakingArticleId = null,
                 compactLayout = false,
+                isRefreshing = false,
                 onToggleSaved = {},
                 onReadArticle = {},
                 onToggleSpeech = {},

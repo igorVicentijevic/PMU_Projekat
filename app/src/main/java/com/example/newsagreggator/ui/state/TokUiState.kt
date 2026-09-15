@@ -17,6 +17,7 @@ enum class TokTab {
 
 data class TokUiState(
     val articles: List<NewsCardUiModel> = emptyList(),
+    val isRefreshing: Boolean = false,
     val darkThemeOverride: Boolean? = null,
     val compactLayout: Boolean = false,
     val refreshIntervalMinutes: Int = 15,

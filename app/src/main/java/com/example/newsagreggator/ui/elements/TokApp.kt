@@ -256,6 +256,7 @@ fun TokApp(
                 readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
                 compactLayout = uiState.compactLayout,
+                isRefreshing = uiState.isRefreshing,
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
