@@ -23,6 +23,12 @@ class TokViewModel : ViewModel() {
         }
     }
 
+    fun setBreakingNewsEnabled(enabled: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(breakingNewsEnabled = enabled)
+        }
+    }
+
     fun setArticleSaved(articleId: Int, saved: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(
