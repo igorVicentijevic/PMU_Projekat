@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class TokViewModel(
-    newsRepository: NewsRepository = SampleNewsRepository(),
+    private val newsRepository: NewsRepository = SampleNewsRepository(),
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
         TokUiState(articles = newsRepository.getArticles())
@@ -22,6 +22,12 @@ class TokViewModel(
     fun setDarkTheme(enabled: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(darkThemeOverride = enabled)
+        }
+    }
+
+    fun refreshArticles() {
+        _uiState.update { currentState ->
+            currentState.copy(articles = newsRepository.getArticles())
         }
     }
 

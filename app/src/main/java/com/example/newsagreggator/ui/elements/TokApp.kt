@@ -266,6 +266,7 @@ fun TokApp(
                 onOpenDigest = {
                     tokViewModel.openSecondaryScreen(SecondaryScreen.Digest)
                 },
+                onRefreshArticles = tokViewModel::refreshArticles,
                 onCompactLayoutChange = tokViewModel::setCompactLayout,
                 modifier = Modifier.padding(innerPadding),
             )

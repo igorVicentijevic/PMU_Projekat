@@ -55,6 +55,7 @@ fun TokHomeScreen(
     onShareArticle: (NewsCardUiModel) -> Unit,
     onOpenHistory: () -> Unit,
     onOpenDigest: () -> Unit,
+    onRefreshArticles: () -> Unit,
     onCompactLayoutChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -164,6 +165,7 @@ fun TokHomeScreen(
                     if (!isRefreshing) {
                         coroutineScope.launch {
                             isRefreshing = true
+                            onRefreshArticles()
                             delay(700)
                             isRefreshing = false
                         }
@@ -226,6 +228,7 @@ private fun TokHomeScreenPreview() {
                 onShareArticle = {},
                 onOpenHistory = {},
                 onOpenDigest = {},
+                onRefreshArticles = {},
                 onCompactLayoutChange = {},
             )
         }
