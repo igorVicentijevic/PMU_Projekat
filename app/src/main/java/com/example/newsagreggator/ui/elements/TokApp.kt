@@ -77,7 +77,6 @@ fun TokApp(
     val uiState by tokViewModel.uiState.collectAsState()
     var selectedTab by rememberSaveable { mutableStateOf(TokTab.Home) }
     var secondaryScreen by rememberSaveable { mutableStateOf<SecondaryScreen?>(null) }
-    var refreshIntervalMinutes by rememberSaveable { mutableStateOf(15) }
     var breakingNewsEnabled by rememberSaveable { mutableStateOf(true) }
     val context = LocalContext.current
     val speechController = remember(context) { ArticleSpeechController(context) }
@@ -308,11 +307,11 @@ fun TokApp(
                 darkTheme = darkTheme,
                 compactLayout = uiState.compactLayout,
                 followedCategories = uiState.followedCategories,
-                refreshIntervalMinutes = refreshIntervalMinutes,
+                refreshIntervalMinutes = uiState.refreshIntervalMinutes,
                 breakingNewsEnabled = breakingNewsEnabled,
                 onDarkThemeChange = onDarkThemeChange,
                 onCompactLayoutChange = tokViewModel::setCompactLayout,
-                onRefreshIntervalChange = { refreshIntervalMinutes = it },
+                onRefreshIntervalChange = tokViewModel::setRefreshInterval,
                 onBreakingNewsChange = { breakingNewsEnabled = it },
                 onToggleCategory = tokViewModel::toggleFollowedCategory,
                 modifier = Modifier.padding(innerPadding),

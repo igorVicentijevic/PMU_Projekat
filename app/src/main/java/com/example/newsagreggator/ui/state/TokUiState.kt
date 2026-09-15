@@ -4,6 +4,7 @@ import com.example.newsagreggator.R
 
 data class TokUiState(
     val compactLayout: Boolean = false,
+    val refreshIntervalMinutes: Int = 15,
     val savedArticleIds: Set<Int> = emptySet(),
     val readArticleIds: Set<Int> = emptySet(),
     val followedCategories: Set<Int> = setOf(

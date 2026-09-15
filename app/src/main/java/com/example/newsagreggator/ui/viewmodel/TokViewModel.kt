@@ -17,6 +17,12 @@ class TokViewModel : ViewModel() {
         }
     }
 
+    fun setRefreshInterval(minutes: Int) {
+        _uiState.update { currentState ->
+            currentState.copy(refreshIntervalMinutes = minutes)
+        }
+    }
+
     fun setArticleSaved(articleId: Int, saved: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(
