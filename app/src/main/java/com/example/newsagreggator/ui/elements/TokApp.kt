@@ -83,15 +83,6 @@ fun TokApp(
     val speechController = remember(context) { ArticleSpeechController(context) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    var followedCategories by remember {
-        mutableStateOf(
-            setOf(
-            R.string.category_serbia,
-            R.string.category_technology,
-            R.string.category_world,
-            )
-        )
-    }
     val toggleSaved: (Int) -> Unit = { articleId ->
         val wasSaved = articleId in uiState.savedArticleIds
         tokViewModel.setArticleSaved(articleId, !wasSaved)
@@ -247,7 +238,7 @@ fun TokApp(
                 )
             SecondaryScreen.Digest -> DigestScreen(
                 articles = sampleNewsArticles
-                    .filter { it.categoryResId in followedCategories }
+                    .filter { it.categoryResId in uiState.followedCategories }
                     .take(5),
                 savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = uiState.readArticleIds,
@@ -261,7 +252,9 @@ fun TokApp(
                 onToggleDigestSpeech = {
                     toggleDigestSpeech(
                         sampleNewsArticles
-                            .filter { it.categoryResId in followedCategories }
+                            .filter {
+                                it.categoryResId in uiState.followedCategories
+                            }
                             .take(5)
                     )
                 },
@@ -285,9 +278,9 @@ fun TokApp(
             )
             TokTab.ForYou -> ForYouScreen(
                 articles = sampleNewsArticles.filter {
-                    it.categoryResId in followedCategories
+                    it.categoryResId in uiState.followedCategories
                 },
-                followedCategories = followedCategories,
+                followedCategories = uiState.followedCategories,
                 savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
@@ -314,20 +307,14 @@ fun TokApp(
             TokTab.Settings -> SettingsScreen(
                 darkTheme = darkTheme,
                 compactLayout = uiState.compactLayout,
-                followedCategories = followedCategories,
+                followedCategories = uiState.followedCategories,
                 refreshIntervalMinutes = refreshIntervalMinutes,
                 breakingNewsEnabled = breakingNewsEnabled,
                 onDarkThemeChange = onDarkThemeChange,
                 onCompactLayoutChange = tokViewModel::setCompactLayout,
                 onRefreshIntervalChange = { refreshIntervalMinutes = it },
                 onBreakingNewsChange = { breakingNewsEnabled = it },
-                onToggleCategory = { category ->
-                    followedCategories = if (category in followedCategories) {
-                        followedCategories - category
-                    } else {
-                        followedCategories + category
-                    }
-                },
+                onToggleCategory = tokViewModel::toggleFollowedCategory,
                 modifier = Modifier.padding(innerPadding),
             )
             }

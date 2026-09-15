@@ -42,4 +42,18 @@ class TokViewModel : ViewModel() {
             currentState.copy(readArticleIds = emptySet())
         }
     }
+
+    fun toggleFollowedCategory(category: Int) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                followedCategories = if (
+                    category in currentState.followedCategories
+                ) {
+                    currentState.followedCategories - category
+                } else {
+                    currentState.followedCategories + category
+                }
+            )
+        }
+    }
 }
