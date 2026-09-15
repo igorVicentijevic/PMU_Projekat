@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -166,29 +167,33 @@ private fun CompactCardContent(
                     .width(112.dp)
                     .height(132.dp),
             )
-            Column(
+            Box(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 12.dp, top = 12.dp, end = 42.dp, bottom = 12.dp),
-                verticalArrangement = Arrangement.Top,
+                    .fillMaxHeight()
+                    .padding(start = 12.dp, end = 8.dp),
             ) {
-                ArticleMetadata(article)
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = stringResource(article.titleResId),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(modifier = Modifier.weight(1f))
+                Column(
+                    modifier = Modifier.padding(top = 12.dp, end = 48.dp),
+                ) {
+                    ArticleMetadata(article)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = stringResource(article.titleResId),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
                 ArticleActions(
                     compact = true,
                     isSpeaking = isSpeaking,
                     onReadClick = onReadClick,
                     onSpeechClick = onSpeechClick,
                     onShareClick = onShareClick,
+                    modifier = Modifier.align(Alignment.BottomStart),
                 )
             }
         }
@@ -197,8 +202,8 @@ private fun CompactCardContent(
             isSaved = isSaved,
             onSaveClick = onSaveClick,
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 16.dp),
+                .align(Alignment.TopEnd)
+                .padding(top = 8.dp, end = 8.dp),
         )
     }
 }
@@ -214,7 +219,13 @@ private fun BookmarkButton(
         onClick = onSaveClick,
         modifier = modifier
             .size(if (compact) 27.dp else 38.dp)
-            .clip(RoundedCornerShape(if (compact) 9.dp else 12.dp))
+            .clip(
+                if (compact) {
+                    CircleShape
+                } else {
+                    RoundedCornerShape(12.dp)
+                }
+            )
             .background(
                 if (isSaved) {
                     Color(0xFFE8F5EE)
@@ -301,9 +312,10 @@ private fun ArticleActions(
     onReadClick: () -> Unit,
     onSpeechClick: () -> Unit,
     onShareClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
