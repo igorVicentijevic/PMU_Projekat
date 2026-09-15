@@ -48,6 +48,7 @@ import com.example.newsagreggator.ui.elements.screens.SettingsScreen
 import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
 import com.example.newsagreggator.ui.model.NewsCardUiModel
 import com.example.newsagreggator.ui.model.sampleNewsArticles
+import com.example.newsagreggator.ui.state.SecondaryScreen
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import com.example.newsagreggator.ui.viewmodel.TokViewModel
 import kotlinx.coroutines.launch
@@ -62,11 +63,6 @@ private enum class TokTab(
     Settings(R.string.nav_settings, R.drawable.ic_settings),
 }
 
-private enum class SecondaryScreen {
-    History,
-    Digest,
-}
-
 @Composable
 fun TokApp(
     darkTheme: Boolean,
@@ -76,7 +72,6 @@ fun TokApp(
 ) {
     val uiState by tokViewModel.uiState.collectAsState()
     var selectedTab by rememberSaveable { mutableStateOf(TokTab.Home) }
-    var secondaryScreen by rememberSaveable { mutableStateOf<SecondaryScreen?>(null) }
     val context = LocalContext.current
     val speechController = remember(context) { ArticleSpeechController(context) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -186,7 +181,7 @@ fun TokApp(
                         selected = tab == selectedTab,
                         onClick = {
                             selectedTab = tab
-                            secondaryScreen = null
+                            tokViewModel.closeSecondaryScreen()
                         },
                         icon = {
                             BadgedBox(
@@ -219,7 +214,7 @@ fun TokApp(
             }
         },
     ) { innerPadding ->
-        when (secondaryScreen) {
+        when (uiState.secondaryScreen) {
             SecondaryScreen.History -> HistoryScreen(
                     articles = sampleNewsArticles.filter {
                         it.id in uiState.readArticleIds
@@ -227,7 +222,7 @@ fun TokApp(
                     savedArticleIds = uiState.savedArticleIds,
                     speakingArticleId = speechController.speakingArticleId,
                     compactLayout = uiState.compactLayout,
-                    onBack = { secondaryScreen = null },
+                    onBack = tokViewModel::closeSecondaryScreen,
                     onClearHistory = tokViewModel::clearReadingHistory,
                     onToggleSaved = toggleSaved,
                     onToggleSpeech = toggleSpeech,
@@ -243,7 +238,7 @@ fun TokApp(
                 speakingArticleId = speechController.speakingArticleId,
                 isDigestSpeaking = speechController.isDigestSpeaking,
                 compactLayout = uiState.compactLayout,
-                onBack = { secondaryScreen = null },
+                onBack = tokViewModel::closeSecondaryScreen,
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
@@ -269,8 +264,12 @@ fun TokApp(
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
                 onShareArticle = shareArticle,
-                onOpenHistory = { secondaryScreen = SecondaryScreen.History },
-                onOpenDigest = { secondaryScreen = SecondaryScreen.Digest },
+                onOpenHistory = {
+                    tokViewModel.openSecondaryScreen(SecondaryScreen.History)
+                },
+                onOpenDigest = {
+                    tokViewModel.openSecondaryScreen(SecondaryScreen.Digest)
+                },
                 onCompactLayoutChange = tokViewModel::setCompactLayout,
                 modifier = Modifier.padding(innerPadding),
             )
