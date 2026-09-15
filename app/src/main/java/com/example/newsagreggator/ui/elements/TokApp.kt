@@ -79,7 +79,6 @@ fun TokApp(
     var secondaryScreen by rememberSaveable { mutableStateOf<SecondaryScreen?>(null) }
     var refreshIntervalMinutes by rememberSaveable { mutableStateOf(15) }
     var breakingNewsEnabled by rememberSaveable { mutableStateOf(true) }
-    var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
     var readArticleIds by remember { mutableStateOf(emptySet<Int>()) }
     val context = LocalContext.current
     val speechController = remember(context) { ArticleSpeechController(context) }
@@ -95,12 +94,8 @@ fun TokApp(
         )
     }
     val toggleSaved: (Int) -> Unit = { articleId ->
-        val wasSaved = articleId in savedArticleIds
-        savedArticleIds = if (wasSaved) {
-            savedArticleIds - articleId
-        } else {
-            savedArticleIds + articleId
-        }
+        val wasSaved = articleId in uiState.savedArticleIds
+        tokViewModel.setArticleSaved(articleId, !wasSaved)
         coroutineScope.launch {
             val result = snackbarHostState.showSnackbar(
                 message = context.getString(
@@ -116,13 +111,10 @@ fun TokApp(
             val expectedSavedState = !wasSaved
             if (
                 result == SnackbarResult.ActionPerformed &&
-                (articleId in savedArticleIds) == expectedSavedState
+                (articleId in tokViewModel.uiState.value.savedArticleIds) ==
+                    expectedSavedState
             ) {
-                savedArticleIds = if (wasSaved) {
-                    savedArticleIds + articleId
-                } else {
-                    savedArticleIds - articleId
-                }
+                tokViewModel.setArticleSaved(articleId, wasSaved)
             }
         }
     }
@@ -211,9 +203,12 @@ fun TokApp(
                         icon = {
                             BadgedBox(
                                 badge = {
-                                    if (tab == TokTab.Saved && savedArticleIds.isNotEmpty()) {
+                                    if (
+                                        tab == TokTab.Saved &&
+                                        uiState.savedArticleIds.isNotEmpty()
+                                    ) {
                                         Badge {
-                                            Text(savedArticleIds.size.toString())
+                                            Text(uiState.savedArticleIds.size.toString())
                                         }
                                     }
                                 }
@@ -239,7 +234,7 @@ fun TokApp(
         when (secondaryScreen) {
             SecondaryScreen.History -> HistoryScreen(
                     articles = sampleNewsArticles.filter { it.id in readArticleIds },
-                    savedArticleIds = savedArticleIds,
+                    savedArticleIds = uiState.savedArticleIds,
                     speakingArticleId = speechController.speakingArticleId,
                     compactLayout = uiState.compactLayout,
                     onBack = { secondaryScreen = null },
@@ -253,7 +248,7 @@ fun TokApp(
                 articles = sampleNewsArticles
                     .filter { it.categoryResId in followedCategories }
                     .take(5),
-                savedArticleIds = savedArticleIds,
+                savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
                 isDigestSpeaking = speechController.isDigestSpeaking,
@@ -274,7 +269,7 @@ fun TokApp(
             )
             null -> when (selectedTab) {
             TokTab.Home -> TokHomeScreen(
-                savedArticleIds = savedArticleIds,
+                savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
                 compactLayout = uiState.compactLayout,
@@ -292,7 +287,7 @@ fun TokApp(
                     it.categoryResId in followedCategories
                 },
                 followedCategories = followedCategories,
-                savedArticleIds = savedArticleIds,
+                savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
                 compactLayout = uiState.compactLayout,
@@ -303,7 +298,9 @@ fun TokApp(
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.Saved -> SavedScreen(
-                articles = sampleNewsArticles.filter { it.id in savedArticleIds },
+                articles = sampleNewsArticles.filter {
+                    it.id in uiState.savedArticleIds
+                },
                 readArticleIds = readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
                 compactLayout = uiState.compactLayout,

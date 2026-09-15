@@ -16,4 +16,16 @@ class TokViewModel : ViewModel() {
             currentState.copy(compactLayout = enabled)
         }
     }
+
+    fun setArticleSaved(articleId: Int, saved: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                savedArticleIds = if (saved) {
+                    currentState.savedArticleIds + articleId
+                } else {
+                    currentState.savedArticleIds - articleId
+                }
+            )
+        }
+    }
 }
