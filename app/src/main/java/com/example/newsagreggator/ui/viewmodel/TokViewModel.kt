@@ -28,4 +28,18 @@ class TokViewModel : ViewModel() {
             )
         }
     }
+
+    fun markArticleRead(articleId: Int) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                readArticleIds = currentState.readArticleIds + articleId
+            )
+        }
+    }
+
+    fun clearReadingHistory() {
+        _uiState.update { currentState ->
+            currentState.copy(readArticleIds = emptySet())
+        }
+    }
 }

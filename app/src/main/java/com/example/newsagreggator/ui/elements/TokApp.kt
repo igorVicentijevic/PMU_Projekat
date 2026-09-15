@@ -79,7 +79,6 @@ fun TokApp(
     var secondaryScreen by rememberSaveable { mutableStateOf<SecondaryScreen?>(null) }
     var refreshIntervalMinutes by rememberSaveable { mutableStateOf(15) }
     var breakingNewsEnabled by rememberSaveable { mutableStateOf(true) }
-    var readArticleIds by remember { mutableStateOf(emptySet<Int>()) }
     val context = LocalContext.current
     val speechController = remember(context) { ArticleSpeechController(context) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -120,7 +119,7 @@ fun TokApp(
     }
     val readArticle: (NewsCardUiModel) -> Unit = { article ->
         if (launchOriginalArticle(context, article)) {
-            readArticleIds = readArticleIds + article.id
+            tokViewModel.markArticleRead(article.id)
         } else {
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(
@@ -181,7 +180,7 @@ fun TokApp(
     }
     LaunchedEffect(speechController.speakingArticleId) {
         speechController.speakingArticleId?.let { articleId ->
-            readArticleIds = readArticleIds + articleId
+            tokViewModel.markArticleRead(articleId)
         }
     }
 
@@ -233,12 +232,14 @@ fun TokApp(
     ) { innerPadding ->
         when (secondaryScreen) {
             SecondaryScreen.History -> HistoryScreen(
-                    articles = sampleNewsArticles.filter { it.id in readArticleIds },
+                    articles = sampleNewsArticles.filter {
+                        it.id in uiState.readArticleIds
+                    },
                     savedArticleIds = uiState.savedArticleIds,
                     speakingArticleId = speechController.speakingArticleId,
                     compactLayout = uiState.compactLayout,
                     onBack = { secondaryScreen = null },
-                    onClearHistory = { readArticleIds = emptySet() },
+                    onClearHistory = tokViewModel::clearReadingHistory,
                     onToggleSaved = toggleSaved,
                     onToggleSpeech = toggleSpeech,
                     onShareArticle = shareArticle,
@@ -249,7 +250,7 @@ fun TokApp(
                     .filter { it.categoryResId in followedCategories }
                     .take(5),
                 savedArticleIds = uiState.savedArticleIds,
-                readArticleIds = readArticleIds,
+                readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
                 isDigestSpeaking = speechController.isDigestSpeaking,
                 compactLayout = uiState.compactLayout,
@@ -270,7 +271,7 @@ fun TokApp(
             null -> when (selectedTab) {
             TokTab.Home -> TokHomeScreen(
                 savedArticleIds = uiState.savedArticleIds,
-                readArticleIds = readArticleIds,
+                readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
                 compactLayout = uiState.compactLayout,
                 onToggleSaved = toggleSaved,
@@ -288,7 +289,7 @@ fun TokApp(
                 },
                 followedCategories = followedCategories,
                 savedArticleIds = uiState.savedArticleIds,
-                readArticleIds = readArticleIds,
+                readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
                 compactLayout = uiState.compactLayout,
                 onToggleSaved = toggleSaved,
@@ -301,7 +302,7 @@ fun TokApp(
                 articles = sampleNewsArticles.filter {
                     it.id in uiState.savedArticleIds
                 },
-                readArticleIds = readArticleIds,
+                readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
                 compactLayout = uiState.compactLayout,
                 onRemoveSaved = toggleSaved,
