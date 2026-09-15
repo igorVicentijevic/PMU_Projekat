@@ -1,6 +1,7 @@
 package com.example.newsagreggator.ui.state
 
 import com.example.newsagreggator.R
+import com.example.newsagreggator.ui.model.NewsCardUiModel
 
 enum class SecondaryScreen {
     History,
@@ -15,6 +16,7 @@ enum class TokTab {
 }
 
 data class TokUiState(
+    val articles: List<NewsCardUiModel> = emptyList(),
     val darkThemeOverride: Boolean? = null,
     val compactLayout: Boolean = false,
     val refreshIntervalMinutes: Int = 15,

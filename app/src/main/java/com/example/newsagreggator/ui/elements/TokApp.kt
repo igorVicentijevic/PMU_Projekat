@@ -42,7 +42,6 @@ import com.example.newsagreggator.ui.elements.screens.SavedScreen
 import com.example.newsagreggator.ui.elements.screens.SettingsScreen
 import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
 import com.example.newsagreggator.ui.model.NewsCardUiModel
-import com.example.newsagreggator.ui.model.sampleNewsArticles
 import com.example.newsagreggator.ui.state.SecondaryScreen
 import com.example.newsagreggator.ui.state.TokTab
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
@@ -213,7 +212,7 @@ fun TokApp(
     ) { innerPadding ->
         when (uiState.secondaryScreen) {
             SecondaryScreen.History -> HistoryScreen(
-                    articles = sampleNewsArticles.filter {
+                    articles = uiState.articles.filter {
                         it.id in uiState.readArticleIds
                     },
                     savedArticleIds = uiState.savedArticleIds,
@@ -227,7 +226,7 @@ fun TokApp(
                     modifier = Modifier.padding(innerPadding),
                 )
             SecondaryScreen.Digest -> DigestScreen(
-                articles = sampleNewsArticles
+                articles = uiState.articles
                     .filter { it.categoryResId in uiState.followedCategories }
                     .take(5),
                 savedArticleIds = uiState.savedArticleIds,
@@ -241,7 +240,7 @@ fun TokApp(
                 onToggleSpeech = toggleSpeech,
                 onToggleDigestSpeech = {
                     toggleDigestSpeech(
-                        sampleNewsArticles
+                        uiState.articles
                             .filter {
                                 it.categoryResId in uiState.followedCategories
                             }
@@ -271,7 +270,7 @@ fun TokApp(
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.ForYou -> ForYouScreen(
-                articles = sampleNewsArticles.filter {
+                articles = uiState.articles.filter {
                     it.categoryResId in uiState.followedCategories
                 },
                 followedCategories = uiState.followedCategories,
@@ -286,7 +285,7 @@ fun TokApp(
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.Saved -> SavedScreen(
-                articles = sampleNewsArticles.filter {
+                articles = uiState.articles.filter {
                     it.id in uiState.savedArticleIds
                 },
                 readArticleIds = uiState.readArticleIds,

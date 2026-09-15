@@ -4,13 +4,16 @@ import androidx.lifecycle.ViewModel
 import com.example.newsagreggator.ui.state.SecondaryScreen
 import com.example.newsagreggator.ui.state.TokTab
 import com.example.newsagreggator.ui.state.TokUiState
+import com.example.newsagreggator.ui.model.sampleNewsArticles
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class TokViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(TokUiState())
+    private val _uiState = MutableStateFlow(
+        TokUiState(articles = sampleNewsArticles)
+    )
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
 
     fun setDarkTheme(enabled: Boolean) {
