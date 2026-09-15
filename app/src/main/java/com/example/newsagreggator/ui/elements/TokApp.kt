@@ -4,8 +4,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -25,11 +23,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -49,19 +44,26 @@ import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
 import com.example.newsagreggator.ui.model.NewsCardUiModel
 import com.example.newsagreggator.ui.model.sampleNewsArticles
 import com.example.newsagreggator.ui.state.SecondaryScreen
+import com.example.newsagreggator.ui.state.TokTab
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import com.example.newsagreggator.ui.viewmodel.TokViewModel
 import kotlinx.coroutines.launch
 
-private enum class TokTab(
-    @StringRes val labelResId: Int,
-    @DrawableRes val iconResId: Int,
-) {
-    Home(R.string.nav_home, R.drawable.ic_home),
-    ForYou(R.string.nav_for_you, R.drawable.ic_spark),
-    Saved(R.string.nav_saved, R.drawable.ic_bookmark_outline),
-    Settings(R.string.nav_settings, R.drawable.ic_settings),
-}
+private val TokTab.labelResId: Int
+    get() = when (this) {
+        TokTab.Home -> R.string.nav_home
+        TokTab.ForYou -> R.string.nav_for_you
+        TokTab.Saved -> R.string.nav_saved
+        TokTab.Settings -> R.string.nav_settings
+    }
+
+private val TokTab.iconResId: Int
+    get() = when (this) {
+        TokTab.Home -> R.drawable.ic_home
+        TokTab.ForYou -> R.drawable.ic_spark
+        TokTab.Saved -> R.drawable.ic_bookmark_outline
+        TokTab.Settings -> R.drawable.ic_settings
+    }
 
 @Composable
 fun TokApp(
@@ -71,7 +73,6 @@ fun TokApp(
     tokViewModel: TokViewModel = viewModel(),
 ) {
     val uiState by tokViewModel.uiState.collectAsState()
-    var selectedTab by rememberSaveable { mutableStateOf(TokTab.Home) }
     val context = LocalContext.current
     val speechController = remember(context) { ArticleSpeechController(context) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -178,11 +179,8 @@ fun TokApp(
             ) {
                 TokTab.entries.forEach { tab ->
                     NavigationBarItem(
-                        selected = tab == selectedTab,
-                        onClick = {
-                            selectedTab = tab
-                            tokViewModel.closeSecondaryScreen()
-                        },
+                        selected = tab == uiState.selectedTab,
+                        onClick = { tokViewModel.selectTab(tab) },
                         icon = {
                             BadgedBox(
                                 badge = {
@@ -254,7 +252,7 @@ fun TokApp(
                 onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )
-            null -> when (selectedTab) {
+            null -> when (uiState.selectedTab) {
             TokTab.Home -> TokHomeScreen(
                 savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = uiState.readArticleIds,

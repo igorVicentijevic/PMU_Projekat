@@ -2,6 +2,7 @@ package com.example.newsagreggator.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.newsagreggator.ui.state.SecondaryScreen
+import com.example.newsagreggator.ui.state.TokTab
 import com.example.newsagreggator.ui.state.TokUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,15 @@ class TokViewModel : ViewModel() {
     fun setBreakingNewsEnabled(enabled: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(breakingNewsEnabled = enabled)
+        }
+    }
+
+    fun selectTab(tab: TokTab) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                selectedTab = tab,
+                secondaryScreen = null,
+            )
         }
     }
 

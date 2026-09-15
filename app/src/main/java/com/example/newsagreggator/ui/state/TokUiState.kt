@@ -7,10 +7,18 @@ enum class SecondaryScreen {
     Digest,
 }
 
+enum class TokTab {
+    Home,
+    ForYou,
+    Saved,
+    Settings,
+}
+
 data class TokUiState(
     val compactLayout: Boolean = false,
     val refreshIntervalMinutes: Int = 15,
     val breakingNewsEnabled: Boolean = true,
+    val selectedTab: TokTab = TokTab.Home,
     val secondaryScreen: SecondaryScreen? = null,
     val savedArticleIds: Set<Int> = emptySet(),
     val readArticleIds: Set<Int> = emptySet(),
