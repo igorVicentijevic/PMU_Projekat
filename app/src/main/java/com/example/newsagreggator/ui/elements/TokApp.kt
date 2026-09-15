@@ -68,7 +68,6 @@ private val TokTab.iconResId: Int
 @Composable
 fun TokApp(
     darkTheme: Boolean,
-    onDarkThemeChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     tokViewModel: TokViewModel = viewModel(),
 ) {
@@ -305,7 +304,7 @@ fun TokApp(
                 followedCategories = uiState.followedCategories,
                 refreshIntervalMinutes = uiState.refreshIntervalMinutes,
                 breakingNewsEnabled = uiState.breakingNewsEnabled,
-                onDarkThemeChange = onDarkThemeChange,
+                onDarkThemeChange = tokViewModel::setDarkTheme,
                 onCompactLayoutChange = tokViewModel::setCompactLayout,
                 onRefreshIntervalChange = tokViewModel::setRefreshInterval,
                 onBreakingNewsChange = tokViewModel::setBreakingNewsEnabled,
@@ -368,7 +367,6 @@ private fun TokAppPreview() {
     NewsAgreggatorTheme(darkTheme = false) {
         TokApp(
             darkTheme = false,
-            onDarkThemeChange = {},
         )
     }
 }

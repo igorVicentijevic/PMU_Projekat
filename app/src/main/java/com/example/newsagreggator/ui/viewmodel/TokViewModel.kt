@@ -13,6 +13,12 @@ class TokViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(TokUiState())
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
 
+    fun setDarkTheme(enabled: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(darkThemeOverride = enabled)
+        }
+    }
+
     fun setCompactLayout(enabled: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(compactLayout = enabled)

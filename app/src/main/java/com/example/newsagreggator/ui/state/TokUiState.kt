@@ -15,6 +15,7 @@ enum class TokTab {
 }
 
 data class TokUiState(
+    val darkThemeOverride: Boolean? = null,
     val compactLayout: Boolean = false,
     val refreshIntervalMinutes: Int = 15,
     val breakingNewsEnabled: Boolean = true,
