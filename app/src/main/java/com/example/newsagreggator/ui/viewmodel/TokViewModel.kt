@@ -3,7 +3,6 @@ package com.example.newsagreggator.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsagreggator.data.NewsRepository
-import com.example.newsagreggator.data.SampleNewsRepository
 import com.example.newsagreggator.ui.state.SecondaryScreen
 import com.example.newsagreggator.ui.state.TokTab
 import com.example.newsagreggator.ui.state.TokUiState
@@ -15,7 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class TokViewModel(
-    private val newsRepository: NewsRepository = SampleNewsRepository(),
+    private val newsRepository: NewsRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
         TokUiState(articles = newsRepository.getArticles())

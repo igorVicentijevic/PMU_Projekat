@@ -30,8 +30,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.newsagreggator.R
+import com.example.newsagreggator.data.SampleNewsRepository
 import com.example.newsagreggator.speech.ArticleSpeechController
 import com.example.newsagreggator.speech.SpeechArticle
 import com.example.newsagreggator.speech.SpeechActionResult
@@ -68,7 +68,7 @@ private val TokTab.iconResId: Int
 fun TokApp(
     darkTheme: Boolean,
     modifier: Modifier = Modifier,
-    tokViewModel: TokViewModel = viewModel(),
+    tokViewModel: TokViewModel,
 ) {
     val uiState by tokViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -368,6 +368,7 @@ private fun TokAppPreview() {
     NewsAgreggatorTheme(darkTheme = false) {
         TokApp(
             darkTheme = false,
+            tokViewModel = TokViewModel(SampleNewsRepository()),
         )
     }
 }
