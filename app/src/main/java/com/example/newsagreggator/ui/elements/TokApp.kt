@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.newsagreggator.R
 import com.example.newsagreggator.speech.ArticleSpeechController
 import com.example.newsagreggator.speech.SpeechArticle
@@ -47,6 +49,7 @@ import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
 import com.example.newsagreggator.ui.model.NewsCardUiModel
 import com.example.newsagreggator.ui.model.sampleNewsArticles
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
+import com.example.newsagreggator.ui.viewmodel.TokViewModel
 import kotlinx.coroutines.launch
 
 private enum class TokTab(
@@ -69,10 +72,11 @@ fun TokApp(
     darkTheme: Boolean,
     onDarkThemeChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    tokViewModel: TokViewModel = viewModel(),
 ) {
+    val uiState by tokViewModel.uiState.collectAsState()
     var selectedTab by rememberSaveable { mutableStateOf(TokTab.Home) }
     var secondaryScreen by rememberSaveable { mutableStateOf<SecondaryScreen?>(null) }
-    var compactLayout by rememberSaveable { mutableStateOf(false) }
     var refreshIntervalMinutes by rememberSaveable { mutableStateOf(15) }
     var breakingNewsEnabled by rememberSaveable { mutableStateOf(true) }
     var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
@@ -237,7 +241,7 @@ fun TokApp(
                     articles = sampleNewsArticles.filter { it.id in readArticleIds },
                     savedArticleIds = savedArticleIds,
                     speakingArticleId = speechController.speakingArticleId,
-                    compactLayout = compactLayout,
+                    compactLayout = uiState.compactLayout,
                     onBack = { secondaryScreen = null },
                     onClearHistory = { readArticleIds = emptySet() },
                     onToggleSaved = toggleSaved,
@@ -253,7 +257,7 @@ fun TokApp(
                 readArticleIds = readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
                 isDigestSpeaking = speechController.isDigestSpeaking,
-                compactLayout = compactLayout,
+                compactLayout = uiState.compactLayout,
                 onBack = { secondaryScreen = null },
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
@@ -273,14 +277,14 @@ fun TokApp(
                 savedArticleIds = savedArticleIds,
                 readArticleIds = readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
-                compactLayout = compactLayout,
+                compactLayout = uiState.compactLayout,
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
                 onShareArticle = shareArticle,
                 onOpenHistory = { secondaryScreen = SecondaryScreen.History },
                 onOpenDigest = { secondaryScreen = SecondaryScreen.Digest },
-                onCompactLayoutChange = { compactLayout = it },
+                onCompactLayoutChange = tokViewModel::setCompactLayout,
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.ForYou -> ForYouScreen(
@@ -291,7 +295,7 @@ fun TokApp(
                 savedArticleIds = savedArticleIds,
                 readArticleIds = readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
-                compactLayout = compactLayout,
+                compactLayout = uiState.compactLayout,
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
@@ -302,7 +306,7 @@ fun TokApp(
                 articles = sampleNewsArticles.filter { it.id in savedArticleIds },
                 readArticleIds = readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
-                compactLayout = compactLayout,
+                compactLayout = uiState.compactLayout,
                 onRemoveSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
@@ -311,12 +315,12 @@ fun TokApp(
             )
             TokTab.Settings -> SettingsScreen(
                 darkTheme = darkTheme,
-                compactLayout = compactLayout,
+                compactLayout = uiState.compactLayout,
                 followedCategories = followedCategories,
                 refreshIntervalMinutes = refreshIntervalMinutes,
                 breakingNewsEnabled = breakingNewsEnabled,
                 onDarkThemeChange = onDarkThemeChange,
-                onCompactLayoutChange = { compactLayout = it },
+                onCompactLayoutChange = tokViewModel::setCompactLayout,
                 onRefreshIntervalChange = { refreshIntervalMinutes = it },
                 onBreakingNewsChange = { breakingNewsEnabled = it },
                 onToggleCategory = { category ->
