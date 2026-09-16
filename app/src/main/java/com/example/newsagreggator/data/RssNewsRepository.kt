@@ -1,8 +1,8 @@
 package com.example.newsagreggator.data
 
-import com.example.newsagreggator.data.local.ArticleDao
-import com.example.newsagreggator.data.local.toDomain
-import com.example.newsagreggator.data.local.toEntity
+import com.example.newsagreggator.data.local.dao.ArticleDao
+import com.example.newsagreggator.data.local.entities.toDomain
+import com.example.newsagreggator.data.local.entities.toEntity
 import com.example.newsagreggator.data.remote.RemoteNewsDataSource
 import com.example.newsagreggator.domain.model.Article
 import kotlinx.coroutines.CancellationException

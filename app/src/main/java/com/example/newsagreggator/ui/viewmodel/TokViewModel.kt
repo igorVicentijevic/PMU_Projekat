@@ -3,7 +3,7 @@ package com.example.newsagreggator.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsagreggator.data.NewsRepository
-import com.example.newsagreggator.data.local.ArticleStateRepository
+import com.example.newsagreggator.data.local.repository.ArticleStateRepository
 import com.example.newsagreggator.data.network.NetworkMonitor
 import com.example.newsagreggator.data.preferences.UserPreferencesRepository
 import com.example.newsagreggator.ui.state.SecondaryScreen

@@ -1,4 +1,4 @@
-package com.example.newsagreggator.data.local
+package com.example.newsagreggator.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

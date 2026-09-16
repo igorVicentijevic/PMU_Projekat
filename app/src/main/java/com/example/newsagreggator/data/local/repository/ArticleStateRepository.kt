@@ -1,5 +1,7 @@
-package com.example.newsagreggator.data.local
+package com.example.newsagreggator.data.local.repository
 
+import com.example.newsagreggator.data.local.dao.ArticleStateDao
+import com.example.newsagreggator.data.local.entities.ArticleStateEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map

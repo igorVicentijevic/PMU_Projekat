@@ -1,9 +1,11 @@
-package com.example.newsagreggator.data.local
+package com.example.newsagreggator.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import com.example.newsagreggator.data.local.entities.ArticleEntity
+import com.example.newsagreggator.data.local.entities.NewsSyncMetadataEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

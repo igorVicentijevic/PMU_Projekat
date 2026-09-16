@@ -6,6 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.newsagreggator.data.local.dao.ArticleDao
+import com.example.newsagreggator.data.local.dao.ArticleStateDao
+import com.example.newsagreggator.data.local.entities.ArticleEntity
+import com.example.newsagreggator.data.local.entities.ArticleStateEntity
+import com.example.newsagreggator.data.local.entities.NewsSyncMetadataEntity
 
 @Database(
     entities = [
