@@ -71,6 +71,7 @@ class TokViewModel(
                         refreshArticles()
                     }
                 }
+                refreshArticles()
         }
     }
 
