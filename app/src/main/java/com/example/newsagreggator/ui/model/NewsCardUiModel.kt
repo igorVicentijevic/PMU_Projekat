@@ -31,12 +31,26 @@ fun Article.toNewsCardUiModel(
         placeholderImageResId = category.placeholderImageResId,
         categoryResId = category.labelResId,
         source = source,
-        time = "pre $minutesAgo min",
+        time = minutesAgo.toRelativeTime(),
         title = title,
         summary = summary,
         url = articleUrl,
     )
 }
+
+private fun Long.toRelativeTime(): String {
+    if (this < MINUTES_PER_HOUR) return "pre $this min"
+
+    val hours = this / MINUTES_PER_HOUR
+    val remainingMinutes = this % MINUTES_PER_HOUR
+    return if (remainingMinutes == 0L) {
+        "pre $hours h"
+    } else {
+        "pre $hours h $remainingMinutes min"
+    }
+}
+
+private const val MINUTES_PER_HOUR = 60L
 
 private val NewsCategory.labelResId: Int
     get() = when (this) {
