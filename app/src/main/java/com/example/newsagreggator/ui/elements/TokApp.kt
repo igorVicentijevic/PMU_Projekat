@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.newsagreggator.R
 import com.example.newsagreggator.data.SampleNewsRepository
+import com.example.newsagreggator.data.preferences.InMemoryUserPreferencesRepository
 import com.example.newsagreggator.speech.ArticleSpeechController
 import com.example.newsagreggator.speech.SpeechArticle
 import com.example.newsagreggator.speech.SpeechActionResult
@@ -164,6 +165,15 @@ fun TokApp(
     LaunchedEffect(speechController.speakingArticleId) {
         speechController.speakingArticleId?.let { articleId ->
             tokViewModel.markArticleRead(articleId)
+        }
+    }
+    LaunchedEffect(uiState.articleRefreshFailed) {
+        if (uiState.articleRefreshFailed) {
+            tokViewModel.clearArticleRefreshError()
+            snackbarHostState.showSnackbar(
+                message = context.getString(R.string.article_refresh_failed),
+                withDismissAction = true,
+            )
         }
     }
 
@@ -373,7 +383,10 @@ private fun TokAppPreview() {
     NewsAgreggatorTheme(darkTheme = false) {
         TokApp(
             darkTheme = false,
-            tokViewModel = TokViewModel(SampleNewsRepository()),
+            tokViewModel = TokViewModel(
+                newsRepository = SampleNewsRepository(),
+                userPreferencesRepository = InMemoryUserPreferencesRepository(),
+            ),
         )
     }
 }

@@ -4,4 +4,6 @@ import com.example.newsagreggator.ui.model.NewsCardUiModel
 
 interface NewsRepository {
     fun getArticles(): List<NewsCardUiModel>
+
+    suspend fun refreshArticles(): Result<List<NewsCardUiModel>>
 }

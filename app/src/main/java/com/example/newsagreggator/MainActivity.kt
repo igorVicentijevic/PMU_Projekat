@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.newsagreggator.data.SampleNewsRepository
+import com.example.newsagreggator.data.preferences.DataStoreUserPreferencesRepository
 import com.example.newsagreggator.ui.elements.TokApp
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import com.example.newsagreggator.ui.viewmodel.TokViewModel
@@ -21,7 +22,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val viewModelFactory = remember {
-                tokViewModelFactory(SampleNewsRepository())
+                tokViewModelFactory(
+                    newsRepository = SampleNewsRepository(),
+                    userPreferencesRepository =
+                        DataStoreUserPreferencesRepository(applicationContext),
+                )
             }
             val tokViewModel: TokViewModel = viewModel(
                 factory = viewModelFactory

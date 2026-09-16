@@ -81,6 +81,7 @@
     <string name="compact_layout">Promeni gustinu prikaza</string>
     <string name="refresh">Osveži</string>
     <string name="refreshing">Osvežavam…</string>
+    <string name="article_refresh_failed">Nije moguće osvežiti vesti. Pokušaj ponovo.</string>
     <string name="updated_now">Ažurirano upravo sada</string>
     <string name="category_all">Sve</string>
     <string name="category_serbia">Srbija</string>
