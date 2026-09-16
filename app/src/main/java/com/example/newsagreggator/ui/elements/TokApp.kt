@@ -252,6 +252,9 @@ fun TokApp(
             )
             null -> when (uiState.selectedTab) {
             TokTab.Home -> TokHomeScreen(
+                articles = uiState.articles,
+                searchQuery = uiState.searchQuery,
+                selectedCategory = uiState.selectedCategory,
                 savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
@@ -269,6 +272,8 @@ fun TokApp(
                 },
                 onRefreshArticles = tokViewModel::refreshArticles,
                 onCompactLayoutChange = tokViewModel::setCompactLayout,
+                onSearchQueryChange = tokViewModel::setSearchQuery,
+                onCategorySelected = tokViewModel::selectCategory,
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.ForYou -> ForYouScreen(

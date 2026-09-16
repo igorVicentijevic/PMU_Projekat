@@ -66,6 +66,18 @@ class TokViewModel(
         }
     }
 
+    fun setSearchQuery(query: String) {
+        _uiState.update { currentState ->
+            currentState.copy(searchQuery = query)
+        }
+    }
+
+    fun selectCategory(category: Int) {
+        _uiState.update { currentState ->
+            currentState.copy(selectedCategory = category)
+        }
+    }
+
     fun selectTab(tab: TokTab) {
         _uiState.update { currentState ->
             currentState.copy(

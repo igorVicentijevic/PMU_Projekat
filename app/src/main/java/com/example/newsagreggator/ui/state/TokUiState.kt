@@ -22,6 +22,8 @@ data class TokUiState(
     val compactLayout: Boolean = false,
     val refreshIntervalMinutes: Int = 15,
     val breakingNewsEnabled: Boolean = true,
+    val searchQuery: String = "",
+    val selectedCategory: Int = R.string.category_all,
     val selectedTab: TokTab = TokTab.Home,
     val secondaryScreen: SecondaryScreen? = null,
     val savedArticleIds: Set<Int> = emptySet(),
