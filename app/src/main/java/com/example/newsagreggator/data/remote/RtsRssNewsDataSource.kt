@@ -6,6 +6,7 @@ import com.example.newsagreggator.domain.model.Article
 import com.example.newsagreggator.domain.model.NewsCategory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.xmlpull.v1.XmlPullParser
@@ -20,20 +21,51 @@ class RtsRssNewsDataSource(
     override suspend fun fetchArticles(): List<Article> =
         withContext(Dispatchers.IO) {
             coroutineScope {
-                val generalNews = async {
-                    parseFeed(newsService.getNewsFeed())
-                }
-                val sportsNews = async {
-                    parseFeed(
-                        feedXml = newsService.getSportsFeed(),
-                        forcedCategory = NewsCategory.Sport,
-                    )
-                }
-                (generalNews.await() + sportsNews.await())
+                val feeds = listOf(
+                    FeedRequest { newsService.getNewsFeed() },
+                    FeedRequest(NewsCategory.Serbia) {
+                        newsService.getSerbiaFeed()
+                    },
+                    FeedRequest(NewsCategory.World) {
+                        newsService.getWorldFeed()
+                    },
+                    FeedRequest(NewsCategory.Business) {
+                        newsService.getBusinessFeed()
+                    },
+                    FeedRequest(NewsCategory.Culture) {
+                        newsService.getCultureFeed()
+                    },
+                    FeedRequest(NewsCategory.Sport) {
+                        newsService.getSportsFeed()
+                    },
+                    FeedRequest(NewsCategory.Technology) {
+                        newsService.getTechnologyFeed()
+                    },
+                    FeedRequest(NewsCategory.Health) {
+                        newsService.getHealthFeed()
+                    },
+                )
+
+                feeds
+                    .map { feed ->
+                        async {
+                            parseFeed(
+                                feedXml = feed.load(),
+                                forcedCategory = feed.category,
+                            )
+                        }
+                    }
+                    .awaitAll()
+                    .flatten()
                     .distinctBy(Article::id)
                     .sortedByDescending(Article::publishedAtEpochMillis)
             }
         }
+
+    private data class FeedRequest(
+        val category: NewsCategory? = null,
+        val load: suspend () -> String,
+    )
 
     private fun parseFeed(
         feedXml: String,
@@ -105,7 +137,7 @@ class RtsRssNewsDataSource(
                 category = forcedCategory ?: category.toNewsCategory(),
                 publishedAtEpochMillis = publishedAt.toEpochMillis(),
                 imageUrl = imageUrl
-                    ?.normalizeRtsThumbnailUrl()
+                    ?.normalizeRtsImageUrl()
                     ?.toWebUrlOrNull(),
                 articleUrl = articleUrl,
             )
@@ -135,8 +167,15 @@ private fun String.toWebUrlOrNull(): String? =
         }?.toString()
     }.getOrNull()
 
-private fun String.normalizeRtsThumbnailUrl(): String {
-    val normalizedPath = replace(
+private fun String.normalizeRtsImageUrl(): String {
+    val secureUrl = replace(
+        regex = Regex(
+            pattern = "^http://(?:www\\.)?rts\\.rs/",
+            option = RegexOption.IGNORE_CASE,
+        ),
+        replacement = "https://www.rts.rs/",
+    )
+    val normalizedPath = secureUrl.replace(
         oldValue = "/upload/thumbnail//",
         newValue = "/upload//",
     )
