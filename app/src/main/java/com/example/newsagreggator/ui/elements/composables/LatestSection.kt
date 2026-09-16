@@ -33,22 +33,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
+import java.util.Date
 
 @Composable
 fun LatestSection(
     selectedCategory: Int,
     compactLayout: Boolean,
     isRefreshing: Boolean,
+    lastSuccessfulRefreshEpochMillis: Long?,
     onCategorySelected: (Int) -> Unit,
     onCompactLayoutClick: () -> Unit,
     onRefreshClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     val refreshTransition = rememberInfiniteTransition(label = "refresh")
     val refreshRotation by refreshTransition.animateFloat(
         initialValue = 0f,
@@ -160,10 +164,23 @@ fun LatestSection(
                 modifier = Modifier
                     .size(6.dp)
                     .clip(RoundedCornerShape(50))
-                    .background(Color(0xFF38A169))
+                    .background(
+                        if (lastSuccessfulRefreshEpochMillis != null) {
+                            Color(0xFF38A169)
+                        } else {
+                            MaterialTheme.colorScheme.outline
+                        }
+                    )
             )
             Text(
-                text = stringResource(R.string.updated_now),
+                text = lastSuccessfulRefreshEpochMillis?.let { timestamp ->
+                    stringResource(
+                        R.string.updated_at,
+                        android.text.format.DateFormat
+                            .getTimeFormat(context)
+                            .format(Date(timestamp)),
+                    )
+                } ?: stringResource(R.string.waiting_for_first_refresh),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelSmall,
             )

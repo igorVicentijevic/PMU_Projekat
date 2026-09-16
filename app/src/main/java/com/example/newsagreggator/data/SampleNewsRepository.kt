@@ -1,16 +1,23 @@
 package com.example.newsagreggator.data
 
-import com.example.newsagreggator.domain.model.Article
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class SampleNewsRepository : NewsRepository {
-    private var articles = createSampleNewsArticles()
+    private val state = MutableStateFlow(
+        NewsSnapshot(
+            articles = createSampleNewsArticles(),
+            lastSuccessfulRefreshEpochMillis = null,
+        )
+    )
+    override val news = state
 
-    override fun getArticles(): List<Article> = articles
-
-    override suspend fun refreshArticles(): Result<List<Article>> {
+    override suspend fun refreshArticles(): Result<Unit> {
         delay(700)
-        articles = createSampleNewsArticles()
-        return Result.success(articles)
+        state.value = NewsSnapshot(
+            articles = createSampleNewsArticles(),
+            lastSuccessfulRefreshEpochMillis = System.currentTimeMillis(),
+        )
+        return Result.success(Unit)
     }
 }

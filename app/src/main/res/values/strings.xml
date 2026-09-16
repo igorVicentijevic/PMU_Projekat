@@ -83,6 +83,8 @@
     <string name="refreshing">Osvežavam…</string>
     <string name="article_refresh_failed">Nije moguće osvežiti vesti. Pokušaj ponovo.</string>
     <string name="updated_now">Ažurirano upravo sada</string>
+    <string name="updated_at">Ažurirano u %1$s</string>
+    <string name="waiting_for_first_refresh">Čekam prvo osvežavanje</string>
     <string name="category_all">Sve</string>
     <string name="category_serbia">Srbija</string>
     <string name="category_world">Svet</string>

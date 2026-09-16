@@ -37,7 +37,8 @@ class MainActivity : ComponentActivity() {
                     .create<RtsNewsService>()
                 tokViewModelFactory(
                     newsRepository = RssNewsRepository(
-                        remoteNewsDataSource = RtsRssNewsDataSource(newsService)
+                        remoteNewsDataSource = RtsRssNewsDataSource(newsService),
+                        articleDao = database.articleDao(),
                     ),
                     userPreferencesRepository =
                         DataStoreUserPreferencesRepository(applicationContext),

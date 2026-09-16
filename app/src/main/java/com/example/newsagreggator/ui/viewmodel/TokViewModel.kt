@@ -24,16 +24,23 @@ class TokViewModel(
     private val userPreferencesRepository: UserPreferencesRepository,
     private val articleStateRepository: ArticleStateRepository,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(
-        TokUiState(
-            articles = newsRepository.getArticles().map {
-                it.toNewsCardUiModel()
-            }
-        )
-    )
+    private val _uiState = MutableStateFlow(TokUiState())
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            newsRepository.news.collect { newsSnapshot ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        articles = newsSnapshot.articles.map {
+                            it.toNewsCardUiModel()
+                        },
+                        lastSuccessfulRefreshEpochMillis =
+                            newsSnapshot.lastSuccessfulRefreshEpochMillis,
+                    )
+                }
+            }
+        }
         viewModelScope.launch {
             userPreferencesRepository.preferences.collect { preferences ->
                 _uiState.update { currentState ->
@@ -71,8 +78,8 @@ class TokViewModel(
                         refreshArticles()
                     }
                 }
-                refreshArticles()
         }
+        refreshArticles()
     }
 
     fun setDarkTheme(enabled: Boolean) {
@@ -96,15 +103,7 @@ class TokViewModel(
         viewModelScope.launch {
             try {
                 newsRepository.refreshArticles().fold(
-                    onSuccess = { articles ->
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                articles = articles.map {
-                                    it.toNewsCardUiModel()
-                                }
-                            )
-                        }
-                    },
+                    onSuccess = {},
                     onFailure = {
                         _uiState.update { currentState ->
                             currentState.copy(articleRefreshFailed = true)

@@ -48,6 +48,7 @@ fun TokHomeScreen(
     speakingArticleId: String?,
     compactLayout: Boolean,
     isRefreshing: Boolean,
+    lastSuccessfulRefreshEpochMillis: Long?,
     onToggleSaved: (String) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
@@ -159,6 +160,8 @@ fun TokHomeScreen(
                 selectedCategory = selectedCategory,
                 compactLayout = compactLayout,
                 isRefreshing = isRefreshing,
+                lastSuccessfulRefreshEpochMillis =
+                    lastSuccessfulRefreshEpochMillis,
                 onCategorySelected = onCategorySelected,
                 onCompactLayoutClick = { onCompactLayoutChange(!compactLayout) },
                 onRefreshClick = {
@@ -223,6 +226,7 @@ private fun TokHomeScreenPreview() {
                 speakingArticleId = null,
                 compactLayout = false,
                 isRefreshing = false,
+                lastSuccessfulRefreshEpochMillis = null,
                 onToggleSaved = {},
                 onReadArticle = {},
                 onToggleSpeech = {},

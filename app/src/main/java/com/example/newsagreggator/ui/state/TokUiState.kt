@@ -20,6 +20,7 @@ data class TokUiState(
     val articles: List<NewsCardUiModel> = emptyList(),
     val isRefreshing: Boolean = false,
     val articleRefreshFailed: Boolean = false,
+    val lastSuccessfulRefreshEpochMillis: Long? = null,
     val darkThemeOverride: Boolean? = null,
     val compactLayout: Boolean = false,
     val refreshIntervalMinutes: Int = 15,
