@@ -4,8 +4,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -24,17 +22,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.newsagreggator.R
+import com.example.newsagreggator.data.SampleNewsRepository
+import com.example.newsagreggator.data.preferences.InMemoryUserPreferencesRepository
 import com.example.newsagreggator.speech.ArticleSpeechController
 import com.example.newsagreggator.speech.SpeechArticle
 import com.example.newsagreggator.speech.SpeechActionResult
@@ -45,58 +43,42 @@ import com.example.newsagreggator.ui.elements.screens.SavedScreen
 import com.example.newsagreggator.ui.elements.screens.SettingsScreen
 import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
 import com.example.newsagreggator.ui.model.NewsCardUiModel
-import com.example.newsagreggator.ui.model.sampleNewsArticles
+import com.example.newsagreggator.ui.state.SecondaryScreen
+import com.example.newsagreggator.ui.state.TokTab
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
+import com.example.newsagreggator.ui.viewmodel.TokViewModel
 import kotlinx.coroutines.launch
 
-private enum class TokTab(
-    @StringRes val labelResId: Int,
-    @DrawableRes val iconResId: Int,
-) {
-    Home(R.string.nav_home, R.drawable.ic_home),
-    ForYou(R.string.nav_for_you, R.drawable.ic_spark),
-    Saved(R.string.nav_saved, R.drawable.ic_bookmark_outline),
-    Settings(R.string.nav_settings, R.drawable.ic_settings),
-}
+private val TokTab.labelResId: Int
+    get() = when (this) {
+        TokTab.Home -> R.string.nav_home
+        TokTab.ForYou -> R.string.nav_for_you
+        TokTab.Saved -> R.string.nav_saved
+        TokTab.Settings -> R.string.nav_settings
+    }
 
-private enum class SecondaryScreen {
-    History,
-    Digest,
-}
+private val TokTab.iconResId: Int
+    get() = when (this) {
+        TokTab.Home -> R.drawable.ic_home
+        TokTab.ForYou -> R.drawable.ic_spark
+        TokTab.Saved -> R.drawable.ic_bookmark_outline
+        TokTab.Settings -> R.drawable.ic_settings
+    }
 
 @Composable
 fun TokApp(
     darkTheme: Boolean,
-    onDarkThemeChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    tokViewModel: TokViewModel,
 ) {
-    var selectedTab by rememberSaveable { mutableStateOf(TokTab.Home) }
-    var secondaryScreen by rememberSaveable { mutableStateOf<SecondaryScreen?>(null) }
-    var compactLayout by rememberSaveable { mutableStateOf(false) }
-    var refreshIntervalMinutes by rememberSaveable { mutableStateOf(15) }
-    var breakingNewsEnabled by rememberSaveable { mutableStateOf(true) }
-    var savedArticleIds by remember { mutableStateOf(emptySet<Int>()) }
-    var readArticleIds by remember { mutableStateOf(emptySet<Int>()) }
+    val uiState by tokViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val speechController = remember(context) { ArticleSpeechController(context) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    var followedCategories by remember {
-        mutableStateOf(
-            setOf(
-            R.string.category_serbia,
-            R.string.category_technology,
-            R.string.category_world,
-            )
-        )
-    }
     val toggleSaved: (Int) -> Unit = { articleId ->
-        val wasSaved = articleId in savedArticleIds
-        savedArticleIds = if (wasSaved) {
-            savedArticleIds - articleId
-        } else {
-            savedArticleIds + articleId
-        }
+        val wasSaved = articleId in uiState.savedArticleIds
+        tokViewModel.setArticleSaved(articleId, !wasSaved)
         coroutineScope.launch {
             val result = snackbarHostState.showSnackbar(
                 message = context.getString(
@@ -112,19 +94,16 @@ fun TokApp(
             val expectedSavedState = !wasSaved
             if (
                 result == SnackbarResult.ActionPerformed &&
-                (articleId in savedArticleIds) == expectedSavedState
+                (articleId in tokViewModel.uiState.value.savedArticleIds) ==
+                    expectedSavedState
             ) {
-                savedArticleIds = if (wasSaved) {
-                    savedArticleIds + articleId
-                } else {
-                    savedArticleIds - articleId
-                }
+                tokViewModel.setArticleSaved(articleId, wasSaved)
             }
         }
     }
     val readArticle: (NewsCardUiModel) -> Unit = { article ->
         if (launchOriginalArticle(context, article)) {
-            readArticleIds = readArticleIds + article.id
+            tokViewModel.markArticleRead(article.id)
         } else {
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(
@@ -185,7 +164,16 @@ fun TokApp(
     }
     LaunchedEffect(speechController.speakingArticleId) {
         speechController.speakingArticleId?.let { articleId ->
-            readArticleIds = readArticleIds + articleId
+            tokViewModel.markArticleRead(articleId)
+        }
+    }
+    LaunchedEffect(uiState.articleRefreshFailed) {
+        if (uiState.articleRefreshFailed) {
+            tokViewModel.clearArticleRefreshError()
+            snackbarHostState.showSnackbar(
+                message = context.getString(R.string.article_refresh_failed),
+                withDismissAction = true,
+            )
         }
     }
 
@@ -199,17 +187,17 @@ fun TokApp(
             ) {
                 TokTab.entries.forEach { tab ->
                     NavigationBarItem(
-                        selected = tab == selectedTab,
-                        onClick = {
-                            selectedTab = tab
-                            secondaryScreen = null
-                        },
+                        selected = tab == uiState.selectedTab,
+                        onClick = { tokViewModel.selectTab(tab) },
                         icon = {
                             BadgedBox(
                                 badge = {
-                                    if (tab == TokTab.Saved && savedArticleIds.isNotEmpty()) {
+                                    if (
+                                        tab == TokTab.Saved &&
+                                        uiState.savedArticleIds.isNotEmpty()
+                                    ) {
                                         Badge {
-                                            Text(savedArticleIds.size.toString())
+                                            Text(uiState.savedArticleIds.size.toString())
                                         }
                                     }
                                 }
@@ -232,66 +220,81 @@ fun TokApp(
             }
         },
     ) { innerPadding ->
-        when (secondaryScreen) {
+        when (uiState.secondaryScreen) {
             SecondaryScreen.History -> HistoryScreen(
-                    articles = sampleNewsArticles.filter { it.id in readArticleIds },
-                    savedArticleIds = savedArticleIds,
+                    articles = uiState.articles.filter {
+                        it.id in uiState.readArticleIds
+                    },
+                    savedArticleIds = uiState.savedArticleIds,
                     speakingArticleId = speechController.speakingArticleId,
-                    compactLayout = compactLayout,
-                    onBack = { secondaryScreen = null },
-                    onClearHistory = { readArticleIds = emptySet() },
+                    compactLayout = uiState.compactLayout,
+                    onBack = tokViewModel::closeSecondaryScreen,
+                    onClearHistory = tokViewModel::clearReadingHistory,
                     onToggleSaved = toggleSaved,
                     onToggleSpeech = toggleSpeech,
                     onShareArticle = shareArticle,
                     modifier = Modifier.padding(innerPadding),
                 )
             SecondaryScreen.Digest -> DigestScreen(
-                articles = sampleNewsArticles
-                    .filter { it.categoryResId in followedCategories }
+                articles = uiState.articles
+                    .filter { it.categoryResId in uiState.followedCategories }
                     .take(5),
-                savedArticleIds = savedArticleIds,
-                readArticleIds = readArticleIds,
+                savedArticleIds = uiState.savedArticleIds,
+                readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
                 isDigestSpeaking = speechController.isDigestSpeaking,
-                compactLayout = compactLayout,
-                onBack = { secondaryScreen = null },
+                compactLayout = uiState.compactLayout,
+                onBack = tokViewModel::closeSecondaryScreen,
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
                 onToggleDigestSpeech = {
                     toggleDigestSpeech(
-                        sampleNewsArticles
-                            .filter { it.categoryResId in followedCategories }
+                        uiState.articles
+                            .filter {
+                                it.categoryResId in uiState.followedCategories
+                            }
                             .take(5)
                     )
                 },
                 onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )
-            null -> when (selectedTab) {
+            null -> when (uiState.selectedTab) {
             TokTab.Home -> TokHomeScreen(
-                savedArticleIds = savedArticleIds,
-                readArticleIds = readArticleIds,
+                articles = uiState.articles,
+                searchQuery = uiState.searchQuery,
+                selectedCategory = uiState.selectedCategory,
+                savedArticleIds = uiState.savedArticleIds,
+                readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
-                compactLayout = compactLayout,
+                compactLayout = uiState.compactLayout,
+                isRefreshing = uiState.isRefreshing,
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
                 onShareArticle = shareArticle,
-                onOpenHistory = { secondaryScreen = SecondaryScreen.History },
-                onOpenDigest = { secondaryScreen = SecondaryScreen.Digest },
-                onCompactLayoutChange = { compactLayout = it },
+                onOpenHistory = {
+                    tokViewModel.openSecondaryScreen(SecondaryScreen.History)
+                },
+                onOpenDigest = {
+                    tokViewModel.openSecondaryScreen(SecondaryScreen.Digest)
+                },
+                onRefreshArticles = tokViewModel::refreshArticles,
+                onCompactLayoutChange = tokViewModel::setCompactLayout,
+                onSearchQueryChange = tokViewModel::setSearchQuery,
+                onCategorySelected = tokViewModel::selectCategory,
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.ForYou -> ForYouScreen(
-                articles = sampleNewsArticles.filter {
-                    it.categoryResId in followedCategories
+                articles = uiState.articles.filter {
+                    it.categoryResId in uiState.followedCategories
                 },
-                followedCategories = followedCategories,
-                savedArticleIds = savedArticleIds,
-                readArticleIds = readArticleIds,
+                followedCategories = uiState.followedCategories,
+                savedArticleIds = uiState.savedArticleIds,
+                readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
-                compactLayout = compactLayout,
+                compactLayout = uiState.compactLayout,
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
@@ -299,10 +302,12 @@ fun TokApp(
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.Saved -> SavedScreen(
-                articles = sampleNewsArticles.filter { it.id in savedArticleIds },
-                readArticleIds = readArticleIds,
+                articles = uiState.articles.filter {
+                    it.id in uiState.savedArticleIds
+                },
+                readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
-                compactLayout = compactLayout,
+                compactLayout = uiState.compactLayout,
                 onRemoveSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
@@ -311,21 +316,15 @@ fun TokApp(
             )
             TokTab.Settings -> SettingsScreen(
                 darkTheme = darkTheme,
-                compactLayout = compactLayout,
-                followedCategories = followedCategories,
-                refreshIntervalMinutes = refreshIntervalMinutes,
-                breakingNewsEnabled = breakingNewsEnabled,
-                onDarkThemeChange = onDarkThemeChange,
-                onCompactLayoutChange = { compactLayout = it },
-                onRefreshIntervalChange = { refreshIntervalMinutes = it },
-                onBreakingNewsChange = { breakingNewsEnabled = it },
-                onToggleCategory = { category ->
-                    followedCategories = if (category in followedCategories) {
-                        followedCategories - category
-                    } else {
-                        followedCategories + category
-                    }
-                },
+                compactLayout = uiState.compactLayout,
+                followedCategories = uiState.followedCategories,
+                refreshIntervalMinutes = uiState.refreshIntervalMinutes,
+                breakingNewsEnabled = uiState.breakingNewsEnabled,
+                onDarkThemeChange = tokViewModel::setDarkTheme,
+                onCompactLayoutChange = tokViewModel::setCompactLayout,
+                onRefreshIntervalChange = tokViewModel::setRefreshInterval,
+                onBreakingNewsChange = tokViewModel::setBreakingNewsEnabled,
+                onToggleCategory = tokViewModel::toggleFollowedCategory,
                 modifier = Modifier.padding(innerPadding),
             )
             }
@@ -384,7 +383,10 @@ private fun TokAppPreview() {
     NewsAgreggatorTheme(darkTheme = false) {
         TokApp(
             darkTheme = false,
-            onDarkThemeChange = {},
+            tokViewModel = TokViewModel(
+                newsRepository = SampleNewsRepository(),
+                userPreferencesRepository = InMemoryUserPreferencesRepository(),
+            ),
         )
     }
 }

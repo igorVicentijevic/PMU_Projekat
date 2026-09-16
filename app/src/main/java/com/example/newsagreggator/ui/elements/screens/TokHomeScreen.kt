@@ -19,11 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -39,34 +35,37 @@ import com.example.newsagreggator.ui.elements.composables.TrendingSection
 import com.example.newsagreggator.ui.model.NewsCardUiModel
 import com.example.newsagreggator.ui.model.sampleNewsArticles
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Composable
 fun TokHomeScreen(
+    articles: List<NewsCardUiModel>,
+    searchQuery: String,
+    selectedCategory: Int,
     savedArticleIds: Set<Int>,
     readArticleIds: Set<Int>,
     speakingArticleId: Int?,
     compactLayout: Boolean,
+    isRefreshing: Boolean,
     onToggleSaved: (Int) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     onOpenHistory: () -> Unit,
     onOpenDigest: () -> Unit,
+    onRefreshArticles: () -> Unit,
     onCompactLayoutChange: (Boolean) -> Unit,
+    onSearchQueryChange: (String) -> Unit,
+    onCategorySelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var query by rememberSaveable { mutableStateOf("") }
-    var selectedCategory by rememberSaveable { mutableStateOf(R.string.category_all) }
-    var isRefreshing by rememberSaveable { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val resources = LocalContext.current.resources
     val serbianLocale = Locale.forLanguageTag("sr-Latn-RS")
-    val normalizedQuery = query.trim().lowercase(serbianLocale)
-    val visibleArticles = sampleNewsArticles.filter { article ->
+    val normalizedQuery = searchQuery.trim().lowercase(serbianLocale)
+    val visibleArticles = articles.filter { article ->
         val matchesCategory =
             selectedCategory == R.string.category_all ||
                 selectedCategory == article.categoryResId
@@ -82,7 +81,7 @@ fun TokHomeScreen(
         drawerState = drawerState,
         selectedCategory = selectedCategory,
         onCategorySelected = { category ->
-            selectedCategory = category
+            onCategorySelected(category)
             coroutineScope.launch { drawerState.close() }
         },
         onDigestClick = {
@@ -126,8 +125,8 @@ fun TokHomeScreen(
             )
             Spacer(modifier = Modifier.height(22.dp))
             OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
+                value = searchQuery,
+                onValueChange = onSearchQueryChange,
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
@@ -158,15 +157,11 @@ fun TokHomeScreen(
                 selectedCategory = selectedCategory,
                 compactLayout = compactLayout,
                 isRefreshing = isRefreshing,
-                onCategorySelected = { selectedCategory = it },
+                onCategorySelected = onCategorySelected,
                 onCompactLayoutClick = { onCompactLayoutChange(!compactLayout) },
                 onRefreshClick = {
                     if (!isRefreshing) {
-                        coroutineScope.launch {
-                            isRefreshing = true
-                            delay(700)
-                            isRefreshing = false
-                        }
+                        onRefreshArticles()
                     }
                 },
             )
@@ -216,17 +211,24 @@ private fun TokHomeScreenPreview() {
     NewsAgreggatorTheme {
         Surface {
             TokHomeScreen(
+                articles = sampleNewsArticles,
+                searchQuery = "",
+                selectedCategory = R.string.category_all,
                 savedArticleIds = emptySet(),
                 readArticleIds = emptySet(),
                 speakingArticleId = null,
                 compactLayout = false,
+                isRefreshing = false,
                 onToggleSaved = {},
                 onReadArticle = {},
                 onToggleSpeech = {},
                 onShareArticle = {},
                 onOpenHistory = {},
                 onOpenDigest = {},
+                onRefreshArticles = {},
                 onCompactLayoutChange = {},
+                onSearchQueryChange = {},
+                onCategorySelected = {},
             )
         }
     }
