@@ -5,6 +5,8 @@ import android.util.Xml
 import com.example.newsagreggator.domain.model.Article
 import com.example.newsagreggator.domain.model.NewsCategory
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.xmlpull.v1.XmlPullParser
 import java.io.StringReader
@@ -17,10 +19,26 @@ class RtsRssNewsDataSource(
 ) : RemoteNewsDataSource {
     override suspend fun fetchArticles(): List<Article> =
         withContext(Dispatchers.IO) {
-            parseFeed(newsService.getNewsFeed())
+            coroutineScope {
+                val generalNews = async {
+                    parseFeed(newsService.getNewsFeed())
+                }
+                val sportsNews = async {
+                    parseFeed(
+                        feedXml = newsService.getSportsFeed(),
+                        forcedCategory = NewsCategory.Sport,
+                    )
+                }
+                (generalNews.await() + sportsNews.await())
+                    .distinctBy(Article::id)
+                    .sortedByDescending(Article::publishedAtEpochMillis)
+            }
         }
 
-    private fun parseFeed(feedXml: String): List<Article> {
+    private fun parseFeed(
+        feedXml: String,
+        forcedCategory: NewsCategory? = null,
+    ): List<Article> {
         StringReader(feedXml).use { reader ->
             val parser = Xml.newPullParser().apply {
                 setInput(reader)
@@ -54,7 +72,7 @@ class RtsRssNewsDataSource(
                     parser.eventType == XmlPullParser.END_TAG &&
                     parser.name.substringAfter(':') == "item"
                 ) {
-                    item?.toArticle()?.let(articles::add)
+                    item?.toArticle(forcedCategory)?.let(articles::add)
                     item = null
                 }
                 parser.next()
@@ -75,7 +93,7 @@ class RtsRssNewsDataSource(
         var guid: String = "",
         var imageUrl: String? = null,
     ) {
-        fun toArticle(): Article? {
+        fun toArticle(forcedCategory: NewsCategory?): Article? {
             val articleUrl = link.toWebUrlOrNull() ?: return null
             if (title.isBlank()) return null
 
@@ -84,7 +102,7 @@ class RtsRssNewsDataSource(
                 title = title,
                 summary = description,
                 source = "RTS",
-                category = category.toNewsCategory(),
+                category = forcedCategory ?: category.toNewsCategory(),
                 publishedAtEpochMillis = publishedAt.toEpochMillis(),
                 imageUrl = imageUrl
                     ?.normalizeRtsThumbnailUrl()
