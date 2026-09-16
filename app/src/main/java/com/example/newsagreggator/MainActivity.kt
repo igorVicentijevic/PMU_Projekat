@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.newsagreggator.data.RssNewsRepository
 import com.example.newsagreggator.data.local.RoomArticleStateRepository
 import com.example.newsagreggator.data.local.TokDatabase
+import com.example.newsagreggator.data.network.AndroidNetworkMonitor
 import com.example.newsagreggator.data.preferences.DataStoreUserPreferencesRepository
 import com.example.newsagreggator.data.remote.RtsNewsService
 import com.example.newsagreggator.data.remote.RtsRssNewsDataSource
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
                         DataStoreUserPreferencesRepository(applicationContext),
                     articleStateRepository =
                         RoomArticleStateRepository(database.articleStateDao()),
+                    networkMonitor = AndroidNetworkMonitor(applicationContext),
                 )
             }
             val tokViewModel: TokViewModel = viewModel(

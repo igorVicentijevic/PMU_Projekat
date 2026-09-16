@@ -35,10 +35,13 @@ import com.example.newsagreggator.R
 import com.example.newsagreggator.ui.theme.TokCoral
 import com.example.newsagreggator.ui.theme.TokGreen
 
+private val OfflineOrange = androidx.compose.ui.graphics.Color(0xFFD08B35)
+
 @Composable
 fun TokCategoryDrawer(
     drawerState: DrawerState,
     selectedCategory: Int,
+    isOffline: Boolean,
     onCategorySelected: (Int) -> Unit,
     onDigestClick: () -> Unit,
     onHistoryClick: () -> Unit,
@@ -142,32 +145,39 @@ fun TokCategoryDrawer(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(14.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Box(
+                    if (isOffline) {
+                        Row(
                             modifier = Modifier
-                                .size(10.dp)
-                                .clip(CircleShape)
-                                .background(TokGreen)
-                        )
-                        Column {
-                            Text(
-                                text = stringResource(R.string.drawer_offline_title),
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.bodyMedium,
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(MaterialTheme.colorScheme.surface)
+                                .padding(14.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(10.dp)
+                                    .clip(CircleShape)
+                                    .background(OfflineOrange)
                             )
-                            Text(
-                                text = stringResource(R.string.drawer_offline_subtitle),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                style = MaterialTheme.typography.labelSmall,
-                            )
+                            Column {
+                                Text(
+                                    text = stringResource(
+                                        R.string.drawer_offline_title
+                                    ),
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                                Text(
+                                    text = stringResource(
+                                        R.string.drawer_offline_subtitle
+                                    ),
+                                    color =
+                                        MaterialTheme.colorScheme.onSurfaceVariant,
+                                    style = MaterialTheme.typography.labelSmall,
+                                )
+                            }
                         }
                     }
                 }

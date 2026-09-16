@@ -13,7 +13,7 @@
     <string name="drawer_digest">Dnevni pregled</string>
     <string name="drawer_categories">KATEGORIJE</string>
     <string name="drawer_offline_title">Offline režim</string>
-    <string name="drawer_offline_subtitle">Poslednje vesti su sačuvane</string>
+    <string name="drawer_offline_subtitle">Nema internet veze; vesti ne mogu da se osveže</string>
     <string name="nav_home">Početna</string>
     <string name="nav_for_you">Za vas</string>
     <string name="nav_saved">Sačuvano</string>
@@ -85,6 +85,9 @@
     <string name="updated_now">Ažurirano upravo sada</string>
     <string name="updated_at">Ažurirano u %1$s</string>
     <string name="waiting_for_first_refresh">Čekam prvo osvežavanje</string>
+    <string name="offline_cached_news_status">Offline — prikazane su sačuvane vesti</string>
+    <string name="offline_home_title">Offline režim</string>
+    <string name="offline_home_body">Nema internet veze. Nove vesti trenutno ne mogu da se preuzmu.</string>
     <string name="category_all">Sve</string>
     <string name="category_serbia">Srbija</string>
     <string name="category_world">Svet</string>

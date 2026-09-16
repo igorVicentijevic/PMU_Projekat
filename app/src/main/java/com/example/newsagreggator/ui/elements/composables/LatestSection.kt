@@ -47,6 +47,7 @@ fun LatestSection(
     compactLayout: Boolean,
     isRefreshing: Boolean,
     lastSuccessfulRefreshEpochMillis: Long?,
+    isOffline: Boolean,
     onCategorySelected: (Int) -> Unit,
     onCompactLayoutClick: () -> Unit,
     onRefreshClick: () -> Unit,
@@ -118,7 +119,7 @@ fun LatestSection(
                 }
                 TextButton(
                     onClick = onRefreshClick,
-                    enabled = !isRefreshing,
+                    enabled = !isRefreshing && !isOffline,
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_refresh),
@@ -165,7 +166,9 @@ fun LatestSection(
                     .size(6.dp)
                     .clip(RoundedCornerShape(50))
                     .background(
-                        if (lastSuccessfulRefreshEpochMillis != null) {
+                        if (isOffline) {
+                            Color(0xFFD08B35)
+                        } else if (lastSuccessfulRefreshEpochMillis != null) {
                             Color(0xFF38A169)
                         } else {
                             MaterialTheme.colorScheme.outline
@@ -173,14 +176,18 @@ fun LatestSection(
                     )
             )
             Text(
-                text = lastSuccessfulRefreshEpochMillis?.let { timestamp ->
-                    stringResource(
-                        R.string.updated_at,
-                        android.text.format.DateFormat
-                            .getTimeFormat(context)
-                            .format(Date(timestamp)),
-                    )
-                } ?: stringResource(R.string.waiting_for_first_refresh),
+                text = if (isOffline) {
+                    stringResource(R.string.offline_cached_news_status)
+                } else {
+                    lastSuccessfulRefreshEpochMillis?.let { timestamp ->
+                        stringResource(
+                            R.string.updated_at,
+                            android.text.format.DateFormat
+                                .getTimeFormat(context)
+                                .format(Date(timestamp)),
+                        )
+                    } ?: stringResource(R.string.waiting_for_first_refresh)
+                },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelSmall,
             )

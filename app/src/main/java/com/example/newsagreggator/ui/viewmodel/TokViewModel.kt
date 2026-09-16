@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsagreggator.data.NewsRepository
 import com.example.newsagreggator.data.local.ArticleStateRepository
+import com.example.newsagreggator.data.network.NetworkMonitor
 import com.example.newsagreggator.data.preferences.UserPreferencesRepository
 import com.example.newsagreggator.ui.state.SecondaryScreen
 import com.example.newsagreggator.ui.state.TokTab
@@ -23,6 +24,7 @@ class TokViewModel(
     private val newsRepository: NewsRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val articleStateRepository: ArticleStateRepository,
+    private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TokUiState())
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
@@ -65,6 +67,17 @@ class TokViewModel(
             }
         }
         viewModelScope.launch {
+            networkMonitor.isOnline.collect { isOnline ->
+                val wasOnline = _uiState.value.hasInternetConnection
+                _uiState.update { currentState ->
+                    currentState.copy(hasInternetConnection = isOnline)
+                }
+                if (isOnline && !wasOnline) {
+                    refreshArticles()
+                }
+            }
+        }
+        viewModelScope.launch {
             userPreferencesRepository.preferences
                 .map { preferences ->
                     preferences.refreshIntervalMinutes.coerceAtLeast(
@@ -92,7 +105,12 @@ class TokViewModel(
     }
 
     fun refreshArticles() {
-        if (_uiState.value.isRefreshing) return
+        if (
+            _uiState.value.isRefreshing ||
+            !_uiState.value.hasInternetConnection
+        ) {
+            return
+        }
 
         _uiState.update { currentState ->
             currentState.copy(

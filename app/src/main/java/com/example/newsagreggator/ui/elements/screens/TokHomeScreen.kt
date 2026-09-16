@@ -1,13 +1,19 @@
 package com.example.newsagreggator.ui.elements.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -20,9 +26,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
@@ -49,6 +59,7 @@ fun TokHomeScreen(
     compactLayout: Boolean,
     isRefreshing: Boolean,
     lastSuccessfulRefreshEpochMillis: Long?,
+    isOffline: Boolean,
     onToggleSaved: (String) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
@@ -80,6 +91,7 @@ fun TokHomeScreen(
     TokCategoryDrawer(
         drawerState = drawerState,
         selectedCategory = selectedCategory,
+        isOffline = isOffline,
         onCategorySelected = { category ->
             onCategorySelected(category)
             coroutineScope.launch { drawerState.close() }
@@ -123,6 +135,10 @@ fun TokHomeScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
             )
+            if (isOffline) {
+                Spacer(modifier = Modifier.height(16.dp))
+                OfflineModeCard()
+            }
             Spacer(modifier = Modifier.height(22.dp))
             OutlinedTextField(
                 value = searchQuery,
@@ -162,6 +178,7 @@ fun TokHomeScreen(
                 isRefreshing = isRefreshing,
                 lastSuccessfulRefreshEpochMillis =
                     lastSuccessfulRefreshEpochMillis,
+                isOffline = isOffline,
                 onCategorySelected = onCategorySelected,
                 onCompactLayoutClick = { onCompactLayoutChange(!compactLayout) },
                 onRefreshClick = {
@@ -210,6 +227,45 @@ fun TokHomeScreen(
     }
 }
 
+@Composable
+private fun OfflineModeCard(
+    modifier: Modifier = Modifier,
+) {
+    val offlineOrange = Color(0xFFD08B35)
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = offlineOrange.copy(alpha = 0.1f),
+        border = BorderStroke(1.dp, offlineOrange.copy(alpha = 0.35f)),
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .clip(CircleShape)
+                    .background(offlineOrange)
+            )
+            Column {
+                Text(
+                    text = stringResource(R.string.offline_home_title),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = stringResource(R.string.offline_home_body),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun TokHomeScreenPreview() {
@@ -227,6 +283,7 @@ private fun TokHomeScreenPreview() {
                 compactLayout = false,
                 isRefreshing = false,
                 lastSuccessfulRefreshEpochMillis = null,
+                isOffline = false,
                 onToggleSaved = {},
                 onReadArticle = {},
                 onToggleSpeech = {},

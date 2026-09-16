@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.newsagreggator.R
 import com.example.newsagreggator.data.SampleNewsRepository
 import com.example.newsagreggator.data.local.InMemoryArticleStateRepository
+import com.example.newsagreggator.data.network.InMemoryNetworkMonitor
 import com.example.newsagreggator.data.preferences.InMemoryUserPreferencesRepository
 import com.example.newsagreggator.speech.ArticleSpeechController
 import com.example.newsagreggator.speech.SpeechArticle
@@ -273,6 +274,7 @@ fun TokApp(
                 isRefreshing = uiState.isRefreshing,
                 lastSuccessfulRefreshEpochMillis =
                     uiState.lastSuccessfulRefreshEpochMillis,
+                isOffline = !uiState.hasInternetConnection,
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
@@ -389,6 +391,7 @@ private fun TokAppPreview() {
                 newsRepository = SampleNewsRepository(),
                 userPreferencesRepository = InMemoryUserPreferencesRepository(),
                 articleStateRepository = InMemoryArticleStateRepository(),
+                networkMonitor = InMemoryNetworkMonitor(),
             ),
         )
     }
