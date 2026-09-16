@@ -28,7 +28,7 @@ data class TokUiState(
     val selectedCategory: Int = R.string.category_all,
     val selectedTab: TokTab = TokTab.Home,
     val secondaryScreen: SecondaryScreen? = null,
-    val savedArticleIds: Set<Int> = emptySet(),
-    val readArticleIds: Set<Int> = emptySet(),
+    val savedArticleIds: Set<String> = emptySet(),
+    val readArticleIds: Set<String> = emptySet(),
     val followedCategories: Set<Int> = defaultFollowedCategories,
 )

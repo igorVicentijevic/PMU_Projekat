@@ -39,8 +39,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
+import com.example.newsagreggator.data.createSampleNewsArticles
 import com.example.newsagreggator.ui.model.NewsCardUiModel
-import com.example.newsagreggator.ui.model.sampleNewsArticles
+import com.example.newsagreggator.ui.model.toNewsCardUiModel
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 
 @Composable
@@ -117,14 +118,14 @@ private fun StandardCardContent(
             ArticleMetadata(article)
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(article.titleResId),
+                text = article.title,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(article.summaryResId),
+                text = article.summary,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
             )
@@ -179,7 +180,7 @@ private fun CompactCardContent(
                     ArticleMetadata(article)
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = stringResource(article.titleResId),
+                        text = article.title,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyMedium,
@@ -270,8 +271,8 @@ private fun ArticleImage(
 ) {
     Box(modifier = modifier) {
         Image(
-            painter = painterResource(article.imageResId),
-            contentDescription = stringResource(article.titleResId),
+            painter = painterResource(article.placeholderImageResId),
+            contentDescription = article.title,
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize(),
         )
@@ -395,7 +396,7 @@ private fun ArticleMetadata(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = stringResource(article.sourceResId),
+            text = article.source,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.labelSmall,
@@ -406,7 +407,7 @@ private fun ArticleMetadata(
             style = MaterialTheme.typography.labelSmall,
         )
         Text(
-            text = stringResource(article.timeResId),
+            text = article.time,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.labelSmall,
         )
@@ -419,7 +420,7 @@ private fun StandardNewsCardPreview() {
     NewsAgreggatorTheme {
         Surface(modifier = Modifier.padding(16.dp)) {
             NewsArticleCard(
-                article = sampleNewsArticles.first(),
+                article = createSampleNewsArticles().first().toNewsCardUiModel(),
                 compact = false,
                 isSaved = false,
                 isRead = false,
@@ -439,7 +440,7 @@ private fun CompactNewsCardPreview() {
     NewsAgreggatorTheme {
         Surface(modifier = Modifier.padding(16.dp)) {
             NewsArticleCard(
-                article = sampleNewsArticles.first(),
+                article = createSampleNewsArticles().first().toNewsCardUiModel(),
                 compact = true,
                 isSaved = true,
                 isRead = true,

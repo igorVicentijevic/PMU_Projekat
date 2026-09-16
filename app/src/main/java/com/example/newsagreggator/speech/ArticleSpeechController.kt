@@ -19,7 +19,7 @@ enum class SpeechActionResult {
 }
 
 data class SpeechArticle(
-    val articleId: Int,
+    val articleId: String,
     val text: String,
 )
 
@@ -29,9 +29,9 @@ class ArticleSpeechController(context: Context) : TextToSpeech.OnInitListener {
     private var ready = false
     private var unavailable = false
     private val activeUtteranceIds = mutableSetOf<String>()
-    private val articleIdsByUtterance = mutableMapOf<String, Int>()
+    private val articleIdsByUtterance = mutableMapOf<String, String>()
 
-    var speakingArticleId by mutableStateOf<Int?>(null)
+    var speakingArticleId by mutableStateOf<String?>(null)
         private set
 
     var isDigestSpeaking by mutableStateOf(false)
@@ -81,7 +81,7 @@ class ArticleSpeechController(context: Context) : TextToSpeech.OnInitListener {
     }
 
     fun toggleArticle(
-        articleId: Int,
+        articleId: String,
         text: String,
     ): SpeechActionResult {
         if (unavailable) return SpeechActionResult.Unavailable

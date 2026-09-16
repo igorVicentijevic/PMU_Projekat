@@ -25,20 +25,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
+import com.example.newsagreggator.data.createSampleNewsArticles
 import com.example.newsagreggator.ui.elements.composables.NewsArticleCard
 import com.example.newsagreggator.ui.model.NewsCardUiModel
-import com.example.newsagreggator.ui.model.sampleNewsArticles
+import com.example.newsagreggator.ui.model.toNewsCardUiModel
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 
 @Composable
 fun ForYouScreen(
     articles: List<NewsCardUiModel>,
     followedCategories: Set<Int>,
-    savedArticleIds: Set<Int>,
-    readArticleIds: Set<Int>,
-    speakingArticleId: Int?,
+    savedArticleIds: Set<String>,
+    readArticleIds: Set<String>,
+    speakingArticleId: String?,
     compactLayout: Boolean,
-    onToggleSaved: (Int) -> Unit,
+    onToggleSaved: (String) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
@@ -156,15 +157,17 @@ private fun ForYouScreenContentPreview() {
     NewsAgreggatorTheme {
         Surface {
             ForYouScreen(
-                articles = sampleNewsArticles,
+                articles = createSampleNewsArticles().map {
+                    it.toNewsCardUiModel()
+                },
                 followedCategories = setOf(
                     R.string.category_serbia,
                     R.string.category_technology,
                     R.string.category_world,
                 ),
-                savedArticleIds = setOf(1),
-                readArticleIds = setOf(2),
-                speakingArticleId = 1,
+                savedArticleIds = setOf("1"),
+                readArticleIds = setOf("2"),
+                speakingArticleId = "1",
                 compactLayout = true,
                 onToggleSaved = {},
                 onReadArticle = {},

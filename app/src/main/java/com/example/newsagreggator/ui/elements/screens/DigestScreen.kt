@@ -31,22 +31,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
+import com.example.newsagreggator.data.createSampleNewsArticles
 import com.example.newsagreggator.ui.elements.composables.NewsArticleCard
 import com.example.newsagreggator.ui.model.NewsCardUiModel
-import com.example.newsagreggator.ui.model.sampleNewsArticles
+import com.example.newsagreggator.ui.model.toNewsCardUiModel
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import com.example.newsagreggator.ui.theme.TokCoral
 
 @Composable
 fun DigestScreen(
     articles: List<NewsCardUiModel>,
-    savedArticleIds: Set<Int>,
-    readArticleIds: Set<Int>,
-    speakingArticleId: Int?,
+    savedArticleIds: Set<String>,
+    readArticleIds: Set<String>,
+    speakingArticleId: String?,
     isDigestSpeaking: Boolean,
     compactLayout: Boolean,
     onBack: () -> Unit,
-    onToggleSaved: (Int) -> Unit,
+    onToggleSaved: (String) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
     onToggleDigestSpeech: () -> Unit,
@@ -246,10 +247,12 @@ private fun DigestContentPreview() {
     NewsAgreggatorTheme {
         Surface {
             DigestScreen(
-                articles = sampleNewsArticles,
-                savedArticleIds = setOf(1),
-                readArticleIds = setOf(2),
-                speakingArticleId = 1,
+                articles = createSampleNewsArticles().map {
+                    it.toNewsCardUiModel()
+                },
+                savedArticleIds = setOf("1"),
+                readArticleIds = setOf("2"),
+                speakingArticleId = "1",
                 isDigestSpeaking = true,
                 compactLayout = true,
                 onBack = {},

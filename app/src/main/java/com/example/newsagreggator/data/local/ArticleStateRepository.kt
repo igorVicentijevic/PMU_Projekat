@@ -6,16 +6,16 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 data class ArticleState(
-    val savedArticleIds: Set<Int> = emptySet(),
-    val readArticleIds: Set<Int> = emptySet(),
+    val savedArticleIds: Set<String> = emptySet(),
+    val readArticleIds: Set<String> = emptySet(),
 )
 
 interface ArticleStateRepository {
     val articleState: Flow<ArticleState>
 
-    suspend fun setArticleSaved(articleId: Int, saved: Boolean)
+    suspend fun setArticleSaved(articleId: String, saved: Boolean)
 
-    suspend fun markArticleRead(articleId: Int)
+    suspend fun markArticleRead(articleId: String)
 
     suspend fun clearReadingHistory()
 }
@@ -35,11 +35,11 @@ class RoomArticleStateRepository(
             )
         }
 
-    override suspend fun setArticleSaved(articleId: Int, saved: Boolean) {
+    override suspend fun setArticleSaved(articleId: String, saved: Boolean) {
         articleStateDao.setArticleSaved(articleId, saved)
     }
 
-    override suspend fun markArticleRead(articleId: Int) {
+    override suspend fun markArticleRead(articleId: String) {
         articleStateDao.markArticleRead(articleId)
     }
 
@@ -53,7 +53,7 @@ class InMemoryArticleStateRepository : ArticleStateRepository {
 
     override val articleState: Flow<ArticleState> = state
 
-    override suspend fun setArticleSaved(articleId: Int, saved: Boolean) {
+    override suspend fun setArticleSaved(articleId: String, saved: Boolean) {
         state.update { currentState ->
             currentState.copy(
                 savedArticleIds = if (saved) {
@@ -65,7 +65,7 @@ class InMemoryArticleStateRepository : ArticleStateRepository {
         }
     }
 
-    override suspend fun markArticleRead(articleId: Int) {
+    override suspend fun markArticleRead(articleId: String) {
         state.update { currentState ->
             currentState.copy(
                 readArticleIds = currentState.readArticleIds + articleId

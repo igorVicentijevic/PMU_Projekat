@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "article_state")
 data class ArticleStateEntity(
-    @PrimaryKey val articleId: Int,
+    @PrimaryKey val articleId: String,
     val isSaved: Boolean = false,
     val isRead: Boolean = false,
 )

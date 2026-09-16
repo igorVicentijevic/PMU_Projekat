@@ -8,6 +8,7 @@ import com.example.newsagreggator.data.preferences.UserPreferencesRepository
 import com.example.newsagreggator.ui.state.SecondaryScreen
 import com.example.newsagreggator.ui.state.TokTab
 import com.example.newsagreggator.ui.state.TokUiState
+import com.example.newsagreggator.ui.model.toNewsCardUiModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +25,11 @@ class TokViewModel(
     private val articleStateRepository: ArticleStateRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
-        TokUiState(articles = newsRepository.getArticles())
+        TokUiState(
+            articles = newsRepository.getArticles().map {
+                it.toNewsCardUiModel()
+            }
+        )
     )
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
 
@@ -92,7 +97,11 @@ class TokViewModel(
                 newsRepository.refreshArticles().fold(
                     onSuccess = { articles ->
                         _uiState.update { currentState ->
-                            currentState.copy(articles = articles)
+                            currentState.copy(
+                                articles = articles.map {
+                                    it.toNewsCardUiModel()
+                                }
+                            )
                         }
                     },
                     onFailure = {
@@ -176,7 +185,7 @@ class TokViewModel(
         }
     }
 
-    fun setArticleSaved(articleId: Int, saved: Boolean) {
+    fun setArticleSaved(articleId: String, saved: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(
                 savedArticleIds = if (saved) {
@@ -191,7 +200,7 @@ class TokViewModel(
         }
     }
 
-    fun markArticleRead(articleId: Int) {
+    fun markArticleRead(articleId: String) {
         _uiState.update { currentState ->
             currentState.copy(
                 readArticleIds = currentState.readArticleIds + articleId

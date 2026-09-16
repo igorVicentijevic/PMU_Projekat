@@ -34,10 +34,10 @@ import com.example.newsagreggator.ui.model.NewsCardUiModel
 @Composable
 fun SavedScreen(
     articles: List<NewsCardUiModel>,
-    readArticleIds: Set<Int>,
-    speakingArticleId: Int?,
+    readArticleIds: Set<String>,
+    speakingArticleId: String?,
     compactLayout: Boolean,
-    onRemoveSaved: (Int) -> Unit,
+    onRemoveSaved: (String) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,

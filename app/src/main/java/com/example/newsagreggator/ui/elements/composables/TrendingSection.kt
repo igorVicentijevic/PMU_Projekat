@@ -1,7 +1,5 @@
 package com.example.newsagreggator.ui.elements.composables
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,31 +31,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
-
-private data class TrendingArticle(
-    @DrawableRes val imageResId: Int,
-    @StringRes val categoryResId: Int,
-    @StringRes val timeResId: Int,
-    @StringRes val titleResId: Int,
-)
-
-private val trendingArticles = listOf(
-    TrendingArticle(
-        imageResId = R.drawable.news_park,
-        categoryResId = R.string.news_category_serbia,
-        timeResId = R.string.news_time_12_minutes,
-        titleResId = R.string.news_park_title,
-    ),
-    TrendingArticle(
-        imageResId = R.drawable.news_technology,
-        categoryResId = R.string.news_category_technology,
-        timeResId = R.string.news_time_28_minutes,
-        titleResId = R.string.news_technology_title,
-    ),
-)
+import com.example.newsagreggator.ui.model.NewsCardUiModel
 
 @Composable
 fun TrendingSection(
+    articles: List<NewsCardUiModel>,
     onDigestClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -90,7 +68,10 @@ fun TrendingSection(
         }
         Spacer(modifier = Modifier.height(12.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(trendingArticles) { article ->
+            items(
+                items = articles.take(2),
+                key = NewsCardUiModel::id,
+            ) { article ->
                 TrendingNewsCard(article)
             }
         }
@@ -98,9 +79,7 @@ fun TrendingSection(
 }
 
 @Composable
-private fun TrendingNewsCard(article: TrendingArticle) {
-    val title = stringResource(article.titleResId)
-
+private fun TrendingNewsCard(article: NewsCardUiModel) {
     Box(
         modifier = Modifier
             .width(218.dp)
@@ -108,8 +87,8 @@ private fun TrendingNewsCard(article: TrendingArticle) {
             .clip(RoundedCornerShape(18.dp))
     ) {
         Image(
-            painter = painterResource(article.imageResId),
-            contentDescription = title,
+            painter = painterResource(article.placeholderImageResId),
+            contentDescription = article.title,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
         )
@@ -129,7 +108,7 @@ private fun TrendingNewsCard(article: TrendingArticle) {
         ) {
             Text(
                 text = "${stringResource(article.categoryResId)} · ${
-                    stringResource(article.timeResId)
+                    article.time
                 }",
                 color = Color(0xFFD7E7DF),
                 style = MaterialTheme.typography.labelSmall,
@@ -137,7 +116,7 @@ private fun TrendingNewsCard(article: TrendingArticle) {
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = title,
+                text = article.title,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyMedium,

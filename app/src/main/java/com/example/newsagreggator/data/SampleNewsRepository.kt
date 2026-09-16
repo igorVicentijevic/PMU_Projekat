@@ -1,14 +1,16 @@
 package com.example.newsagreggator.data
 
-import com.example.newsagreggator.ui.model.NewsCardUiModel
-import com.example.newsagreggator.ui.model.sampleNewsArticles
+import com.example.newsagreggator.domain.model.Article
 import kotlinx.coroutines.delay
 
 class SampleNewsRepository : NewsRepository {
-    override fun getArticles(): List<NewsCardUiModel> = sampleNewsArticles
+    private var articles = createSampleNewsArticles()
 
-    override suspend fun refreshArticles(): Result<List<NewsCardUiModel>> {
+    override fun getArticles(): List<Article> = articles
+
+    override suspend fun refreshArticles(): Result<List<Article>> {
         delay(700)
-        return Result.success(sampleNewsArticles)
+        articles = createSampleNewsArticles()
+        return Result.success(articles)
     }
 }

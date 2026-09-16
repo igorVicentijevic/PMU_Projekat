@@ -13,7 +13,7 @@ abstract class ArticleStateDao {
 
     @Query("SELECT * FROM article_state WHERE articleId = :articleId")
     protected abstract suspend fun getArticleState(
-        articleId: Int,
+        articleId: String,
     ): ArticleStateEntity?
 
     @Upsert
@@ -25,14 +25,14 @@ abstract class ArticleStateDao {
     abstract suspend fun clearReadingHistory()
 
     @Transaction
-    open suspend fun setArticleSaved(articleId: Int, saved: Boolean) {
+    open suspend fun setArticleSaved(articleId: String, saved: Boolean) {
         val articleState = getArticleState(articleId)
             ?: ArticleStateEntity(articleId = articleId)
         upsertArticleState(articleState.copy(isSaved = saved))
     }
 
     @Transaction
-    open suspend fun markArticleRead(articleId: Int) {
+    open suspend fun markArticleRead(articleId: String) {
         val articleState = getArticleState(articleId)
             ?: ArticleStateEntity(articleId = articleId)
         upsertArticleState(articleState.copy(isRead = true))

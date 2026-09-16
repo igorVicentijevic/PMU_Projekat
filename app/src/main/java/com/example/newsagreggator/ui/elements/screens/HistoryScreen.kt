@@ -31,20 +31,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
+import com.example.newsagreggator.data.createSampleNewsArticles
 import com.example.newsagreggator.ui.elements.composables.NewsArticleCard
 import com.example.newsagreggator.ui.model.NewsCardUiModel
-import com.example.newsagreggator.ui.model.sampleNewsArticles
+import com.example.newsagreggator.ui.model.toNewsCardUiModel
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 
 @Composable
 fun HistoryScreen(
     articles: List<NewsCardUiModel>,
-    savedArticleIds: Set<Int>,
-    speakingArticleId: Int?,
+    savedArticleIds: Set<String>,
+    speakingArticleId: String?,
     compactLayout: Boolean,
     onBack: () -> Unit,
     onClearHistory: () -> Unit,
-    onToggleSaved: (Int) -> Unit,
+    onToggleSaved: (String) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
@@ -184,9 +185,11 @@ private fun HistoryContentPreview() {
     NewsAgreggatorTheme {
         Surface {
             HistoryScreen(
-                articles = sampleNewsArticles.take(2),
-                savedArticleIds = setOf(1),
-                speakingArticleId = 1,
+                articles = createSampleNewsArticles()
+                    .take(2)
+                    .map { it.toNewsCardUiModel() },
+                savedArticleIds = setOf("1"),
+                speakingArticleId = "1",
                 compactLayout = true,
                 onBack = {},
                 onClearHistory = {},

@@ -21,7 +21,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +32,8 @@ import com.example.newsagreggator.ui.elements.composables.TokTopBar
 import com.example.newsagreggator.ui.elements.composables.TokCategoryDrawer
 import com.example.newsagreggator.ui.elements.composables.TrendingSection
 import com.example.newsagreggator.ui.model.NewsCardUiModel
-import com.example.newsagreggator.ui.model.sampleNewsArticles
+import com.example.newsagreggator.data.createSampleNewsArticles
+import com.example.newsagreggator.ui.model.toNewsCardUiModel
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -43,12 +43,12 @@ fun TokHomeScreen(
     articles: List<NewsCardUiModel>,
     searchQuery: String,
     selectedCategory: Int,
-    savedArticleIds: Set<Int>,
-    readArticleIds: Set<Int>,
-    speakingArticleId: Int?,
+    savedArticleIds: Set<String>,
+    readArticleIds: Set<String>,
+    speakingArticleId: String?,
     compactLayout: Boolean,
     isRefreshing: Boolean,
-    onToggleSaved: (Int) -> Unit,
+    onToggleSaved: (String) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
@@ -62,7 +62,6 @@ fun TokHomeScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val resources = LocalContext.current.resources
     val serbianLocale = Locale.forLanguageTag("sr-Latn-RS")
     val normalizedQuery = searchQuery.trim().lowercase(serbianLocale)
     val visibleArticles = articles.filter { article ->
@@ -71,8 +70,8 @@ fun TokHomeScreen(
                 selectedCategory == article.categoryResId
         val matchesQuery =
             normalizedQuery.isEmpty() ||
-                listOf(article.titleResId, article.summaryResId, article.sourceResId).any {
-                    resources.getString(it).lowercase(serbianLocale).contains(normalizedQuery)
+                listOf(article.title, article.summary, article.source).any {
+                    it.lowercase(serbianLocale).contains(normalizedQuery)
                 }
         matchesCategory && matchesQuery
     }
@@ -151,7 +150,10 @@ fun TokHomeScreen(
                 ),
             )
             Spacer(modifier = Modifier.height(26.dp))
-            TrendingSection(onDigestClick = onOpenDigest)
+            TrendingSection(
+                articles = articles,
+                onDigestClick = onOpenDigest,
+            )
             Spacer(modifier = Modifier.height(26.dp))
             LatestSection(
                 selectedCategory = selectedCategory,
@@ -211,7 +213,9 @@ private fun TokHomeScreenPreview() {
     NewsAgreggatorTheme {
         Surface {
             TokHomeScreen(
-                articles = sampleNewsArticles,
+                articles = createSampleNewsArticles().map {
+                    it.toNewsCardUiModel()
+                },
                 searchQuery = "",
                 selectedCategory = R.string.category_all,
                 savedArticleIds = emptySet(),

@@ -77,7 +77,7 @@ fun TokApp(
     val speechController = remember(context) { ArticleSpeechController(context) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    val toggleSaved: (Int) -> Unit = { articleId ->
+    val toggleSaved: (String) -> Unit = { articleId ->
         val wasSaved = articleId in uiState.savedArticleIds
         tokViewModel.setArticleSaved(articleId, !wasSaved)
         coroutineScope.launch {
@@ -131,7 +131,7 @@ fun TokApp(
         }
     }
     val toggleSpeech: (NewsCardUiModel) -> Unit = { article ->
-        val speechText = articleSpeechText(context, article)
+        val speechText = articleSpeechText(article)
         val speechResult = speechController.toggleArticle(article.id, speechText)
         when (speechResult) {
             SpeechActionResult.Started,
@@ -148,7 +148,7 @@ fun TokApp(
             articles.map { article ->
                 SpeechArticle(
                     articleId = article.id,
-                    text = articleSpeechText(context, article),
+                    text = articleSpeechText(article),
                 )
             }
         )
@@ -349,14 +349,13 @@ private fun launchOriginalArticle(
 }
 
 private fun articleSpeechText(
-    context: Context,
     article: NewsCardUiModel,
 ): String = buildString {
-    append(context.getString(article.titleResId))
+    append(article.title)
     append(". ")
-    append(context.getString(article.summaryResId))
+    append(article.summary)
     append(". ")
-    append(context.getString(article.sourceResId))
+    append(article.source)
 }
 
 private fun launchShareChooser(
@@ -367,7 +366,7 @@ private fun launchShareChooser(
         type = "text/plain"
         putExtra(
             Intent.EXTRA_TEXT,
-            "${context.getString(article.titleResId)}\n${article.url}",
+            "${article.title}\n${article.url}",
         )
     }
     context.startActivity(

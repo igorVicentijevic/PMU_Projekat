@@ -1,9 +1,9 @@
 package com.example.newsagreggator.data
 
-import com.example.newsagreggator.ui.model.NewsCardUiModel
+import com.example.newsagreggator.domain.model.Article
 
 interface NewsRepository {
-    fun getArticles(): List<NewsCardUiModel>
+    fun getArticles(): List<Article>
 
-    suspend fun refreshArticles(): Result<List<NewsCardUiModel>>
+    suspend fun refreshArticles(): Result<List<Article>>
 }
