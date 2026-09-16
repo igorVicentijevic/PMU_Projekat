@@ -8,9 +8,13 @@ import com.example.newsagreggator.data.preferences.UserPreferencesRepository
 import com.example.newsagreggator.ui.state.SecondaryScreen
 import com.example.newsagreggator.ui.state.TokTab
 import com.example.newsagreggator.ui.state.TokUiState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -47,6 +51,21 @@ class TokViewModel(
                     )
                 }
             }
+        }
+        viewModelScope.launch {
+            userPreferencesRepository.preferences
+                .map { preferences ->
+                    preferences.refreshIntervalMinutes.coerceAtLeast(
+                        MIN_REFRESH_INTERVAL_MINUTES
+                    )
+                }
+                .distinctUntilChanged()
+                .collectLatest { refreshIntervalMinutes ->
+                    while (true) {
+                        delay(refreshIntervalMinutes.toLong() * MILLIS_PER_MINUTE)
+                        refreshArticles()
+                    }
+                }
         }
     }
 
@@ -106,11 +125,12 @@ class TokViewModel(
     }
 
     fun setRefreshInterval(minutes: Int) {
+        val validInterval = minutes.coerceAtLeast(MIN_REFRESH_INTERVAL_MINUTES)
         _uiState.update { currentState ->
-            currentState.copy(refreshIntervalMinutes = minutes)
+            currentState.copy(refreshIntervalMinutes = validInterval)
         }
         viewModelScope.launch {
-            userPreferencesRepository.setRefreshInterval(minutes)
+            userPreferencesRepository.setRefreshInterval(validInterval)
         }
     }
 
@@ -205,5 +225,10 @@ class TokViewModel(
         viewModelScope.launch {
             userPreferencesRepository.setFollowedCategories(followedCategories)
         }
+    }
+
+    private companion object {
+        const val MIN_REFRESH_INTERVAL_MINUTES = 1
+        const val MILLIS_PER_MINUTE = 60_000L
     }
 }
