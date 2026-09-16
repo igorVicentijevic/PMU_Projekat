@@ -1,7 +1,6 @@
 package com.example.newsagreggator.ui.elements.composables
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,6 +43,7 @@ import com.example.newsagreggator.data.createSampleNewsArticles
 import com.example.newsagreggator.ui.model.NewsCardUiModel
 import com.example.newsagreggator.ui.model.toNewsCardUiModel
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
+import coil3.compose.AsyncImage
 
 @Composable
 fun NewsArticleCard(
@@ -270,9 +271,12 @@ private fun ArticleImage(
     modifier: Modifier,
 ) {
     Box(modifier = modifier) {
-        Image(
-            painter = painterResource(article.placeholderImageResId),
+        AsyncImage(
+            model = article.imageUrl,
             contentDescription = article.title,
+            placeholder = painterResource(article.placeholderImageResId),
+            error = painterResource(article.placeholderImageResId),
+            fallback = painterResource(article.placeholderImageResId),
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize(),
         )
@@ -305,6 +309,7 @@ private fun ArticleImage(
         }
     }
 }
+
 
 @Composable
 private fun ArticleActions(

@@ -1,6 +1,5 @@
 package com.example.newsagreggator.ui.elements.composables
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.example.newsagreggator.R
 import com.example.newsagreggator.ui.model.NewsCardUiModel
 
@@ -86,9 +86,12 @@ private fun TrendingNewsCard(article: NewsCardUiModel) {
             .height(132.dp)
             .clip(RoundedCornerShape(18.dp))
     ) {
-        Image(
-            painter = painterResource(article.placeholderImageResId),
+        AsyncImage(
+            model = article.imageUrl,
             contentDescription = article.title,
+            placeholder = painterResource(article.placeholderImageResId),
+            error = painterResource(article.placeholderImageResId),
+            fallback = painterResource(article.placeholderImageResId),
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
         )

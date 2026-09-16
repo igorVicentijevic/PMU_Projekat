@@ -86,7 +86,9 @@ class RtsRssNewsDataSource(
                 source = "RTS",
                 category = category.toNewsCategory(),
                 publishedAtEpochMillis = publishedAt.toEpochMillis(),
-                imageUrl = imageUrl?.toWebUrlOrNull(),
+                imageUrl = imageUrl
+                    ?.normalizeRtsThumbnailUrl()
+                    ?.toWebUrlOrNull(),
                 articleUrl = articleUrl,
             )
         }
@@ -114,6 +116,23 @@ private fun String.toWebUrlOrNull(): String? =
                 (uri.scheme == "https" || uri.scheme == "http")
         }?.toString()
     }.getOrNull()
+
+private fun String.normalizeRtsThumbnailUrl(): String {
+    val normalizedPath = replace(
+        oldValue = "/upload/thumbnail//",
+        newValue = "/upload//",
+    )
+    val lastPathSeparator = normalizedPath.lastIndexOf('/')
+    if (lastPathSeparator <= 0) return normalizedPath
+
+    val fileName = normalizedPath.substring(lastPathSeparator + 1)
+    val parentPath = normalizedPath.substring(0, lastPathSeparator)
+    return if (parentPath.endsWith("/$fileName")) {
+        parentPath
+    } else {
+        normalizedPath
+    }
+}
 
 private fun String.toNewsCategory(): NewsCategory {
     val normalized = lowercase(Locale.forLanguageTag("sr"))
