@@ -1,0 +1,234 @@
+[33mcommit 28e37e2444eff3592d1b6a2ee0d428ea492219b4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Merge: 285b3a0 a26c6d4
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Wed Sep 16 14:21:20 2026 +0200
+
+    Merge branch 'viewmodel-integration'
+
+[33mcommit a26c6d48bb62790a3f7cc674b10c48a14159627a[m[33m ([m[1;32mviewmodel-integration[m[33m)[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Wed Sep 16 13:52:16 2026 +0200
+
+    Added preferences
+
+[33mcommit 4146c9450553c9232809880f048da16deb865e17[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Wed Sep 16 13:37:21 2026 +0200
+
+    Moved search query and selected category into viewmodel
+
+[33mcommit 0b4e9336235f61de790d1fdfb750768ae1c1393a[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 20:30:41 2026 +0200
+
+    Added TokViewModelFactory
+
+[33mcommit fcada5561126a9d4b092775889c22419109656ee[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 20:27:12 2026 +0200
+
+    Added isRefreshing
+
+[33mcommit 96fa473e2ab04209b558790ae2f00e13dbfdd551[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 20:23:04 2026 +0200
+
+    Added refreshArticles()
+
+[33mcommit cd527b79c22d5890de11e497b4d84910fa71086f[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 20:19:22 2026 +0200
+
+    Added NewsRepository
+
+[33mcommit 4a80e5e028d55ccdf2ca19e8ef220e6e544ee671[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 20:10:26 2026 +0200
+
+    Added articles
+
+[33mcommit 589243ab8b731762838197ae94b175b1350e7319[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 20:03:08 2026 +0200
+
+    Added lifecycle-runtime-compose
+
+[33mcommit 62e5fe97b3fb88f1e27f2a2109f8688b3c57e3db[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 19:44:46 2026 +0200
+
+    Added darkThemeOverride
+
+[33mcommit 915fdec2173eb7b86ca574ea402e0130e999f235[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 19:42:00 2026 +0200
+
+    Added selectTab
+
+[33mcommit 474c2abfb2e0ac0ebcb458f3e1d56a3cf83302d9[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 19:38:07 2026 +0200
+
+    Added secondaryScreen
+
+[33mcommit b13ab2b824d5176e314d891becfafb5424db90e1[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 19:30:23 2026 +0200
+
+    Added breakingNewsEnabled
+
+[33mcommit f8c5a49fa5eceb60a0185cb3583fc735aca5f182[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 19:27:03 2026 +0200
+
+    Added refresh interval
+
+[33mcommit 2a87e87d67e1e056184cc62add295d88043e93fd[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 19:22:21 2026 +0200
+
+    Added followedCategories
+
+[33mcommit 02ea48249f264f8b0122d96795cdacd6e2ba236f[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 16:03:35 2026 +0200
+
+    Added markArticleRead() and clearReadingHistory()
+
+[33mcommit e3f1c9bcc76532063c56542d5b82cd471b59ec37[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 15:57:32 2026 +0200
+
+    Added setArticleSaved
+
+[33mcommit 285b3a016cf5a1fc414e6853a20608064eb29f3a[m[33m ([m[1;32mui-hotfix[m[33m)[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 15:41:21 2026 +0200
+
+    Fixed ui card collapsed inconsistencies
+
+[33mcommit 1773e71fcd6e43ec39f9241b17cfeff817bc6be3[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Tue Sep 15 15:33:42 2026 +0200
+
+    Added TokViewModel
+
+[33mcommit 84fbeadbc262eec9c9b45a1e144c755f42ba1117[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mui[m[33m)[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 18:08:09 2026 +0200
+
+    Implemented listen all in daily digest section
+
+[33mcommit 4ddf20917b79d502ddb63175696eda0bda21ff5e[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 17:50:18 2026 +0200
+
+    Added TTS
+
+[33mcommit ef28d7dabffd63f5fd4100af86b883e9d3cdb898[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 17:38:38 2026 +0200
+
+    Implemented opening of an article in the device browser
+
+[33mcommit 04511df47d6a30291c56cb0e4e5ea20e7ae5290f[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 17:35:12 2026 +0200
+
+    Implemented snackbar when saving news and added tok app preview
+
+[33mcommit 0c6338f026d93b12a6ae97526de80dc775926d55[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 17:27:00 2026 +0200
+
+    Implemented daily digest section
+
+[33mcommit a1db00573cb6236382e8d9a524ab9afb03ea1a72[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 17:20:53 2026 +0200
+
+    Added History section
+
+[33mcommit 91259644d95e2f11a80b9ea78834c318e19c43b4[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 17:10:59 2026 +0200
+
+    Added Read section and readed tint mechanism
+
+[33mcommit 9c8b96e61f032d14f606dbb6db90a48d2f1272ca[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 17:00:18 2026 +0200
+
+    Added more setting into setting section
+
+[33mcommit 7e1760530beadbdc337097d7020de312048cb112[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 16:56:36 2026 +0200
+
+    Implemented Favorit categories section inside settings
+
+[33mcommit 99674055460afab3e21df456d1359d78285bbc72[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 16:47:25 2026 +0200
+
+    Added screen for you
+
+[33mcommit e0a9ebde1c0303d44a98dd02874b25c3ceb4b123[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 16:38:34 2026 +0200
+
+    Implementad save screen
+
+[33mcommit a1fc98719c95e4c5d9f58ec939a852c3175432d4[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 16:28:42 2026 +0200
+
+    Implemented navigation and added multiple screens
+
+[33mcommit 75883f60a09161d221499fc30e782b0c0b9d23bd[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 16:20:49 2026 +0200
+
+    Added category drawer
+
+[33mcommit 44b1afb5049e42800aeae958caf689ab09634178[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 16:10:04 2026 +0200
+
+    Replaced the temporary symbols with prototype-style vector icons
+
+[33mcommit 8567286902a76ec5426e3c6cb0e4c600bb30d0e5[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 15:59:14 2026 +0200
+
+    Reorganized composable into separate files
+
+[33mcommit c784caccbe05c32492f68da77805fcb363b21db9[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 15:20:37 2026 +0200
+
+    Added more static cards and search functionality
+
+[33mcommit b9aa0c71e0fae60c97741539f14c14d6e5d2ec59[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 15:16:21 2026 +0200
+
+    Added latest news cards with compaction and saving
+
+[33mcommit 592f3b25231d4a71b0657c374eb94b48fb4a2025[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 14:51:16 2026 +0200
+
+    Added the most recent news section
+
+[33mcommit 48497da29602d06d5bc46c0755221f72fb4602f4[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 14:40:53 2026 +0200
+
+    Added trending corousel
+
+[33mcommit 43d230c7f5c8b2f773c0802cc6bc2f114271128e[m
+Author: Igor Vićentijević <t-igorv@microsoft.com>
+Date:   Fri Sep 11 14:33:13 2026 +0200
+
+    Added starting  page with minimal elements

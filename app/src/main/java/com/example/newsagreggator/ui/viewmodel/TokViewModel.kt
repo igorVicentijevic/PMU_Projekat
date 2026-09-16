@@ -3,6 +3,7 @@ package com.example.newsagreggator.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsagreggator.data.NewsRepository
+import com.example.newsagreggator.data.local.ArticleStateRepository
 import com.example.newsagreggator.data.preferences.UserPreferencesRepository
 import com.example.newsagreggator.ui.state.SecondaryScreen
 import com.example.newsagreggator.ui.state.TokTab
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 class TokViewModel(
     private val newsRepository: NewsRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
+    private val articleStateRepository: ArticleStateRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
         TokUiState(articles = newsRepository.getArticles())
@@ -32,6 +34,16 @@ class TokViewModel(
                         refreshIntervalMinutes = preferences.refreshIntervalMinutes,
                         breakingNewsEnabled = preferences.breakingNewsEnabled,
                         followedCategories = preferences.followedCategories,
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
+            articleStateRepository.articleState.collect { articleState ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        savedArticleIds = articleState.savedArticleIds,
+                        readArticleIds = articleState.readArticleIds,
                     )
                 }
             }
@@ -154,6 +166,9 @@ class TokViewModel(
                 }
             )
         }
+        viewModelScope.launch {
+            articleStateRepository.setArticleSaved(articleId, saved)
+        }
     }
 
     fun markArticleRead(articleId: Int) {
@@ -162,11 +177,17 @@ class TokViewModel(
                 readArticleIds = currentState.readArticleIds + articleId
             )
         }
+        viewModelScope.launch {
+            articleStateRepository.markArticleRead(articleId)
+        }
     }
 
     fun clearReadingHistory() {
         _uiState.update { currentState ->
             currentState.copy(readArticleIds = emptySet())
+        }
+        viewModelScope.launch {
+            articleStateRepository.clearReadingHistory()
         }
     }
 

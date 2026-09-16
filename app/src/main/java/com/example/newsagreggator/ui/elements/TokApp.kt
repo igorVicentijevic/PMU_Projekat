@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.newsagreggator.R
 import com.example.newsagreggator.data.SampleNewsRepository
+import com.example.newsagreggator.data.local.InMemoryArticleStateRepository
 import com.example.newsagreggator.data.preferences.InMemoryUserPreferencesRepository
 import com.example.newsagreggator.speech.ArticleSpeechController
 import com.example.newsagreggator.speech.SpeechArticle
@@ -386,6 +387,7 @@ private fun TokAppPreview() {
             tokViewModel = TokViewModel(
                 newsRepository = SampleNewsRepository(),
                 userPreferencesRepository = InMemoryUserPreferencesRepository(),
+                articleStateRepository = InMemoryArticleStateRepository(),
             ),
         )
     }

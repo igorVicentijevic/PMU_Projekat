@@ -1,0 +1,43 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "bf93f5bc13ac3779156ee43dd5c6dd51",
+    "entities": [
+      {
+        "tableName": "article_state",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`articleId` INTEGER NOT NULL, `isSaved` INTEGER NOT NULL, `isRead` INTEGER NOT NULL, PRIMARY KEY(`articleId`))",
+        "fields": [
+          {
+            "fieldPath": "articleId",
+            "columnName": "articleId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSaved",
+            "columnName": "isSaved",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isRead",
+            "columnName": "isRead",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "articleId"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bf93f5bc13ac3779156ee43dd5c6dd51')"
+    ]
+  }
+}
