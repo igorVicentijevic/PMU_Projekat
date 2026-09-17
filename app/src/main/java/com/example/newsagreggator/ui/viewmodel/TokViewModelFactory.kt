@@ -3,10 +3,10 @@ package com.example.newsagreggator.ui.viewmodel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.newsagreggator.data.NewsRepository
 import com.example.newsagreggator.data.local.repository.ArticleStateRepository
 import com.example.newsagreggator.data.network.NetworkMonitor
 import com.example.newsagreggator.data.preferences.UserPreferencesRepository
+import com.example.newsagreggator.data.repository.NewsRepository
 
 fun tokViewModelFactory(
     newsRepository: NewsRepository,

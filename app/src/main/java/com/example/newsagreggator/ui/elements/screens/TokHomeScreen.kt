@@ -42,7 +42,7 @@ import com.example.newsagreggator.ui.elements.composables.TokTopBar
 import com.example.newsagreggator.ui.elements.composables.TokCategoryDrawer
 import com.example.newsagreggator.ui.elements.composables.TrendingSection
 import com.example.newsagreggator.ui.model.NewsCardUiModel
-import com.example.newsagreggator.data.createSampleNewsArticles
+import com.example.newsagreggator.data.sample.createSampleNewsArticles
 import com.example.newsagreggator.ui.model.toNewsCardUiModel
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import kotlinx.coroutines.launch

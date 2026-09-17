@@ -1,4 +1,4 @@
-package com.example.newsagreggator.data
+package com.example.newsagreggator.data.repository
 
 import com.example.newsagreggator.domain.model.Article
 import kotlinx.coroutines.flow.Flow

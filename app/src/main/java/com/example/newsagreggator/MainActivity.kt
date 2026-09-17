@@ -9,13 +9,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.newsagreggator.data.RssNewsRepository
 import com.example.newsagreggator.data.local.TokDatabase
+import com.example.newsagreggator.data.local.repository.RoomArticleStateRepository
 import com.example.newsagreggator.data.network.AndroidNetworkMonitor
 import com.example.newsagreggator.data.preferences.DataStoreUserPreferencesRepository
-import com.example.newsagreggator.data.remote.RtsNewsService
-import com.example.newsagreggator.data.remote.RtsRssNewsDataSource
-import com.example.newsagreggator.data.local.repository.RoomArticleStateRepository
+import com.example.newsagreggator.data.remote.api.RssNewsService
+import com.example.newsagreggator.data.remote.rss.RssNewsDataSource
+import com.example.newsagreggator.data.repository.RssNewsRepository
 import com.example.newsagreggator.ui.elements.TokApp
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme
 import com.example.newsagreggator.ui.viewmodel.TokViewModel
@@ -35,10 +35,10 @@ class MainActivity : ComponentActivity() {
                     .baseUrl("https://www.rts.rs/")
                     .addConverterFactory(ScalarsConverterFactory.create())
                     .build()
-                    .create<RtsNewsService>()
+                    .create<RssNewsService>()
                 tokViewModelFactory(
                     newsRepository = RssNewsRepository(
-                        remoteNewsDataSource = RtsRssNewsDataSource(newsService),
+                        remoteNewsDataSource = RssNewsDataSource(newsService),
                         articleDao = database.articleDao(),
                     ),
                     userPreferencesRepository =

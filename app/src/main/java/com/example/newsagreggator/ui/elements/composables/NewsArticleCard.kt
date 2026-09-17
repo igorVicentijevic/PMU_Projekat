@@ -39,7 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
-import com.example.newsagreggator.data.createSampleNewsArticles
+import com.example.newsagreggator.data.sample.createSampleNewsArticles
 import com.example.newsagreggator.ui.model.NewsCardUiModel
 import com.example.newsagreggator.ui.model.toNewsCardUiModel
 import com.example.newsagreggator.ui.theme.NewsAgreggatorTheme

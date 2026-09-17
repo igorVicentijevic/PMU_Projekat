@@ -1,4 +1,4 @@
-package com.example.newsagreggator.data
+package com.example.newsagreggator.data.sample
 
 import com.example.newsagreggator.domain.model.Article
 import com.example.newsagreggator.domain.model.NewsCategory
