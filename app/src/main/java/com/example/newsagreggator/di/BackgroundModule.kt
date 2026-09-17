@@ -1,7 +1,7 @@
 package com.example.newsagreggator.di
 
-import com.example.newsagreggator.background.NewsRefreshScheduler
-import com.example.newsagreggator.background.WorkManagerNewsRefreshScheduler
+import com.example.newsagreggator.business.service.NewsRefreshScheduler
+import com.example.newsagreggator.data.background.WorkManagerNewsRefreshScheduler
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

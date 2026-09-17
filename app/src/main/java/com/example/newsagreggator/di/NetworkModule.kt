@@ -1,6 +1,6 @@
 package com.example.newsagreggator.di
 
-import com.example.newsagreggator.remote.api.RssNewsService
+import com.example.newsagreggator.data.remote.api.RssNewsService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
