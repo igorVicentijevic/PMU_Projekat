@@ -19,4 +19,5 @@ data class Article(
     val publishedAtEpochMillis: Long,
     val imageUrl: String?,
     val articleUrl: String,
+    val relatedCityIds: Set<String> = emptySet(),
 )

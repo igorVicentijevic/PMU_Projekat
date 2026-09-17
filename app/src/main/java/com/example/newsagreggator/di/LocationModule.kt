@@ -1,8 +1,11 @@
 package com.example.newsagreggator.di
 
 import com.example.newsagreggator.business.repository.SelectedCityRepository
+import com.example.newsagreggator.business.service.ArticleLocationDetectionStrategy
+import com.example.newsagreggator.business.service.CityCatalog
 import com.example.newsagreggator.business.service.CityResolver
 import com.example.newsagreggator.business.service.CurrentLocationProvider
+import com.example.newsagreggator.data.location.AliasArticleLocationDetectionStrategy
 import com.example.newsagreggator.data.location.AndroidGpsLocationProvider
 import com.example.newsagreggator.data.location.SerbianCityResolver
 import com.example.newsagreggator.data.preferences.DataStoreSelectedCityRepository
@@ -26,6 +29,18 @@ abstract class LocationModule {
     abstract fun bindCityResolver(
         resolver: SerbianCityResolver,
     ): CityResolver
+
+    @Binds
+    @Singleton
+    abstract fun bindCityCatalog(
+        resolver: SerbianCityResolver,
+    ): CityCatalog
+
+    @Binds
+    @Singleton
+    abstract fun bindArticleLocationDetectionStrategy(
+        strategy: AliasArticleLocationDetectionStrategy,
+    ): ArticleLocationDetectionStrategy
 
     @Binds
     @Singleton

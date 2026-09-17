@@ -2,6 +2,7 @@ package com.example.newsagreggator.data.location
 
 import com.example.newsagreggator.business.model.City
 import com.example.newsagreggator.business.model.Coordinates
+import com.example.newsagreggator.business.service.CityCatalog
 import com.example.newsagreggator.business.service.CityResolver
 import javax.inject.Inject
 import kotlin.math.asin
@@ -10,7 +11,9 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class SerbianCityResolver @Inject constructor() : CityResolver {
+class SerbianCityResolver @Inject constructor() : CityResolver, CityCatalog {
+    override val cities: List<City> = SERBIAN_CITIES
+
     override fun findNearestCity(coordinates: Coordinates): City? {
         val nearestCity = cities.minByOrNull { city ->
             distanceKilometers(coordinates, city.coordinates)
@@ -49,7 +52,7 @@ class SerbianCityResolver @Inject constructor() : CityResolver {
         const val EARTH_RADIUS_KILOMETERS = 6_371.0
         const val MAX_SUPPORTED_DISTANCE_KILOMETERS = 100.0
 
-        val cities = listOf(
+        val SERBIAN_CITIES = listOf(
             city(
                 id = "belgrade",
                 name = "Beograd",

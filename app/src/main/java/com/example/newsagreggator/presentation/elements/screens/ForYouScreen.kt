@@ -67,7 +67,14 @@ fun ForYouScreen(
                 style = MaterialTheme.typography.headlineLarge,
             )
             Text(
-                text = stringResource(R.string.for_you_subtitle),
+                text = if (location is LocationUiState.Selected) {
+                    stringResource(
+                        R.string.for_you_local_subtitle,
+                        location.cityName,
+                    )
+                } else {
+                    stringResource(R.string.for_you_subtitle)
+                },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
             )
@@ -83,7 +90,7 @@ fun ForYouScreen(
             }
         }
         if (articles.isEmpty()) {
-            item { ForYouEmptyState() }
+            item { ForYouEmptyState(location) }
         } else {
             items(
                 items = articles,
@@ -212,7 +219,7 @@ private fun FollowedCategoryChips(categories: Set<Int>) {
 }
 
 @Composable
-private fun ForYouEmptyState() {
+private fun ForYouEmptyState(location: LocationUiState) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(22.dp),
@@ -230,13 +237,26 @@ private fun ForYouEmptyState() {
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = stringResource(R.string.for_you_empty_title),
+                text = if (location is LocationUiState.Selected) {
+                    stringResource(
+                        R.string.for_you_local_empty_title,
+                        location.cityName,
+                    )
+                } else {
+                    stringResource(R.string.for_you_empty_title)
+                },
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge,
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = stringResource(R.string.for_you_empty_body),
+                text = stringResource(
+                    if (location is LocationUiState.Selected) {
+                        R.string.for_you_local_empty_body
+                    } else {
+                        R.string.for_you_empty_body
+                    }
+                ),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
             )

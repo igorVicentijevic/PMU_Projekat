@@ -18,6 +18,7 @@ fun createSampleNewsArticles(
         publishedAtEpochMillis = currentTimeMillis - 12 * MINUTE_MILLIS,
         imageUrl = null,
         articleUrl = "https://www.danas.rs/",
+        relatedCityIds = setOf("belgrade"),
     ),
     Article(
         id = "2",

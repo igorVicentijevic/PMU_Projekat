@@ -58,6 +58,7 @@ import com.example.newsagreggator.presentation.elements.screens.SavedScreen
 import com.example.newsagreggator.presentation.elements.screens.SettingsScreen
 import com.example.newsagreggator.presentation.elements.screens.TokHomeScreen
 import com.example.newsagreggator.presentation.model.NewsCardUiModel
+import com.example.newsagreggator.presentation.state.LocationUiState
 import com.example.newsagreggator.presentation.state.SecondaryScreen
 import com.example.newsagreggator.presentation.state.TokTab
 import com.example.newsagreggator.presentation.theme.NewsAgreggatorTheme
@@ -338,23 +339,38 @@ fun TokApp(
                 onCategorySelected = tokViewModel::selectCategory,
                 modifier = Modifier.padding(innerPadding),
             )
-            TokTab.ForYou -> ForYouScreen(
-                articles = uiState.articles.filter {
-                    it.categoryResId in uiState.followedCategories
-                },
-                followedCategories = uiState.followedCategories,
-                location = uiState.location,
-                savedArticleIds = uiState.savedArticleIds,
-                readArticleIds = uiState.readArticleIds,
-                speakingArticleId = speechController.speakingArticleId,
-                compactLayout = uiState.compactLayout,
-                onToggleSaved = toggleSaved,
-                onReadArticle = readArticle,
-                onToggleSpeech = toggleSpeech,
-                onShareArticle = shareArticle,
-                onLocationAction = requestGpsLocation,
-                modifier = Modifier.padding(innerPadding),
-            )
+            TokTab.ForYou -> {
+                val selectedLocation =
+                    uiState.location as? LocationUiState.Selected
+                val articles = if (selectedLocation != null) {
+                    uiState.articles.filter { article ->
+                        selectedLocation.cityId in article.relatedCityIds
+                    }
+                } else {
+                    uiState.articles.filter { article ->
+                        article.categoryResId in uiState.followedCategories
+                    }
+                }
+                ForYouScreen(
+                    articles = articles,
+                    followedCategories = if (selectedLocation == null) {
+                        uiState.followedCategories
+                    } else {
+                        emptySet()
+                    },
+                    location = uiState.location,
+                    savedArticleIds = uiState.savedArticleIds,
+                    readArticleIds = uiState.readArticleIds,
+                    speakingArticleId = speechController.speakingArticleId,
+                    compactLayout = uiState.compactLayout,
+                    onToggleSaved = toggleSaved,
+                    onReadArticle = readArticle,
+                    onToggleSpeech = toggleSpeech,
+                    onShareArticle = shareArticle,
+                    onLocationAction = requestGpsLocation,
+                    modifier = Modifier.padding(innerPadding),
+                )
+            }
             TokTab.Saved -> SavedScreen(
                 articles = uiState.articles.filter {
                     it.id in uiState.savedArticleIds

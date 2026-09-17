@@ -21,8 +21,11 @@
     <string name="for_you_kicker">SAMO ZA TEBE</string>
     <string name="for_you_placeholder">Priče iz kategorija koje pratiš uskoro će biti prikazane ovde.</string>
     <string name="for_you_subtitle">Priče iz kategorija koje pratiš.</string>
+    <string name="for_you_local_subtitle">Vesti povezane sa gradom %1$s.</string>
     <string name="for_you_empty_title">Izaberi teme koje pratiš</string>
     <string name="for_you_empty_body">Kada izabereš omiljene kategorije, personalizovane vesti pojaviće se ovde.</string>
+    <string name="for_you_local_empty_title">Trenutno nema vesti za %1$s</string>
+    <string name="for_you_local_empty_body">Nove lokalne priče pojaviće se ovde kada ih pronađemo u izvorima koje pratimo.</string>
     <string name="for_you_location_title">Lokalne vesti</string>
     <string name="for_you_location_body">Koristi GPS da odredimo najbliži grad. Tačne koordinate se ne čuvaju.</string>
     <string name="for_you_location_use_gps">Koristi GPS</string>

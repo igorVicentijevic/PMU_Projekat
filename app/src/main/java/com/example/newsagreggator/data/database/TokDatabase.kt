@@ -18,7 +18,7 @@ import com.example.newsagreggator.data.database.entity.NewsSyncMetadataEntity
         ArticleStateEntity::class,
         NewsSyncMetadataEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = true,
 )
 abstract class TokDatabase : RoomDatabase() {
@@ -32,7 +32,7 @@ abstract class TokDatabase : RoomDatabase() {
             TokDatabase::class.java,
             "tok.db",
         )
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
 
         private val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -85,6 +85,17 @@ abstract class TokDatabase : RoomDatabase() {
                         lastSuccessfulRefreshEpochMillis INTEGER NOT NULL,
                         PRIMARY KEY(id)
                     )
+                    """.trimIndent()
+                )
+            }
+        }
+
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    ALTER TABLE articles
+                    ADD COLUMN relatedCityIds TEXT NOT NULL DEFAULT ''
                     """.trimIndent()
                 )
             }

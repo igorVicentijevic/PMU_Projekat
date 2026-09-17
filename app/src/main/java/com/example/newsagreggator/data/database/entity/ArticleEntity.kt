@@ -15,6 +15,7 @@ data class ArticleEntity(
     val publishedAtEpochMillis: Long,
     val imageUrl: String?,
     val articleUrl: String,
+    val relatedCityIds: String,
 )
 
 fun Article.toEntity(): ArticleEntity = ArticleEntity(
@@ -26,6 +27,7 @@ fun Article.toEntity(): ArticleEntity = ArticleEntity(
     publishedAtEpochMillis = publishedAtEpochMillis,
     imageUrl = imageUrl,
     articleUrl = articleUrl,
+    relatedCityIds = relatedCityIds.sorted().joinToString(","),
 )
 
 fun ArticleEntity.toDomain(): Article? {
@@ -41,5 +43,9 @@ fun ArticleEntity.toDomain(): Article? {
         publishedAtEpochMillis = publishedAtEpochMillis,
         imageUrl = imageUrl,
         articleUrl = articleUrl,
+        relatedCityIds = relatedCityIds
+            .split(',')
+            .filter(String::isNotBlank)
+            .toSet(),
     )
 }
