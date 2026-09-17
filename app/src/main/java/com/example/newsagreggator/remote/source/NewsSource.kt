@@ -1,0 +1,15 @@
+package com.example.newsagreggator.remote.source
+
+import com.example.newsagreggator.domain.model.NewsCategory
+
+data class NewsSource(
+    val id: String,
+    val displayName: String,
+    val feeds: List<NewsFeed>,
+    val imageUrlNormalizer: (String) -> String = { it },
+)
+
+data class NewsFeed(
+    val url: String,
+    val category: NewsCategory? = null,
+)

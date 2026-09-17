@@ -1,7 +1,7 @@
 package com.example.newsagreggator.ui.state
 
 import com.example.newsagreggator.R
-import com.example.newsagreggator.data.preferences.defaultFollowedCategories
+import com.example.newsagreggator.preferences.defaultFollowedCategories
 import com.example.newsagreggator.ui.model.NewsCardUiModel
 
 enum class SecondaryScreen {

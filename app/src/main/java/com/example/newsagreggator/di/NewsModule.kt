@@ -1,12 +1,12 @@
 package com.example.newsagreggator.di
 
-import com.example.newsagreggator.data.remote.RemoteNewsDataSource
-import com.example.newsagreggator.data.remote.rss.RssNewsDataSource
-import com.example.newsagreggator.data.remote.source.NewsSource
-import com.example.newsagreggator.data.remote.source.NewsSources
-import com.example.newsagreggator.data.repository.NewsRepository
-import com.example.newsagreggator.data.repository.RssNewsRepository
-import com.example.newsagreggator.data.sample.createSampleNewsArticles
+import com.example.newsagreggator.remote.RemoteNewsDataSource
+import com.example.newsagreggator.remote.rss.RssNewsDataSource
+import com.example.newsagreggator.remote.source.NewsSource
+import com.example.newsagreggator.remote.source.NewsSources
+import com.example.newsagreggator.repository.NewsRepository
+import com.example.newsagreggator.repository.RssNewsRepository
+import com.example.newsagreggator.sample.createSampleNewsArticles
 import com.example.newsagreggator.domain.model.Article
 import dagger.Binds
 import dagger.Module

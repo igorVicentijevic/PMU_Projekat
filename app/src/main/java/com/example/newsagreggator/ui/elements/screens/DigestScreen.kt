@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
-import com.example.newsagreggator.data.sample.createSampleNewsArticles
+import com.example.newsagreggator.sample.createSampleNewsArticles
 import com.example.newsagreggator.ui.elements.composables.NewsArticleCard
 import com.example.newsagreggator.ui.model.NewsCardUiModel
 import com.example.newsagreggator.ui.model.toNewsCardUiModel

@@ -31,11 +31,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.newsagreggator.R
-import com.example.newsagreggator.data.background.InMemoryNewsRefreshScheduler
-import com.example.newsagreggator.data.local.repository.InMemoryArticleStateRepository
-import com.example.newsagreggator.data.network.InMemoryNetworkMonitor
-import com.example.newsagreggator.data.preferences.InMemoryUserPreferencesRepository
-import com.example.newsagreggator.data.sample.SampleNewsRepository
+import com.example.newsagreggator.background.InMemoryNewsRefreshScheduler
+import com.example.newsagreggator.repository.InMemoryArticleStateRepository
+import com.example.newsagreggator.network.InMemoryNetworkMonitor
+import com.example.newsagreggator.preferences.InMemoryUserPreferencesRepository
+import com.example.newsagreggator.sample.SampleNewsRepository
 import com.example.newsagreggator.speech.ArticleSpeechController
 import com.example.newsagreggator.speech.SpeechArticle
 import com.example.newsagreggator.speech.SpeechActionResult
