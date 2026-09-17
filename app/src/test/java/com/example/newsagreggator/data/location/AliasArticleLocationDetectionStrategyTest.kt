@@ -47,6 +47,32 @@ class AliasArticleLocationDetectionStrategyTest {
         assertTrue(strategy.detectRelatedCityIds(article).isEmpty())
     }
 
+    @Test
+    fun detectsCityWrittenInCyrillic() {
+        val article = article(
+            title = "Нова бициклистичка стаза отворена у Новом Саду",
+            summary = "Радови су завршени јутрос.",
+        )
+
+        assertEquals(
+            setOf("novi-sad"),
+            strategy.detectRelatedCityIds(article),
+        )
+    }
+
+    @Test
+    fun matchesLatinAliasAgainstCyrillicArticle() {
+        val article = article(
+            title = "Ниш добија нови градски парк",
+            summary = "Изградња почиње следеће недеље.",
+        )
+
+        assertEquals(
+            setOf("nis"),
+            strategy.detectRelatedCityIds(article),
+        )
+    }
+
     private fun article(
         title: String,
         summary: String,
