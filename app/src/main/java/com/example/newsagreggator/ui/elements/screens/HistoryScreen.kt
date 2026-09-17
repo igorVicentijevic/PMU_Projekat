@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,10 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,98 +51,102 @@ fun HistoryScreen(
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 20.dp)
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
     ) {
-        IconButton(onClick = onBack) {
-            Icon(
-                painter = painterResource(R.drawable.ic_back),
-                contentDescription = stringResource(R.string.navigate_back),
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.history_kicker),
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-                Text(
-                    text = stringResource(R.string.history_title),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.headlineLarge,
-                )
-                Text(
-                    text = stringResource(R.string.history_subtitle),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
+        item {
+            IconButton(onClick = onBack) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_back),
+                    contentDescription = stringResource(R.string.navigate_back),
                 )
             }
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = articles.size.toString(),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        if (articles.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                TextButton(onClick = onClearHistory) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_trash),
-                        contentDescription = null,
-                        modifier = Modifier.size(17.dp),
-                    )
-                    Spacer(modifier = Modifier.size(5.dp))
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = stringResource(R.string.history_clear),
+                        text = stringResource(R.string.history_kicker),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                    Text(
+                        text = stringResource(R.string.history_title),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.headlineLarge,
+                    )
+                    Text(
+                        text = stringResource(R.string.history_subtitle),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(CircleShape)
+                        .background(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = articles.size.toString(),
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold,
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Column(
-                verticalArrangement = Arrangement.spacedBy(
-                    if (compactLayout) 10.dp else 18.dp
-                )
-            ) {
-                articles.forEach { article ->
-                    NewsArticleCard(
-                        article = article,
-                        compact = compactLayout,
-                        isSaved = article.id in savedArticleIds,
-                        isRead = true,
-                        isSpeaking = article.id == speakingArticleId,
-                        onSaveClick = { onToggleSaved(article.id) },
-                        onReadClick = {},
-                        onSpeechClick = { onToggleSpeech(article) },
-                        onShareClick = { onShareArticle(article) },
-                    )
+            Spacer(modifier = Modifier.height(16.dp))
+            if (articles.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    TextButton(onClick = onClearHistory) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_trash),
+                            contentDescription = null,
+                            modifier = Modifier.size(17.dp),
+                        )
+                        Spacer(modifier = Modifier.size(5.dp))
+                        Text(
+                            text = stringResource(R.string.history_clear),
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
+                Spacer(modifier = Modifier.height(8.dp))
             }
-        } else {
-            HistoryEmptyState()
         }
-        Spacer(modifier = Modifier.height(24.dp))
+        if (articles.isEmpty()) {
+            item { HistoryEmptyState() }
+        } else {
+            items(
+                items = articles,
+                key = NewsCardUiModel::url,
+            ) { article ->
+                NewsArticleCard(
+                    article = article,
+                    compact = compactLayout,
+                    isSaved = article.id in savedArticleIds,
+                    isRead = true,
+                    isSpeaking = article.id == speakingArticleId,
+                    onSaveClick = { onToggleSaved(article.id) },
+                    onReadClick = {},
+                    onSpeechClick = { onToggleSpeech(article) },
+                    onShareClick = { onShareArticle(article) },
+                    modifier = Modifier.padding(
+                        bottom = if (compactLayout) 10.dp else 18.dp
+                    ),
+                )
+            }
+        }
+        item { Spacer(modifier = Modifier.height(6.dp)) }
     }
 }
 

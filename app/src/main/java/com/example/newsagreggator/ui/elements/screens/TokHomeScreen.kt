@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,10 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.DrawerValue
@@ -110,119 +111,127 @@ fun TokHomeScreen(
         },
         onClose = { coroutineScope.launch { drawerState.close() } },
     ) {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 12.dp)
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                horizontal = 20.dp,
+                vertical = 12.dp,
+            ),
         ) {
-            TokTopBar(
-                onMenuClick = { coroutineScope.launch { drawerState.open() } }
-            )
-            Spacer(modifier = Modifier.height(34.dp))
-            Text(
-                text = stringResource(R.string.home_eyebrow),
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.labelSmall,
-            )
-            Text(
-                text = stringResource(R.string.home_greeting),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.headlineLarge,
-            )
-            Text(
-                text = stringResource(R.string.home_subtitle),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            if (isOffline) {
-                Spacer(modifier = Modifier.height(16.dp))
-                OfflineModeCard()
-            }
-            Spacer(modifier = Modifier.height(22.dp))
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = onSearchQueryChange,
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.search_news),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_search),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(17.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                ),
-            )
-            Spacer(modifier = Modifier.height(26.dp))
-            TrendingSection(
-                articles = articles,
-                onDigestClick = onOpenDigest,
-            )
-            Spacer(modifier = Modifier.height(26.dp))
-            LatestSection(
-                selectedCategory = selectedCategory,
-                compactLayout = compactLayout,
-                isRefreshing = isRefreshing,
-                lastSuccessfulRefreshEpochMillis =
-                    lastSuccessfulRefreshEpochMillis,
-                isOffline = isOffline,
-                onCategorySelected = onCategorySelected,
-                onCompactLayoutClick = { onCompactLayoutChange(!compactLayout) },
-                onRefreshClick = {
-                    if (!isRefreshing) {
-                        onRefreshArticles()
+            item {
+                TokTopBar(
+                    onMenuClick = {
+                        coroutineScope.launch { drawerState.open() }
                     }
-                },
-            )
-            Spacer(modifier = Modifier.height(14.dp))
-            if (visibleArticles.isNotEmpty()) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(
-                        if (compactLayout) 10.dp else 18.dp
-                    )
-                ) {
-                    visibleArticles.forEach { article ->
-                        NewsArticleCard(
-                            article = article,
-                            compact = compactLayout,
-                            isSaved = article.id in savedArticleIds,
-                            isRead = article.id in readArticleIds,
-                            isSpeaking = article.id == speakingArticleId,
-                            onSaveClick = { onToggleSaved(article.id) },
-                            onReadClick = { onReadArticle(article) },
-                            onSpeechClick = { onToggleSpeech(article) },
-                            onShareClick = { onShareArticle(article) },
-                        )
-                    }
-                }
-            } else {
+                )
+                Spacer(modifier = Modifier.height(34.dp))
                 Text(
-                    text = stringResource(
-                        if (normalizedQuery.isEmpty()) {
-                            R.string.no_category_news
-                        } else {
-                            R.string.no_search_results
-                        }
-                    ),
-                    modifier = Modifier.padding(vertical = 28.dp),
+                    text = stringResource(R.string.home_eyebrow),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+                Text(
+                    text = stringResource(R.string.home_greeting),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.headlineLarge,
+                )
+                Text(
+                    text = stringResource(R.string.home_subtitle),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium,
                 )
+                if (isOffline) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OfflineModeCard()
+                }
+                Spacer(modifier = Modifier.height(22.dp))
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChange,
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {
+                        Text(
+                            text = stringResource(R.string.search_news),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_search),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(17.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    ),
+                )
+                Spacer(modifier = Modifier.height(26.dp))
+                TrendingSection(
+                    articles = articles,
+                    onDigestClick = onOpenDigest,
+                )
+                Spacer(modifier = Modifier.height(26.dp))
+                LatestSection(
+                    selectedCategory = selectedCategory,
+                    compactLayout = compactLayout,
+                    isRefreshing = isRefreshing,
+                    lastSuccessfulRefreshEpochMillis =
+                        lastSuccessfulRefreshEpochMillis,
+                    isOffline = isOffline,
+                    onCategorySelected = onCategorySelected,
+                    onCompactLayoutClick = {
+                        onCompactLayoutChange(!compactLayout)
+                    },
+                    onRefreshClick = {
+                        if (!isRefreshing) {
+                            onRefreshArticles()
+                        }
+                    },
+                )
+                Spacer(modifier = Modifier.height(14.dp))
+                if (visibleArticles.isEmpty()) {
+                    Text(
+                        text = stringResource(
+                            if (normalizedQuery.isEmpty()) {
+                                R.string.no_category_news
+                            } else {
+                                R.string.no_search_results
+                            }
+                        ),
+                        modifier = Modifier.padding(vertical = 28.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(24.dp))
+            items(
+                items = visibleArticles,
+                key = NewsCardUiModel::url,
+            ) { article ->
+                NewsArticleCard(
+                    article = article,
+                    compact = compactLayout,
+                    isSaved = article.id in savedArticleIds,
+                    isRead = article.id in readArticleIds,
+                    isSpeaking = article.id == speakingArticleId,
+                    onSaveClick = { onToggleSaved(article.id) },
+                    onReadClick = { onReadArticle(article) },
+                    onSpeechClick = { onToggleSpeech(article) },
+                    onShareClick = { onShareArticle(article) },
+                    modifier = Modifier.padding(
+                        bottom = if (compactLayout) 10.dp else 18.dp
+                    ),
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(6.dp))
+            }
         }
     }
 }

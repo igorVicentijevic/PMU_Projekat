@@ -36,6 +36,8 @@ class RssNewsRepository @Inject constructor(
 
     }
 
+    //synchronization is needed because refreshing should be done concurrently from background worker
+    //and foreground process
     override suspend fun refreshArticles(): Result<Unit> = refreshMutex.withLock {
         refreshArticlesLocked()
     }

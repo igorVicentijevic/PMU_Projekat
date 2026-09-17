@@ -2,16 +2,16 @@ package com.example.newsagreggator.ui.elements.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -45,56 +45,56 @@ fun ForYouScreen(
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 28.dp)
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 28.dp),
     ) {
-        Text(
-            text = stringResource(R.string.for_you_kicker),
-            color = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.labelSmall,
-        )
-        Text(
-            text = stringResource(R.string.nav_for_you),
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.headlineLarge,
-        )
-        Text(
-            text = stringResource(R.string.for_you_subtitle),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        Spacer(modifier = Modifier.height(18.dp))
-        if (followedCategories.isNotEmpty()) {
-            FollowedCategoryChips(followedCategories)
+        item {
+            Text(
+                text = stringResource(R.string.for_you_kicker),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelSmall,
+            )
+            Text(
+                text = stringResource(R.string.nav_for_you),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.headlineLarge,
+            )
+            Text(
+                text = stringResource(R.string.for_you_subtitle),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+            )
             Spacer(modifier = Modifier.height(18.dp))
-        }
-        if (articles.isEmpty()) {
-            ForYouEmptyState()
-        } else {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(
-                    if (compactLayout) 10.dp else 18.dp
-                )
-            ) {
-                articles.forEach { article ->
-                    NewsArticleCard(
-                        article = article,
-                        compact = compactLayout,
-                        isSaved = article.id in savedArticleIds,
-                        isRead = article.id in readArticleIds,
-                        isSpeaking = article.id == speakingArticleId,
-                        onSaveClick = { onToggleSaved(article.id) },
-                        onReadClick = { onReadArticle(article) },
-                        onSpeechClick = { onToggleSpeech(article) },
-                        onShareClick = { onShareArticle(article) },
-                    )
-                }
+            if (followedCategories.isNotEmpty()) {
+                FollowedCategoryChips(followedCategories)
+                Spacer(modifier = Modifier.height(18.dp))
             }
         }
-        Spacer(modifier = Modifier.height(24.dp))
+        if (articles.isEmpty()) {
+            item { ForYouEmptyState() }
+        } else {
+            items(
+                items = articles,
+                key = NewsCardUiModel::url,
+            ) { article ->
+                NewsArticleCard(
+                    article = article,
+                    compact = compactLayout,
+                    isSaved = article.id in savedArticleIds,
+                    isRead = article.id in readArticleIds,
+                    isSpeaking = article.id == speakingArticleId,
+                    onSaveClick = { onToggleSaved(article.id) },
+                    onReadClick = { onReadArticle(article) },
+                    onSpeechClick = { onToggleSpeech(article) },
+                    onShareClick = { onShareArticle(article) },
+                    modifier = Modifier.padding(
+                        bottom = if (compactLayout) 10.dp else 18.dp
+                    ),
+                )
+            }
+        }
+        item { Spacer(modifier = Modifier.height(6.dp)) }
     }
 }
 

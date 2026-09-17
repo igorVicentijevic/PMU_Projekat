@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,10 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -43,75 +44,77 @@ fun SavedScreen(
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 28.dp)
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 28.dp),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.saved_kicker),
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-                Text(
-                    text = stringResource(R.string.nav_saved),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.headlineLarge,
-                )
-                Text(
-                    text = stringResource(R.string.saved_subtitle),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
-                contentAlignment = Alignment.Center,
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = articles.size.toString(),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        OfflineSavedNote()
-        Spacer(modifier = Modifier.height(18.dp))
-        if (articles.isEmpty()) {
-            SavedEmptyState()
-        } else {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(
-                    if (compactLayout) 10.dp else 18.dp
-                )
-            ) {
-                articles.forEach { article ->
-                    NewsArticleCard(
-                        article = article,
-                        compact = compactLayout,
-                        isSaved = true,
-                        isRead = article.id in readArticleIds,
-                        isSpeaking = article.id == speakingArticleId,
-                        onSaveClick = { onRemoveSaved(article.id) },
-                        onReadClick = { onReadArticle(article) },
-                        onSpeechClick = { onToggleSpeech(article) },
-                        onShareClick = { onShareArticle(article) },
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.saved_kicker),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                    Text(
+                        text = stringResource(R.string.nav_saved),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.headlineLarge,
+                    )
+                    Text(
+                        text = stringResource(R.string.saved_subtitle),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(CircleShape)
+                        .background(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = articles.size.toString(),
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(20.dp))
+            OfflineSavedNote()
+            Spacer(modifier = Modifier.height(18.dp))
         }
-        Spacer(modifier = Modifier.height(24.dp))
+        if (articles.isEmpty()) {
+            item { SavedEmptyState() }
+        } else {
+            items(
+                items = articles,
+                key = NewsCardUiModel::url,
+            ) { article ->
+                NewsArticleCard(
+                    article = article,
+                    compact = compactLayout,
+                    isSaved = true,
+                    isRead = article.id in readArticleIds,
+                    isSpeaking = article.id == speakingArticleId,
+                    onSaveClick = { onRemoveSaved(article.id) },
+                    onReadClick = { onReadArticle(article) },
+                    onSpeechClick = { onToggleSpeech(article) },
+                    onShareClick = { onShareArticle(article) },
+                    modifier = Modifier.padding(
+                        bottom = if (compactLayout) 10.dp else 18.dp
+                    ),
+                )
+            }
+        }
+        item { Spacer(modifier = Modifier.height(6.dp)) }
     }
 }
 
