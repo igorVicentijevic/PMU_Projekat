@@ -17,6 +17,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val tokViewModel: TokViewModel by viewModels()
 
+    override fun onResume() {
+        super.onResume()
+        tokViewModel.refreshArticlesIfStale()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

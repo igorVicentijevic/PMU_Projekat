@@ -36,25 +36,42 @@ class RssNewsRepository @Inject constructor(
 
     }
 
-    override suspend fun refreshArticles(): Result<Unit> =
-        refreshMutex.withLock {
-            try {
-                //getting articles from the internet
-                val fetchedArticles = remoteNewsDataSource.fetchArticles()
-                check(fetchedArticles.isNotEmpty()) {
-                    "The RSS feed did not contain usable articles"
-                }
+    override suspend fun refreshArticles(): Result<Unit> = refreshMutex.withLock {
+        refreshArticlesLocked()
+    }
 
-                //updating database
-                articleDao.replaceRemoteArticles(
-                    articles = fetchedArticles.map(Article::toEntity),
-                    refreshedAtEpochMillis = System.currentTimeMillis(),
-                )
-                Result.success(Unit)
-            } catch (cancellation: CancellationException) {
-                throw cancellation
-            } catch (error: Exception) {
-                Result.failure(error)
-            }
+    override suspend fun refreshArticlesIfStale(
+        staleAfterMillis: Long,
+    ): Result<Unit> = refreshMutex.withLock {
+        val lastSuccessfulRefresh = articleDao.getLastSuccessfulRefresh()
+        val isFresh = lastSuccessfulRefresh != null &&
+            System.currentTimeMillis() - lastSuccessfulRefresh < staleAfterMillis
+
+        if (isFresh) {
+            Result.success(Unit)
+        } else {
+            refreshArticlesLocked()
         }
+    }
+
+    private suspend fun refreshArticlesLocked(): Result<Unit> {
+        return try {
+            //getting articles from the internet
+            val fetchedArticles = remoteNewsDataSource.fetchArticles()
+            check(fetchedArticles.isNotEmpty()) {
+                "The RSS feed did not contain usable articles"
+            }
+
+            //updating database
+            articleDao.replaceRemoteArticles(
+                articles = fetchedArticles.map(Article::toEntity),
+                refreshedAtEpochMillis = System.currentTimeMillis(),
+            )
+            Result.success(Unit)
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (error: Exception) {
+            Result.failure(error)
+        }
+    }
 }

@@ -12,4 +12,8 @@ interface NewsRepository {
     val news: Flow<NewsSnapshot>
 
     suspend fun refreshArticles(): Result<Unit>
+
+    suspend fun refreshArticlesIfStale(
+        staleAfterMillis: Long,
+    ): Result<Unit> = refreshArticles()
 }

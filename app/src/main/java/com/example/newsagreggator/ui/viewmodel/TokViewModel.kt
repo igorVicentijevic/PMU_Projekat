@@ -80,7 +80,7 @@ class TokViewModel @Inject constructor(
                     currentState.copy(hasInternetConnection = isOnline)
                 }
                 if (isOnline && !wasOnline) {
-                    refreshArticles()
+                    refreshArticlesIfStale()
                 }
             }
         }
@@ -96,7 +96,6 @@ class TokViewModel @Inject constructor(
                     newsRefreshScheduler.schedule(refreshIntervalMinutes)
                 }
         }
-        refreshArticles()
     }
 
     fun setDarkTheme(enabled: Boolean) {
@@ -109,6 +108,28 @@ class TokViewModel @Inject constructor(
     }
 
     fun refreshArticles() {
+        launchArticleRefresh(newsRepository::refreshArticles)
+    }
+
+    fun refreshArticlesIfStale() {
+        val lastSuccessfulRefresh =
+            _uiState.value.lastSuccessfulRefreshEpochMillis
+        val isFresh = lastSuccessfulRefresh != null &&
+            System.currentTimeMillis() - lastSuccessfulRefresh <
+            FOREGROUND_REFRESH_STALE_AFTER_MILLIS
+
+        if (!isFresh) {
+            launchArticleRefresh {
+                newsRepository.refreshArticlesIfStale(
+                    FOREGROUND_REFRESH_STALE_AFTER_MILLIS
+                )
+            }
+        }
+    }
+
+    private fun launchArticleRefresh(
+        refresh: suspend () -> Result<Unit>,
+    ) {
         if (
             _uiState.value.isRefreshing ||
             !_uiState.value.hasInternetConnection
@@ -124,7 +145,7 @@ class TokViewModel @Inject constructor(
         }
         viewModelScope.launch {
             try {
-                newsRepository.refreshArticles().fold(
+                refresh().fold(
                     onSuccess = {},
                     onFailure = {
                         _uiState.update { currentState ->
@@ -258,6 +279,10 @@ class TokViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferencesRepository.setFollowedCategories(followedCategories)
         }
+    }
+
+    private companion object {
+        const val FOREGROUND_REFRESH_STALE_AFTER_MILLIS = 5 * 60_000L
     }
 
 }

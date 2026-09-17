@@ -22,6 +22,15 @@ abstract class ArticleDao {
     )
     abstract fun observeLastSuccessfulRefresh(): Flow<Long?>
 
+    @Query(
+        """
+        SELECT lastSuccessfulRefreshEpochMillis
+        FROM news_sync_metadata
+        WHERE id = 1
+        """
+    )
+    abstract suspend fun getLastSuccessfulRefresh(): Long?
+
     @Upsert
     protected abstract suspend fun upsertArticles(
         articles: List<ArticleEntity>,
