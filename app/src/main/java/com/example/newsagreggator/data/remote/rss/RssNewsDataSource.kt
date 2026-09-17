@@ -6,7 +6,7 @@ import com.example.newsagreggator.data.remote.api.RssNewsService
 import com.example.newsagreggator.data.remote.parser.RssFeedParser
 import com.example.newsagreggator.data.remote.source.NewsFeed
 import com.example.newsagreggator.data.remote.source.NewsSource
-import com.example.newsagreggator.data.remote.source.NewsSources
+import com.example.newsagreggator.di.NewsSourceCatalog
 import com.example.newsagreggator.domain.model.Article
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -14,11 +14,12 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class RssNewsDataSource(
+class RssNewsDataSource @Inject constructor(
     private val newsService: RssNewsService,
-    sources: List<NewsSource> = NewsSources.all,
-    private val parser: RssFeedParser = RssFeedParser(),
+    @NewsSourceCatalog sources: List<NewsSource>,
+    private val parser: RssFeedParser,
 ) : RemoteNewsDataSource {
     private val sourceFeeds = sources.flatMap { source ->
         source.feeds.map { feed -> SourceFeed(source, feed) }

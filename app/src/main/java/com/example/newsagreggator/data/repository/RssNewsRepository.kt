@@ -4,16 +4,17 @@ import com.example.newsagreggator.data.local.dao.ArticleDao
 import com.example.newsagreggator.data.local.entities.toDomain
 import com.example.newsagreggator.data.local.entities.toEntity
 import com.example.newsagreggator.data.remote.RemoteNewsDataSource
-import com.example.newsagreggator.data.sample.createSampleNewsArticles
+import com.example.newsagreggator.di.InitialArticles
 import com.example.newsagreggator.domain.model.Article
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import javax.inject.Inject
 
-class RssNewsRepository(
+class RssNewsRepository @Inject constructor(
     private val remoteNewsDataSource: RemoteNewsDataSource,
     private val articleDao: ArticleDao,
-    initialArticles: List<Article> = createSampleNewsArticles(),
+    @InitialArticles initialArticles: List<Article>,
 ) : NewsRepository {
 
     override val news: Flow<NewsSnapshot> = combine(

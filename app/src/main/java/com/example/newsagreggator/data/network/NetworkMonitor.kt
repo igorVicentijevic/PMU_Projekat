@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,8 +16,8 @@ interface NetworkMonitor {
     val isOnline: Flow<Boolean>
 }
 
-class AndroidNetworkMonitor(
-    context: Context,
+class AndroidNetworkMonitor @Inject constructor(
+    @ApplicationContext context: Context,
 ) : NetworkMonitor {
     private val connectivityManager =
         context.applicationContext.getSystemService(ConnectivityManager::class.java)

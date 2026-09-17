@@ -10,6 +10,8 @@ import com.example.newsagreggator.ui.state.SecondaryScreen
 import com.example.newsagreggator.ui.state.TokTab
 import com.example.newsagreggator.ui.state.TokUiState
 import com.example.newsagreggator.ui.model.toNewsCardUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +22,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class TokViewModel(
+@HiltViewModel
+class TokViewModel @Inject constructor(
     private val newsRepository: NewsRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val articleStateRepository: ArticleStateRepository,

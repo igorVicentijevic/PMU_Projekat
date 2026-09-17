@@ -2,6 +2,7 @@ package com.example.newsagreggator.data.local.repository
 
 import com.example.newsagreggator.data.local.dao.ArticleStateDao
 import com.example.newsagreggator.data.local.entities.ArticleStateEntity
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -22,7 +23,7 @@ interface ArticleStateRepository {
     suspend fun clearReadingHistory()
 }
 
-class RoomArticleStateRepository(
+class RoomArticleStateRepository @Inject constructor(
     private val articleStateDao: ArticleStateDao,
 ) : ArticleStateRepository {
     override val articleState: Flow<ArticleState> =

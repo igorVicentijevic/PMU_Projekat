@@ -7,6 +7,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.newsagreggator.R
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -14,8 +16,8 @@ private val Context.userPreferencesDataStore by preferencesDataStore(
     name = "user_preferences"
 )
 
-class DataStoreUserPreferencesRepository(
-    context: Context,
+class DataStoreUserPreferencesRepository @Inject constructor(
+    @ApplicationContext context: Context,
 ) : UserPreferencesRepository {
     private val dataStore = context.applicationContext.userPreferencesDataStore
 

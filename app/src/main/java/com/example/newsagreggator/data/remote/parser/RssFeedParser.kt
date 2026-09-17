@@ -10,8 +10,9 @@ import java.io.StringReader
 import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.Locale
+import javax.inject.Inject
 
-class RssFeedParser {
+class RssFeedParser @Inject constructor() {
     fun parse(
         feedXml: String,
         source: NewsSource,
