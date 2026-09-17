@@ -2,6 +2,7 @@ package com.example.newsagreggator.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.newsagreggator.data.background.NewsRefreshScheduler
 import com.example.newsagreggator.data.local.repository.ArticleStateRepository
 import com.example.newsagreggator.data.network.NetworkMonitor
 import com.example.newsagreggator.data.preferences.UserPreferencesRepository
@@ -12,11 +13,9 @@ import com.example.newsagreggator.ui.state.TokUiState
 import com.example.newsagreggator.ui.model.toNewsCardUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -28,6 +27,7 @@ class TokViewModel @Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository,
     private val articleStateRepository: ArticleStateRepository,
     private val networkMonitor: NetworkMonitor,
+    private val newsRefreshScheduler: NewsRefreshScheduler,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TokUiState())
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
@@ -48,11 +48,15 @@ class TokViewModel @Inject constructor(
         }
         viewModelScope.launch {
             userPreferencesRepository.preferences.collect { preferences ->
+                val refreshIntervalMinutes =
+                    preferences.refreshIntervalMinutes.coerceAtLeast(
+                        NewsRefreshScheduler.MIN_INTERVAL_MINUTES
+                    )
                 _uiState.update { currentState ->
                     currentState.copy(
                         darkThemeOverride = preferences.darkThemeOverride,
                         compactLayout = preferences.compactLayout,
-                        refreshIntervalMinutes = preferences.refreshIntervalMinutes,
+                        refreshIntervalMinutes = refreshIntervalMinutes,
                         breakingNewsEnabled = preferences.breakingNewsEnabled,
                         followedCategories = preferences.followedCategories,
                     )
@@ -84,15 +88,12 @@ class TokViewModel @Inject constructor(
             userPreferencesRepository.preferences
                 .map { preferences ->
                     preferences.refreshIntervalMinutes.coerceAtLeast(
-                        MIN_REFRESH_INTERVAL_MINUTES
+                        NewsRefreshScheduler.MIN_INTERVAL_MINUTES
                     )
                 }
                 .distinctUntilChanged()
-                .collectLatest { refreshIntervalMinutes ->
-                    while (true) {
-                        delay(refreshIntervalMinutes.toLong() * MILLIS_PER_MINUTE)
-                        refreshArticles()
-                    }
+                .collect { refreshIntervalMinutes ->
+                    newsRefreshScheduler.schedule(refreshIntervalMinutes)
                 }
         }
         refreshArticles()
@@ -155,7 +156,9 @@ class TokViewModel @Inject constructor(
     }
 
     fun setRefreshInterval(minutes: Int) {
-        val validInterval = minutes.coerceAtLeast(MIN_REFRESH_INTERVAL_MINUTES)
+        val validInterval = minutes.coerceAtLeast(
+            NewsRefreshScheduler.MIN_INTERVAL_MINUTES
+        )
         _uiState.update { currentState ->
             currentState.copy(refreshIntervalMinutes = validInterval)
         }
@@ -257,8 +260,4 @@ class TokViewModel @Inject constructor(
         }
     }
 
-    private companion object {
-        const val MIN_REFRESH_INTERVAL_MINUTES = 1
-        const val MILLIS_PER_MINUTE = 60_000L
-    }
 }

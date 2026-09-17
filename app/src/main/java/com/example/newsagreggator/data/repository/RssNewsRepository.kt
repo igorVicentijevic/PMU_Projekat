@@ -9,6 +9,8 @@ import com.example.newsagreggator.domain.model.Article
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 class RssNewsRepository @Inject constructor(
@@ -16,6 +18,7 @@ class RssNewsRepository @Inject constructor(
     private val articleDao: ArticleDao,
     @InitialArticles initialArticles: List<Article>,
 ) : NewsRepository {
+    private val refreshMutex = Mutex()
 
     override val news: Flow<NewsSnapshot> = combine(
         articleDao.observeArticles(),
@@ -33,24 +36,25 @@ class RssNewsRepository @Inject constructor(
 
     }
 
-    override suspend fun refreshArticles(): Result<Unit> {
-        return try {
-            //getting articles from the internet
-            val fetchedArticles = remoteNewsDataSource.fetchArticles()
-            check(fetchedArticles.isNotEmpty()) {
-                "The RSS feed did not contain usable articles"
-            }
+    override suspend fun refreshArticles(): Result<Unit> =
+        refreshMutex.withLock {
+            try {
+                //getting articles from the internet
+                val fetchedArticles = remoteNewsDataSource.fetchArticles()
+                check(fetchedArticles.isNotEmpty()) {
+                    "The RSS feed did not contain usable articles"
+                }
 
-            //updating database
-            articleDao.replaceRemoteArticles(
-                articles = fetchedArticles.map(Article::toEntity),
-                refreshedAtEpochMillis = System.currentTimeMillis(),
-            )
-            Result.success(Unit)
-        } catch (cancellation: CancellationException) {
-            throw cancellation
-        } catch (error: Exception) {
-            Result.failure(error)
+                //updating database
+                articleDao.replaceRemoteArticles(
+                    articles = fetchedArticles.map(Article::toEntity),
+                    refreshedAtEpochMillis = System.currentTimeMillis(),
+                )
+                Result.success(Unit)
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (error: Exception) {
+                Result.failure(error)
+            }
         }
-    }
 }

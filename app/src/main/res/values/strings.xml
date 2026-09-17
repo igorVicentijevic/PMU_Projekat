@@ -62,8 +62,6 @@
     <string name="settings_auto_refresh_description">Provera novih i udarnih vesti</string>
     <string name="settings_breaking_news">Udarne vesti</string>
     <string name="settings_breaking_news_description">Za kategorije koje pratiš</string>
-    <string name="refresh_interval_1">1 min</string>
-    <string name="refresh_interval_5">5 min</string>
     <string name="refresh_interval_15">15 min</string>
     <string name="refresh_interval_30">30 min</string>
     <string name="refresh_interval_60">1 sat</string>

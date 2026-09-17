@@ -176,8 +176,6 @@ private data class RefreshIntervalOption(
 )
 
 private val refreshIntervalOptions = listOf(
-    RefreshIntervalOption(1, R.string.refresh_interval_1),
-    RefreshIntervalOption(5, R.string.refresh_interval_5),
     RefreshIntervalOption(15, R.string.refresh_interval_15),
     RefreshIntervalOption(30, R.string.refresh_interval_30),
     RefreshIntervalOption(60, R.string.refresh_interval_60),
@@ -191,7 +189,7 @@ private fun RefreshIntervalRow(
     var menuExpanded by remember { mutableStateOf(false) }
     val selectedOption = refreshIntervalOptions.firstOrNull {
         it.minutes == selectedIntervalMinutes
-    } ?: refreshIntervalOptions[2]
+    } ?: refreshIntervalOptions.first()
 
     Row(
         modifier = Modifier

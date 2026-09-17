@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.newsagreggator.R
+import com.example.newsagreggator.data.background.InMemoryNewsRefreshScheduler
 import com.example.newsagreggator.data.local.repository.InMemoryArticleStateRepository
 import com.example.newsagreggator.data.network.InMemoryNetworkMonitor
 import com.example.newsagreggator.data.preferences.InMemoryUserPreferencesRepository
@@ -392,6 +393,7 @@ private fun TokAppPreview() {
                 userPreferencesRepository = InMemoryUserPreferencesRepository(),
                 articleStateRepository = InMemoryArticleStateRepository(),
                 networkMonitor = InMemoryNetworkMonitor(),
+                newsRefreshScheduler = InMemoryNewsRefreshScheduler(),
             ),
         )
     }
