@@ -22,6 +22,9 @@ class SerbianCityResolver @Inject constructor() : CityResolver {
         }
     }
 
+    override fun findCityById(cityId: String): City? =
+        cities.firstOrNull { city -> city.id == cityId }
+
     private fun distanceKilometers(
         first: Coordinates,
         second: Coordinates,

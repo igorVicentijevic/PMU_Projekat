@@ -16,6 +16,27 @@ enum class TokTab {
     Settings,
 }
 
+sealed interface LocationUiState {
+    data object NotConfigured : LocationUiState
+
+    data object Detecting : LocationUiState
+
+    data object PermissionRequired : LocationUiState
+
+    data object PermissionDenied : LocationUiState
+
+    data object LocationServicesDisabled : LocationUiState
+
+    data object LocationUnavailable : LocationUiState
+
+    data object OutsideSupportedArea : LocationUiState
+
+    data class Selected(
+        val cityId: String,
+        val cityName: String,
+    ) : LocationUiState
+}
+
 data class TokUiState(
     val articles: List<NewsCardUiModel> = emptyList(),
     val isRefreshing: Boolean = false,
@@ -33,4 +54,5 @@ data class TokUiState(
     val savedArticleIds: Set<String> = emptySet(),
     val readArticleIds: Set<String> = emptySet(),
     val followedCategories: Set<Int> = defaultFollowedCategories,
+    val location: LocationUiState = LocationUiState.NotConfigured,
 )

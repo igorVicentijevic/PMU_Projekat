@@ -101,6 +101,9 @@ class DetectNearestCityCommandTest {
             override fun findNearestCity(
                 coordinates: Coordinates,
             ) = resolvedCity
+
+            override fun findCityById(cityId: String) =
+                resolvedCity?.takeIf { city -> city.id == cityId }
         },
         selectedCityRepository = repository,
     )

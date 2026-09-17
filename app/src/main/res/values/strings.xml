@@ -23,6 +23,17 @@
     <string name="for_you_subtitle">Priče iz kategorija koje pratiš.</string>
     <string name="for_you_empty_title">Izaberi teme koje pratiš</string>
     <string name="for_you_empty_body">Kada izabereš omiljene kategorije, personalizovane vesti pojaviće se ovde.</string>
+    <string name="for_you_location_title">Lokalne vesti</string>
+    <string name="for_you_location_body">Koristi GPS da odredimo najbliži grad. Tačne koordinate se ne čuvaju.</string>
+    <string name="for_you_location_use_gps">Koristi GPS</string>
+    <string name="for_you_location_detecting">Određujem najbliži grad pomoću GPS-a…</string>
+    <string name="for_you_location_permission_denied">Pristup lokaciji nije odobren. Dozvola je potrebna samo dok određujemo grad.</string>
+    <string name="for_you_location_disabled">Uključi lokaciju na uređaju, pa pokušaj ponovo.</string>
+    <string name="for_you_location_unavailable">GPS trenutno ne može da odredi lokaciju. Pokušaj ponovo na otvorenom.</string>
+    <string name="for_you_location_outside_serbia">Lokacija nije dovoljno blizu podržanog grada u Srbiji.</string>
+    <string name="for_you_location_retry">Pokušaj ponovo</string>
+    <string name="for_you_location_selected_title">Najbliži grad: %1$s</string>
+    <string name="for_you_location_selected_body">Grad je sačuvan za lokalnu sekciju. Precizna lokacija nije sačuvana.</string>
     <string name="saved_kicker">TVOJA BIBLIOTEKA</string>
     <string name="saved_placeholder">Vesti koje sačuvaš uskoro će biti dostupne ovde.</string>
     <string name="saved_subtitle">Dostupno i bez interneta.</string>

@@ -43,4 +43,11 @@ class SerbianCityResolverTest {
 
         assertNull(city)
     }
+
+    @Test
+    fun resolvesPersistedCityById() {
+        val city = resolver.findCityById("nis")
+
+        assertEquals("Niš", city?.name)
+    }
 }

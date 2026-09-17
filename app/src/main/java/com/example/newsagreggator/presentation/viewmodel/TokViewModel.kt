@@ -2,15 +2,20 @@ package com.example.newsagreggator.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.newsagreggator.business.command.DetectNearestCityCommand
+import com.example.newsagreggator.business.command.DetectNearestCityResult
 import com.example.newsagreggator.business.command.RefreshNewsCommand
 import com.example.newsagreggator.business.command.ToggleFollowedCategoryCommand
 import com.example.newsagreggator.business.command.UpdateRefreshIntervalCommand
 import com.example.newsagreggator.business.repository.ArticleStateRepository
 import com.example.newsagreggator.business.repository.NewsRepository
+import com.example.newsagreggator.business.repository.SelectedCityRepository
 import com.example.newsagreggator.business.repository.UserPreferencesRepository
+import com.example.newsagreggator.business.service.CityResolver
 import com.example.newsagreggator.business.service.NetworkMonitor
 import com.example.newsagreggator.business.service.NewsRefreshScheduler
 import com.example.newsagreggator.presentation.model.toNewsCardUiModel
+import com.example.newsagreggator.presentation.state.LocationUiState
 import com.example.newsagreggator.presentation.state.SecondaryScreen
 import com.example.newsagreggator.presentation.state.TokTab
 import com.example.newsagreggator.presentation.state.TokUiState
@@ -34,6 +39,9 @@ class TokViewModel @Inject constructor(
     private val refreshNewsCommand: RefreshNewsCommand,
     private val updateRefreshIntervalCommand: UpdateRefreshIntervalCommand,
     private val toggleFollowedCategoryCommand: ToggleFollowedCategoryCommand,
+    private val detectNearestCityCommand: DetectNearestCityCommand,
+    private val selectedCityRepository: SelectedCityRepository,
+    private val cityResolver: CityResolver,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TokUiState())
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
@@ -100,6 +108,23 @@ class TokViewModel @Inject constructor(
                 .distinctUntilChanged()
                 .collect { refreshIntervalMinutes ->
                     newsRefreshScheduler.schedule(refreshIntervalMinutes)
+                }
+        }
+        viewModelScope.launch {
+            selectedCityRepository.selectedCityId
+                .distinctUntilChanged()
+                .collect { selectedCityId ->
+                    val city = selectedCityId?.let(cityResolver::findCityById)
+                    if (city != null) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                location = LocationUiState.Selected(
+                                    cityId = city.id,
+                                    cityName = city.name,
+                                )
+                            )
+                        }
+                    }
                 }
         }
     }
@@ -277,6 +302,47 @@ class TokViewModel @Inject constructor(
         }
         viewModelScope.launch {
             toggleFollowedCategoryCommand(input)
+        }
+    }
+
+    fun detectNearestCity() {
+        if (_uiState.value.location == LocationUiState.Detecting) {
+            return
+        }
+
+        _uiState.update { currentState ->
+            currentState.copy(location = LocationUiState.Detecting)
+        }
+        viewModelScope.launch {
+            val locationState = when (val result = detectNearestCityCommand(Unit)) {
+                is DetectNearestCityResult.Detected ->
+                    LocationUiState.Selected(
+                        cityId = result.city.id,
+                        cityName = result.city.name,
+                    )
+
+                DetectNearestCityResult.PermissionRequired ->
+                    LocationUiState.PermissionRequired
+
+                DetectNearestCityResult.LocationServicesDisabled ->
+                    LocationUiState.LocationServicesDisabled
+
+                is DetectNearestCityResult.LocationUnavailable,
+                is DetectNearestCityResult.Failed,
+                -> LocationUiState.LocationUnavailable
+
+                is DetectNearestCityResult.NoSupportedCity ->
+                    LocationUiState.OutsideSupportedArea
+            }
+            _uiState.update { currentState ->
+                currentState.copy(location = locationState)
+            }
+        }
+    }
+
+    fun onLocationPermissionDenied() {
+        _uiState.update { currentState ->
+            currentState.copy(location = LocationUiState.PermissionDenied)
         }
     }
 }

@@ -5,4 +5,6 @@ import com.example.newsagreggator.business.model.Coordinates
 
 interface CityResolver {
     fun findNearestCity(coordinates: Coordinates): City?
+
+    fun findCityById(cityId: String): City?
 }

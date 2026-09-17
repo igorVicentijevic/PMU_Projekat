@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -29,12 +32,14 @@ import com.example.newsagreggator.data.sample.createSampleNewsArticles
 import com.example.newsagreggator.presentation.elements.composables.NewsArticleCard
 import com.example.newsagreggator.presentation.model.NewsCardUiModel
 import com.example.newsagreggator.presentation.model.toNewsCardUiModel
+import com.example.newsagreggator.presentation.state.LocationUiState
 import com.example.newsagreggator.presentation.theme.NewsAgreggatorTheme
 
 @Composable
 fun ForYouScreen(
     articles: List<NewsCardUiModel>,
     followedCategories: Set<Int>,
+    location: LocationUiState,
     savedArticleIds: Set<String>,
     readArticleIds: Set<String>,
     speakingArticleId: String?,
@@ -43,6 +48,7 @@ fun ForYouScreen(
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
+    onLocationAction: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -64,6 +70,11 @@ fun ForYouScreen(
                 text = stringResource(R.string.for_you_subtitle),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
+            )
+            Spacer(modifier = Modifier.height(18.dp))
+            LocalNewsLocationCard(
+                location = location,
+                onLocationAction = onLocationAction,
             )
             Spacer(modifier = Modifier.height(18.dp))
             if (followedCategories.isNotEmpty()) {
@@ -95,6 +106,88 @@ fun ForYouScreen(
             }
         }
         item { Spacer(modifier = Modifier.height(6.dp)) }
+    }
+}
+
+@Composable
+private fun LocalNewsLocationCard(
+    location: LocationUiState,
+    onLocationAction: () -> Unit,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f),
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+        ) {
+            Text(
+                text = when (location) {
+                    is LocationUiState.Selected -> stringResource(
+                        R.string.for_you_location_selected_title,
+                        location.cityName,
+                    )
+                    else -> stringResource(R.string.for_you_location_title)
+                },
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = when (location) {
+                    LocationUiState.NotConfigured,
+                    LocationUiState.PermissionRequired,
+                    -> stringResource(R.string.for_you_location_body)
+
+                    LocationUiState.Detecting ->
+                        stringResource(R.string.for_you_location_detecting)
+
+                    LocationUiState.PermissionDenied ->
+                        stringResource(R.string.for_you_location_permission_denied)
+
+                    LocationUiState.LocationServicesDisabled ->
+                        stringResource(R.string.for_you_location_disabled)
+
+                    LocationUiState.LocationUnavailable ->
+                        stringResource(R.string.for_you_location_unavailable)
+
+                    LocationUiState.OutsideSupportedArea ->
+                        stringResource(R.string.for_you_location_outside_serbia)
+
+                    is LocationUiState.Selected -> stringResource(
+                        R.string.for_you_location_selected_body
+                    )
+                },
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            when (location) {
+                LocationUiState.Detecting -> {
+                    Spacer(modifier = Modifier.height(14.dp))
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 3.dp,
+                    )
+                }
+                is LocationUiState.Selected -> Unit
+                else -> {
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Button(onClick = onLocationAction) {
+                        Text(
+                            text = stringResource(
+                                when (location) {
+                                    LocationUiState.LocationServicesDisabled ->
+                                        R.string.for_you_location_retry
+                                    else -> R.string.for_you_location_use_gps
+                                }
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -165,6 +258,10 @@ private fun ForYouScreenContentPreview() {
                     R.string.category_technology,
                     R.string.category_world,
                 ),
+                location = LocationUiState.Selected(
+                    cityId = "belgrade",
+                    cityName = "Beograd",
+                ),
                 savedArticleIds = setOf("1"),
                 readArticleIds = setOf("2"),
                 speakingArticleId = "1",
@@ -173,6 +270,7 @@ private fun ForYouScreenContentPreview() {
                 onReadArticle = {},
                 onToggleSpeech = {},
                 onShareArticle = {},
+                onLocationAction = {},
             )
         }
     }
@@ -186,6 +284,7 @@ private fun ForYouScreenEmptyPreview() {
             ForYouScreen(
                 articles = emptyList(),
                 followedCategories = emptySet(),
+                location = LocationUiState.NotConfigured,
                 savedArticleIds = emptySet(),
                 readArticleIds = emptySet(),
                 speakingArticleId = null,
@@ -194,6 +293,7 @@ private fun ForYouScreenEmptyPreview() {
                 onReadArticle = {},
                 onToggleSpeech = {},
                 onShareArticle = {},
+                onLocationAction = {},
             )
         }
     }

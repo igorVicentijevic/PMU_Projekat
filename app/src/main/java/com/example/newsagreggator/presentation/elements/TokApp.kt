@@ -1,9 +1,13 @@
 package com.example.newsagreggator.presentation.elements
 
+import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -29,14 +33,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.newsagreggator.R
+import com.example.newsagreggator.business.command.DetectNearestCityCommand
 import com.example.newsagreggator.business.command.RefreshNewsCommand
 import com.example.newsagreggator.business.command.ToggleFollowedCategoryCommand
 import com.example.newsagreggator.business.command.UpdateRefreshIntervalCommand
 import com.example.newsagreggator.data.sample.InMemoryArticleStateRepository
+import com.example.newsagreggator.data.sample.InMemoryCityResolver
+import com.example.newsagreggator.data.sample.InMemoryCurrentLocationProvider
 import com.example.newsagreggator.data.sample.InMemoryNetworkMonitor
 import com.example.newsagreggator.data.sample.InMemoryNewsRefreshScheduler
+import com.example.newsagreggator.data.sample.InMemorySelectedCityRepository
 import com.example.newsagreggator.data.sample.InMemoryUserPreferencesRepository
 import com.example.newsagreggator.data.sample.SampleNewsRepository
 import com.example.newsagreggator.presentation.speech.ArticleSpeechController
@@ -82,6 +91,40 @@ fun TokApp(
     val speechController = remember(context) { ArticleSpeechController(context) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val locationGranted =
+            permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (locationGranted) {
+            tokViewModel.detectNearestCity()
+        } else {
+            tokViewModel.onLocationPermissionDenied()
+        }
+    }
+    val requestGpsLocation: () -> Unit = {
+        val locationGranted =
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ) == PackageManager.PERMISSION_GRANTED
+
+        if (locationGranted) {
+            tokViewModel.detectNearestCity()
+        } else {
+            locationPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                )
+            )
+        }
+    }
     val toggleSaved: (String) -> Unit = { articleId ->
         val wasSaved = articleId in uiState.savedArticleIds
         tokViewModel.setArticleSaved(articleId, !wasSaved)
@@ -300,6 +343,7 @@ fun TokApp(
                     it.categoryResId in uiState.followedCategories
                 },
                 followedCategories = uiState.followedCategories,
+                location = uiState.location,
                 savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
@@ -308,6 +352,7 @@ fun TokApp(
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
                 onShareArticle = shareArticle,
+                onLocationAction = requestGpsLocation,
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.Saved -> SavedScreen(
@@ -390,6 +435,9 @@ private fun launchShareChooser(
 private fun TokAppPreview() {
     val newsRepository = SampleNewsRepository()
     val userPreferencesRepository = InMemoryUserPreferencesRepository()
+    val selectedCityRepository = InMemorySelectedCityRepository()
+    val cityResolver = InMemoryCityResolver()
+    val currentLocationProvider = InMemoryCurrentLocationProvider()
     NewsAgreggatorTheme(darkTheme = false) {
         TokApp(
             darkTheme = false,
@@ -404,6 +452,13 @@ private fun TokAppPreview() {
                     UpdateRefreshIntervalCommand(userPreferencesRepository),
                 toggleFollowedCategoryCommand =
                     ToggleFollowedCategoryCommand(userPreferencesRepository),
+                detectNearestCityCommand = DetectNearestCityCommand(
+                    currentLocationProvider = currentLocationProvider,
+                    cityResolver = cityResolver,
+                    selectedCityRepository = selectedCityRepository,
+                ),
+                selectedCityRepository = selectedCityRepository,
+                cityResolver = cityResolver,
             ),
         )
     }

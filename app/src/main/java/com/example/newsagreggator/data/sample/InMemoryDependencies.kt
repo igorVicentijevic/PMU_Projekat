@@ -2,8 +2,14 @@ package com.example.newsagreggator.data.sample
 
 import com.example.newsagreggator.business.repository.ArticleState
 import com.example.newsagreggator.business.repository.ArticleStateRepository
+import com.example.newsagreggator.business.repository.SelectedCityRepository
 import com.example.newsagreggator.business.repository.UserPreferences
 import com.example.newsagreggator.business.repository.UserPreferencesRepository
+import com.example.newsagreggator.business.model.City
+import com.example.newsagreggator.business.model.Coordinates
+import com.example.newsagreggator.business.service.CityResolver
+import com.example.newsagreggator.business.service.CurrentLocationProvider
+import com.example.newsagreggator.business.service.CurrentLocationResult
 import com.example.newsagreggator.business.service.NetworkMonitor
 import com.example.newsagreggator.business.service.NewsRefreshScheduler
 import kotlinx.coroutines.flow.Flow
@@ -77,3 +83,42 @@ class InMemoryNetworkMonitor(
 class InMemoryNewsRefreshScheduler : NewsRefreshScheduler {
     override fun schedule(intervalMinutes: Int) = Unit
 }
+
+class InMemorySelectedCityRepository(
+    initialCityId: String? = null,
+) : SelectedCityRepository {
+    private val selectedCity = MutableStateFlow(initialCityId)
+    override val selectedCityId: Flow<String?> = selectedCity
+
+    override suspend fun setSelectedCity(cityId: String) {
+        selectedCity.value = cityId
+    }
+
+    override suspend fun clearSelectedCity() {
+        selectedCity.value = null
+    }
+}
+
+class InMemoryCurrentLocationProvider(
+    private val result: CurrentLocationResult =
+        CurrentLocationResult.Available(BELGRADE.coordinates),
+) : CurrentLocationProvider {
+    override suspend fun getCurrentLocation(): CurrentLocationResult = result
+}
+
+class InMemoryCityResolver : CityResolver {
+    override fun findNearestCity(coordinates: Coordinates): City = BELGRADE
+
+    override fun findCityById(cityId: String): City? =
+        BELGRADE.takeIf { city -> city.id == cityId }
+}
+
+private val BELGRADE = City(
+    id = "belgrade",
+    name = "Beograd",
+    coordinates = Coordinates(
+        latitude = 44.7866,
+        longitude = 20.4489,
+    ),
+    aliases = setOf("Beograd", "Beogradu", "beogradski"),
+)
