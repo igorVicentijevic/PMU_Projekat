@@ -9,6 +9,7 @@ import com.example.newsagreggator.data.remote.source.NewsSource
 import com.example.newsagreggator.di.NewsSourceCatalog
 import com.example.newsagreggator.business.model.Article
 import com.example.newsagreggator.business.service.ArticleCityClassifier
+import com.example.newsagreggator.business.service.TextNormalizer
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -22,6 +23,7 @@ class RssNewsDataSource @Inject constructor(
     @NewsSourceCatalog sources: List<NewsSource>,
     private val parser: RssFeedParser,
     private val articleCityClassifier: ArticleCityClassifier,
+    private val textNormalizer: TextNormalizer,
 ) : RemoteNewsDataSource {
     private val sourceFeeds = sources.flatMap { source ->
         source.feeds.map { feed -> SourceFeed(source, feed) }
@@ -38,8 +40,14 @@ class RssNewsDataSource @Inject constructor(
             //remove duplicate articles
             .distinctBy(Article::articleUrl)
             .map { article ->
-                article.copy(
-                    relatedCityIds = articleCityClassifier.classify(article)
+                val normalizedArticle = article.copy(
+                    normalizedText = textNormalizer.normalize(
+                        "${article.title} ${article.summary} ${article.source}"
+                    )
+                )
+                normalizedArticle.copy(
+                    relatedCityIds =
+                        articleCityClassifier.classify(normalizedArticle)
                 )
             }
             .sortedByDescending(Article::publishedAtEpochMillis)

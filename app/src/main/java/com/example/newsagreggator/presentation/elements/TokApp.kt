@@ -48,6 +48,7 @@ import com.example.newsagreggator.data.sample.InMemoryNewsRefreshScheduler
 import com.example.newsagreggator.data.sample.InMemorySelectedCityRepository
 import com.example.newsagreggator.data.sample.InMemoryUserPreferencesRepository
 import com.example.newsagreggator.data.sample.SampleNewsRepository
+import com.example.newsagreggator.data.text.SerbianTextNormalizer
 import com.example.newsagreggator.presentation.speech.ArticleSpeechController
 import com.example.newsagreggator.presentation.speech.SpeechArticle
 import com.example.newsagreggator.presentation.speech.SpeechActionResult
@@ -314,6 +315,7 @@ fun TokApp(
             TokTab.Home -> TokHomeScreen(
                 articles = uiState.articles,
                 searchQuery = uiState.searchQuery,
+                normalizedSearchQuery = uiState.normalizedSearchQuery,
                 selectedCategory = uiState.selectedCategory,
                 savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = uiState.readArticleIds,
@@ -454,6 +456,7 @@ private fun TokAppPreview() {
     val selectedCityRepository = InMemorySelectedCityRepository()
     val cityResolver = InMemoryCityResolver()
     val currentLocationProvider = InMemoryCurrentLocationProvider()
+    val textNormalizer = SerbianTextNormalizer()
     NewsAgreggatorTheme(darkTheme = false) {
         TokApp(
             darkTheme = false,
@@ -475,6 +478,7 @@ private fun TokAppPreview() {
                 ),
                 selectedCityRepository = selectedCityRepository,
                 cityResolver = cityResolver,
+                textNormalizer = textNormalizer,
             ),
         )
     }

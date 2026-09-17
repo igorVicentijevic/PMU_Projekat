@@ -16,6 +16,7 @@ data class NewsCardUiModel(
     val title: String,
     val summary: String,
     val url: String,
+    val normalizedText: String,
     val relatedCityIds: Set<String>,
 )
 
@@ -36,6 +37,7 @@ fun Article.toNewsCardUiModel(
         title = title,
         summary = summary,
         url = articleUrl,
+        normalizedText = normalizedText,
         relatedCityIds = relatedCityIds,
     )
 }

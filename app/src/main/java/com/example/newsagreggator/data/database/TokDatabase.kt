@@ -11,6 +11,7 @@ import com.example.newsagreggator.data.database.dao.ArticleStateDao
 import com.example.newsagreggator.data.database.entity.ArticleEntity
 import com.example.newsagreggator.data.database.entity.ArticleStateEntity
 import com.example.newsagreggator.data.database.entity.NewsSyncMetadataEntity
+import com.example.newsagreggator.data.text.SerbianTextNormalizer
 
 @Database(
     entities = [
@@ -18,7 +19,7 @@ import com.example.newsagreggator.data.database.entity.NewsSyncMetadataEntity
         ArticleStateEntity::class,
         NewsSyncMetadataEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
 )
 abstract class TokDatabase : RoomDatabase() {
@@ -32,7 +33,12 @@ abstract class TokDatabase : RoomDatabase() {
             TokDatabase::class.java,
             "tok.db",
         )
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(
+                MIGRATION_1_2,
+                MIGRATION_2_3,
+                MIGRATION_3_4,
+                MIGRATION_4_5,
+            )
             .build()
 
         private val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -98,6 +104,58 @@ abstract class TokDatabase : RoomDatabase() {
                     ADD COLUMN relatedCityIds TEXT NOT NULL DEFAULT ''
                     """.trimIndent()
                 )
+            }
+        }
+
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    ALTER TABLE articles
+                    ADD COLUMN normalizedText TEXT NOT NULL DEFAULT ''
+                    """.trimIndent()
+                )
+
+                val normalizer = SerbianTextNormalizer()
+                val normalizedArticles = db.query(
+                    """
+                    SELECT id, title, summary, source
+                    FROM articles
+                    """.trimIndent()
+                ).use { cursor ->
+                    val idIndex = cursor.getColumnIndexOrThrow("id")
+                    val titleIndex = cursor.getColumnIndexOrThrow("title")
+                    val summaryIndex = cursor.getColumnIndexOrThrow("summary")
+                    val sourceIndex = cursor.getColumnIndexOrThrow("source")
+
+                    buildList {
+                        while (cursor.moveToNext()) {
+                            add(
+                                cursor.getString(idIndex) to
+                                    normalizer.normalize(
+                                        buildString {
+                                            append(cursor.getString(titleIndex))
+                                            append(' ')
+                                            append(cursor.getString(summaryIndex))
+                                            append(' ')
+                                            append(cursor.getString(sourceIndex))
+                                        }
+                                    )
+                            )
+                        }
+                    }
+                }
+
+                normalizedArticles.forEach { (articleId, normalizedText) ->
+                    db.execSQL(
+                        """
+                        UPDATE articles
+                        SET normalizedText = ?
+                        WHERE id = ?
+                        """.trimIndent(),
+                        arrayOf(normalizedText, articleId),
+                    )
+                }
             }
         }
     }

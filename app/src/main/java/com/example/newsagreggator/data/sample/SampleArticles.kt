@@ -2,8 +2,10 @@ package com.example.newsagreggator.data.sample
 
 import com.example.newsagreggator.business.model.Article
 import com.example.newsagreggator.business.model.NewsCategory
+import com.example.newsagreggator.data.text.SerbianTextNormalizer
 
 private const val MINUTE_MILLIS = 60_000L
+private val textNormalizer = SerbianTextNormalizer()
 
 fun createSampleNewsArticles(
     currentTimeMillis: Long = System.currentTimeMillis(),
@@ -42,4 +44,10 @@ fun createSampleNewsArticles(
         imageUrl = null,
         articleUrl = "https://www.reuters.com/world/",
     ),
-)
+).map { article ->
+    article.copy(
+        normalizedText = textNormalizer.normalize(
+            "${article.title} ${article.summary} ${article.source}"
+        )
+    )
+}

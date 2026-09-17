@@ -14,6 +14,7 @@ import com.example.newsagreggator.business.repository.UserPreferencesRepository
 import com.example.newsagreggator.business.service.CityResolver
 import com.example.newsagreggator.business.service.NetworkMonitor
 import com.example.newsagreggator.business.service.NewsRefreshScheduler
+import com.example.newsagreggator.business.service.TextNormalizer
 import com.example.newsagreggator.presentation.model.toNewsCardUiModel
 import com.example.newsagreggator.presentation.state.LocationUiState
 import com.example.newsagreggator.presentation.state.SecondaryScreen
@@ -42,6 +43,7 @@ class TokViewModel @Inject constructor(
     private val detectNearestCityCommand: DetectNearestCityCommand,
     private val selectedCityRepository: SelectedCityRepository,
     private val cityResolver: CityResolver,
+    private val textNormalizer: TextNormalizer,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TokUiState())
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
@@ -225,7 +227,10 @@ class TokViewModel @Inject constructor(
 
     fun setSearchQuery(query: String) {
         _uiState.update { currentState ->
-            currentState.copy(searchQuery = query)
+            currentState.copy(
+                searchQuery = query,
+                normalizedSearchQuery = textNormalizer.normalize(query),
+            )
         }
     }
 

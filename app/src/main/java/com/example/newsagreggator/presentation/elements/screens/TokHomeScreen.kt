@@ -47,12 +47,12 @@ import com.example.newsagreggator.data.sample.createSampleNewsArticles
 import com.example.newsagreggator.presentation.model.toNewsCardUiModel
 import com.example.newsagreggator.presentation.theme.NewsAgreggatorTheme
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 @Composable
 fun TokHomeScreen(
     articles: List<NewsCardUiModel>,
     searchQuery: String,
+    normalizedSearchQuery: String,
     selectedCategory: Int,
     savedArticleIds: Set<String>,
     readArticleIds: Set<String>,
@@ -75,17 +75,13 @@ fun TokHomeScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val serbianLocale = Locale.forLanguageTag("sr-Latn-RS")
-    val normalizedQuery = searchQuery.trim().lowercase(serbianLocale)
     val visibleArticles = articles.filter { article ->
         val matchesCategory =
             selectedCategory == R.string.category_all ||
                 selectedCategory == article.categoryResId
         val matchesQuery =
-            normalizedQuery.isEmpty() ||
-                listOf(article.title, article.summary, article.source).any {
-                    it.lowercase(serbianLocale).contains(normalizedQuery)
-                }
+            normalizedSearchQuery.isEmpty() ||
+                article.normalizedText.contains(normalizedSearchQuery)
         matchesCategory && matchesQuery
     }
 
@@ -198,7 +194,7 @@ fun TokHomeScreen(
                 if (visibleArticles.isEmpty()) {
                     Text(
                         text = stringResource(
-                            if (normalizedQuery.isEmpty()) {
+                            if (normalizedSearchQuery.isEmpty()) {
                                 R.string.no_category_news
                             } else {
                                 R.string.no_search_results
@@ -285,6 +281,7 @@ private fun TokHomeScreenPreview() {
                     it.toNewsCardUiModel()
                 },
                 searchQuery = "",
+                normalizedSearchQuery = "",
                 selectedCategory = R.string.category_all,
                 savedArticleIds = emptySet(),
                 readArticleIds = emptySet(),

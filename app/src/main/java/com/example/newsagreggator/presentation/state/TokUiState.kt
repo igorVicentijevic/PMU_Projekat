@@ -48,6 +48,7 @@ data class TokUiState(
     val refreshIntervalMinutes: Int = 15,
     val breakingNewsEnabled: Boolean = true,
     val searchQuery: String = "",
+    val normalizedSearchQuery: String = "",
     val selectedCategory: Int = R.string.category_all,
     val selectedTab: TokTab = TokTab.Home,
     val secondaryScreen: SecondaryScreen? = null,

@@ -2,13 +2,16 @@ package com.example.newsagreggator.data.location
 
 import com.example.newsagreggator.business.model.Article
 import com.example.newsagreggator.business.model.NewsCategory
+import com.example.newsagreggator.data.text.SerbianTextNormalizer
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AliasArticleLocationDetectionStrategyTest {
+    private val textNormalizer = SerbianTextNormalizer()
     private val strategy = AliasArticleLocationDetectionStrategy(
-        cityCatalog = SerbianCityResolver()
+        cityCatalog = SerbianCityResolver(),
+        textNormalizer = textNormalizer,
     )
 
     @Test
@@ -85,5 +88,6 @@ class AliasArticleLocationDetectionStrategyTest {
         publishedAtEpochMillis = 0L,
         imageUrl = null,
         articleUrl = "https://example.com/test",
+        normalizedText = textNormalizer.normalize("$title $summary Test"),
     )
 }
