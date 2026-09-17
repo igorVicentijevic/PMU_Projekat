@@ -31,6 +31,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.newsagreggator.R
+import com.example.newsagreggator.business.command.RefreshNewsCommand
+import com.example.newsagreggator.business.command.ToggleFollowedCategoryCommand
+import com.example.newsagreggator.business.command.UpdateRefreshIntervalCommand
 import com.example.newsagreggator.data.sample.InMemoryArticleStateRepository
 import com.example.newsagreggator.data.sample.InMemoryNetworkMonitor
 import com.example.newsagreggator.data.sample.InMemoryNewsRefreshScheduler
@@ -385,15 +388,22 @@ private fun launchShareChooser(
 @Preview(name = "Tok aplikacija", showBackground = true)
 @Composable
 private fun TokAppPreview() {
+    val newsRepository = SampleNewsRepository()
+    val userPreferencesRepository = InMemoryUserPreferencesRepository()
     NewsAgreggatorTheme(darkTheme = false) {
         TokApp(
             darkTheme = false,
             tokViewModel = TokViewModel(
-                newsRepository = SampleNewsRepository(),
-                userPreferencesRepository = InMemoryUserPreferencesRepository(),
+                newsRepository = newsRepository,
+                userPreferencesRepository = userPreferencesRepository,
                 articleStateRepository = InMemoryArticleStateRepository(),
                 networkMonitor = InMemoryNetworkMonitor(),
                 newsRefreshScheduler = InMemoryNewsRefreshScheduler(),
+                refreshNewsCommand = RefreshNewsCommand(newsRepository),
+                updateRefreshIntervalCommand =
+                    UpdateRefreshIntervalCommand(userPreferencesRepository),
+                toggleFollowedCategoryCommand =
+                    ToggleFollowedCategoryCommand(userPreferencesRepository),
             ),
         )
     }

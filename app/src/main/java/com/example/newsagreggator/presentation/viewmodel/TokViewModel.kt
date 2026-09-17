@@ -2,15 +2,18 @@ package com.example.newsagreggator.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.newsagreggator.business.service.NewsRefreshScheduler
+import com.example.newsagreggator.business.command.RefreshNewsCommand
+import com.example.newsagreggator.business.command.ToggleFollowedCategoryCommand
+import com.example.newsagreggator.business.command.UpdateRefreshIntervalCommand
 import com.example.newsagreggator.business.repository.ArticleStateRepository
-import com.example.newsagreggator.business.service.NetworkMonitor
-import com.example.newsagreggator.business.repository.UserPreferencesRepository
 import com.example.newsagreggator.business.repository.NewsRepository
+import com.example.newsagreggator.business.repository.UserPreferencesRepository
+import com.example.newsagreggator.business.service.NetworkMonitor
+import com.example.newsagreggator.business.service.NewsRefreshScheduler
+import com.example.newsagreggator.presentation.model.toNewsCardUiModel
 import com.example.newsagreggator.presentation.state.SecondaryScreen
 import com.example.newsagreggator.presentation.state.TokTab
 import com.example.newsagreggator.presentation.state.TokUiState
-import com.example.newsagreggator.presentation.model.toNewsCardUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +31,9 @@ class TokViewModel @Inject constructor(
     private val articleStateRepository: ArticleStateRepository,
     private val networkMonitor: NetworkMonitor,
     private val newsRefreshScheduler: NewsRefreshScheduler,
+    private val refreshNewsCommand: RefreshNewsCommand,
+    private val updateRefreshIntervalCommand: UpdateRefreshIntervalCommand,
+    private val toggleFollowedCategoryCommand: ToggleFollowedCategoryCommand,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TokUiState())
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
@@ -49,8 +55,8 @@ class TokViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferencesRepository.preferences.collect { preferences ->
                 val refreshIntervalMinutes =
-                    preferences.refreshIntervalMinutes.coerceAtLeast(
-                        NewsRefreshScheduler.MIN_INTERVAL_MINUTES
+                    updateRefreshIntervalCommand.normalize(
+                        preferences.refreshIntervalMinutes
                     )
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -87,8 +93,8 @@ class TokViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferencesRepository.preferences
                 .map { preferences ->
-                    preferences.refreshIntervalMinutes.coerceAtLeast(
-                        NewsRefreshScheduler.MIN_INTERVAL_MINUTES
+                    updateRefreshIntervalCommand.normalize(
+                        preferences.refreshIntervalMinutes
                     )
                 }
                 .distinctUntilChanged()
@@ -108,21 +114,18 @@ class TokViewModel @Inject constructor(
     }
 
     fun refreshArticles() {
-        launchArticleRefresh(newsRepository::refreshArticles)
+        launchArticleRefresh {
+            refreshNewsCommand(RefreshNewsCommand.Policy.Force)
+        }
     }
 
     fun refreshArticlesIfStale() {
         val lastSuccessfulRefresh =
             _uiState.value.lastSuccessfulRefreshEpochMillis
-        val isFresh = lastSuccessfulRefresh != null &&
-            System.currentTimeMillis() - lastSuccessfulRefresh <
-            FOREGROUND_REFRESH_STALE_AFTER_MILLIS
 
-        if (!isFresh) {
+        if (refreshNewsCommand.shouldRefresh(lastSuccessfulRefresh)) {
             launchArticleRefresh {
-                newsRepository.refreshArticlesIfStale(
-                    FOREGROUND_REFRESH_STALE_AFTER_MILLIS
-                )
+                refreshNewsCommand(RefreshNewsCommand.Policy.IfStale)
             }
         }
     }
@@ -177,14 +180,12 @@ class TokViewModel @Inject constructor(
     }
 
     fun setRefreshInterval(minutes: Int) {
-        val validInterval = minutes.coerceAtLeast(
-            NewsRefreshScheduler.MIN_INTERVAL_MINUTES
-        )
+        val validInterval = updateRefreshIntervalCommand.normalize(minutes)
         _uiState.update { currentState ->
             currentState.copy(refreshIntervalMinutes = validInterval)
         }
         viewModelScope.launch {
-            userPreferencesRepository.setRefreshInterval(validInterval)
+            updateRefreshIntervalCommand(minutes)
         }
     }
 
@@ -266,23 +267,16 @@ class TokViewModel @Inject constructor(
     }
 
     fun toggleFollowedCategory(category: Int) {
-        val followedCategories = if (
-            category in _uiState.value.followedCategories
-        ) {
-            _uiState.value.followedCategories - category
-        } else {
-            _uiState.value.followedCategories + category
-        }
+        val input = ToggleFollowedCategoryCommand.Input(
+            followedCategories = _uiState.value.followedCategories,
+            category = category,
+        )
+        val followedCategories = toggleFollowedCategoryCommand.toggle(input)
         _uiState.update { currentState ->
             currentState.copy(followedCategories = followedCategories)
         }
         viewModelScope.launch {
-            userPreferencesRepository.setFollowedCategories(followedCategories)
+            toggleFollowedCategoryCommand(input)
         }
     }
-
-    private companion object {
-        const val FOREGROUND_REFRESH_STALE_AFTER_MILLIS = 5 * 60_000L
-    }
-
 }
