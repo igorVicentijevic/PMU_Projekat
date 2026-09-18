@@ -18,8 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -42,7 +40,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
-import com.example.newsagreggator.ui.elements.composables.newsCategoryResIds
 import com.example.newsagreggator.ui.elements.theme.NewsAgreggatorTheme
 import com.example.newsagreggator.ui.elements.theme.TokCoral
 
@@ -52,7 +49,6 @@ fun SettingsScreen(
     automaticThemeEnabled: Boolean,
     ambientLightSensorAvailable: Boolean?,
     compactLayout: Boolean,
-    followedCategories: Set<Int>,
     refreshIntervalMinutes: Int,
     breakingNewsEnabled: Boolean,
     onDarkThemeChange: (Boolean) -> Unit,
@@ -60,7 +56,6 @@ fun SettingsScreen(
     onCompactLayoutChange: (Boolean) -> Unit,
     onRefreshIntervalChange: (Int) -> Unit,
     onBreakingNewsChange: (Boolean) -> Unit,
-    onToggleCategory: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -172,22 +167,6 @@ fun SettingsScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(28.dp))
-        Text(
-            text = stringResource(R.string.settings_favorite_categories),
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleLarge,
-        )
-        Text(
-            text = stringResource(R.string.settings_favorite_categories_description),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        FavoriteCategoryGrid(
-            followedCategories = followedCategories,
-            onToggleCategory = onToggleCategory,
-        )
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
@@ -279,47 +258,6 @@ private fun RefreshIntervalRow(
 }
 
 @Composable
-private fun FavoriteCategoryGrid(
-    followedCategories: Set<Int>,
-    onToggleCategory: (Int) -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        newsCategoryResIds
-            .drop(1)
-            .chunked(2)
-            .forEach { rowCategories ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    rowCategories.forEach { category ->
-                        FilterChip(
-                            selected = category in followedCategories,
-                            onClick = { onToggleCategory(category) },
-                            label = {
-                                Text(
-                                    text = stringResource(category),
-                                    fontWeight = FontWeight.Medium,
-                                )
-                            },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor =
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
-                                selectedLabelColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
-                    }
-                    if (rowCategories.size == 1) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
-            }
-    }
-}
-
-@Composable
 private fun SettingToggleRow(
     @DrawableRes iconResId: Int,
     @StringRes titleResId: Int,
@@ -381,11 +319,6 @@ private fun SettingsLightPreview() {
                 automaticThemeEnabled = false,
                 ambientLightSensorAvailable = true,
                 compactLayout = false,
-                followedCategories = setOf(
-                    R.string.category_serbia,
-                    R.string.category_technology,
-                    R.string.category_world,
-                ),
                 refreshIntervalMinutes = 15,
                 breakingNewsEnabled = true,
                 onDarkThemeChange = {},
@@ -393,7 +326,6 @@ private fun SettingsLightPreview() {
                 onCompactLayoutChange = {},
                 onRefreshIntervalChange = {},
                 onBreakingNewsChange = {},
-                onToggleCategory = {},
             )
         }
     }
@@ -409,7 +341,6 @@ private fun SettingsDarkPreview() {
                 automaticThemeEnabled = true,
                 ambientLightSensorAvailable = true,
                 compactLayout = true,
-                followedCategories = emptySet(),
                 refreshIntervalMinutes = 60,
                 breakingNewsEnabled = false,
                 onDarkThemeChange = {},
@@ -417,7 +348,6 @@ private fun SettingsDarkPreview() {
                 onCompactLayoutChange = {},
                 onRefreshIntervalChange = {},
                 onBreakingNewsChange = {},
-                onToggleCategory = {},
             )
         }
     }

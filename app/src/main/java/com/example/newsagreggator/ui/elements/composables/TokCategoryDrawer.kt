@@ -40,9 +40,9 @@ private val OfflineOrange = androidx.compose.ui.graphics.Color(0xFFD08B35)
 @Composable
 fun TokCategoryDrawer(
     drawerState: DrawerState,
-    selectedCategory: Int,
+    followedCategories: Set<Int>,
     isOffline: Boolean,
-    onCategorySelected: (Int) -> Unit,
+    onToggleCategory: (Int) -> Unit,
     onDigestClick: () -> Unit,
     onHistoryClick: () -> Unit,
     onClose: () -> Unit,
@@ -107,28 +107,40 @@ fun TokCategoryDrawer(
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(horizontal = 12.dp),
                     )
+                    Text(
+                        text = stringResource(
+                            R.string.drawer_categories_description
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(
+                            horizontal = 12.dp,
+                            vertical = 4.dp,
+                        ),
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
-                    newsCategoryResIds.forEach { category ->
+                    newsCategoryResIds.drop(1).forEach { category ->
+                        val selected = category in followedCategories
                         NavigationDrawerItem(
                             label = {
                                 Text(
                                     text = stringResource(category),
-                                    fontWeight = if (category == selectedCategory) {
+                                    fontWeight = if (selected) {
                                         FontWeight.Bold
                                     } else {
                                         FontWeight.Medium
                                     },
                                 )
                             },
-                            selected = category == selectedCategory,
-                            onClick = { onCategorySelected(category) },
+                            selected = selected,
+                            onClick = { onToggleCategory(category) },
                             icon = {
                                 Box(
                                     modifier = Modifier
                                         .size(9.dp)
                                         .clip(CircleShape)
                                         .background(
-                                            if (category == selectedCategory) {
+                                            if (selected) {
                                                 MaterialTheme.colorScheme.primary
                                             } else {
                                                 MaterialTheme.colorScheme.outline

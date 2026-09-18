@@ -14,7 +14,8 @@
     <string name="drawer_subtitle">Izaberi svoj tok vesti</string>
     <string name="drawer_history">Istorija</string>
     <string name="drawer_digest">Dnevni pregled</string>
-    <string name="drawer_categories">KATEGORIJE</string>
+    <string name="drawer_categories">OMILJENE KATEGORIJE</string>
+    <string name="drawer_categories_description">Izaberi teme za sekciju „Za vas“ i dnevni pregled.</string>
     <string name="drawer_offline_title">Offline režim</string>
     <string name="drawer_offline_subtitle">Nema internet veze; vesti ne mogu da se osveže</string>
     <string name="nav_home">Početna</string>

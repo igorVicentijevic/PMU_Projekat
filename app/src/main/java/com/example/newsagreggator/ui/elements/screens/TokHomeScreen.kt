@@ -54,6 +54,7 @@ fun TokHomeScreen(
     searchQuery: String,
     normalizedSearchQuery: String,
     selectedCategory: Int,
+    followedCategories: Set<Int>,
     savedArticleIds: Set<String>,
     readArticleIds: Set<String>,
     speakingArticleId: String?,
@@ -71,6 +72,7 @@ fun TokHomeScreen(
     onCompactLayoutChange: (Boolean) -> Unit,
     onSearchQueryChange: (String) -> Unit,
     onCategorySelected: (Int) -> Unit,
+    onToggleFollowedCategory: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -87,12 +89,9 @@ fun TokHomeScreen(
 
     TokCategoryDrawer(
         drawerState = drawerState,
-        selectedCategory = selectedCategory,
+        followedCategories = followedCategories,
         isOffline = isOffline,
-        onCategorySelected = { category ->
-            onCategorySelected(category)
-            coroutineScope.launch { drawerState.close() }
-        },
+        onToggleCategory = onToggleFollowedCategory,
         onDigestClick = {
             coroutineScope.launch {
                 drawerState.close()
@@ -283,6 +282,10 @@ private fun TokHomeScreenPreview() {
                 searchQuery = "",
                 normalizedSearchQuery = "",
                 selectedCategory = R.string.category_all,
+                followedCategories = setOf(
+                    R.string.category_serbia,
+                    R.string.category_technology,
+                ),
                 savedArticleIds = emptySet(),
                 readArticleIds = emptySet(),
                 speakingArticleId = null,
@@ -300,6 +303,7 @@ private fun TokHomeScreenPreview() {
                 onCompactLayoutChange = {},
                 onSearchQueryChange = {},
                 onCategorySelected = {},
+                onToggleFollowedCategory = {},
             )
         }
     }

@@ -352,6 +352,7 @@ fun TokApp(
                 searchQuery = uiState.searchQuery,
                 normalizedSearchQuery = uiState.normalizedSearchQuery,
                 selectedCategory = uiState.selectedCategory,
+                followedCategories = uiState.followedCategories,
                 savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
@@ -374,6 +375,8 @@ fun TokApp(
                 onCompactLayoutChange = tokViewModel::setCompactLayout,
                 onSearchQueryChange = tokViewModel::setSearchQuery,
                 onCategorySelected = tokViewModel::selectCategory,
+                onToggleFollowedCategory =
+                    tokViewModel::toggleFollowedCategory,
                 modifier = Modifier.padding(innerPadding),
             )
             TokTab.ForYou -> {
@@ -432,7 +435,6 @@ fun TokApp(
                 automaticThemeEnabled = uiState.automaticThemeEnabled,
                 ambientLightSensorAvailable = ambientLightSensorAvailable,
                 compactLayout = uiState.compactLayout,
-                followedCategories = uiState.followedCategories,
                 refreshIntervalMinutes = uiState.refreshIntervalMinutes,
                 breakingNewsEnabled = uiState.breakingNewsEnabled,
                 onDarkThemeChange = tokViewModel::setDarkTheme,
@@ -441,7 +443,6 @@ fun TokApp(
                 onCompactLayoutChange = tokViewModel::setCompactLayout,
                 onRefreshIntervalChange = tokViewModel::setRefreshInterval,
                 onBreakingNewsChange = setBreakingNewsEnabled,
-                onToggleCategory = tokViewModel::toggleFollowedCategory,
                 modifier = Modifier.padding(innerPadding),
             )
             }
