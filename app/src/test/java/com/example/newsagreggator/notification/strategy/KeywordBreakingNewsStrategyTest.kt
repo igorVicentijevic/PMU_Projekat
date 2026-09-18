@@ -18,6 +18,12 @@ class KeywordBreakingNewsStrategyTest {
     )
 
     @Test
+    fun vocabularyContainsAtLeastFiftyWordsPerPrimarySet() {
+        assertTrue(BreakingNewsVocabulary.urgencyWords.size >= 50)
+        assertTrue(BreakingNewsVocabulary.highImpactWords.size >= 50)
+    }
+
+    @Test
     fun detectsFreshUrgentEscalation() {
         val decision = strategy.evaluate(
             article(
@@ -39,6 +45,33 @@ class KeywordBreakingNewsStrategyTest {
         val decision = strategy.evaluate(
             article(
                 title = "Hitno izveštavanje o zemljotresu",
+                publishedAtEpochMillis = now,
+            )
+        )
+
+        assertTrue(decision.isBreaking)
+        assertTrue("high-impact-event" in decision.reasons)
+    }
+
+    @Test
+    fun detectsExpandedUrgencyAndHighImpactVocabulary() {
+        val decision = strategy.evaluate(
+            article(
+                title = "UŽIVO: evakuacija zbog klizišta",
+                publishedAtEpochMillis = now,
+            )
+        )
+
+        assertTrue(decision.isBreaking)
+        assertTrue("urgency-in-title" in decision.reasons)
+        assertTrue("high-impact-event" in decision.reasons)
+    }
+
+    @Test
+    fun detectsSerbianSpellingNormalizedByTextNormalizer() {
+        val decision = strategy.evaluate(
+            article(
+                title = "Alarmantno: više povređenih u sudaru",
                 publishedAtEpochMillis = now,
             )
         )

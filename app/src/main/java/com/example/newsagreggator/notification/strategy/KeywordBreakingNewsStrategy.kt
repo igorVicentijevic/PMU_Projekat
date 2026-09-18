@@ -20,6 +20,25 @@ class KeywordBreakingNewsStrategy internal constructor(
         currentTimeMillis = System::currentTimeMillis,
     )
 
+    //checks if the word is in set to compare and add appropriate reason and score
+    private fun checkAndGetScore(words: Set<String>,  wordsToCompare:  Set<String>, reason: String,scoreToAdd:Int, reasons: MutableSet<String>): Int{
+
+        if (words.containsAny(wordsToCompare)) {
+
+            reasons += reason
+            return scoreToAdd
+        }
+        return 0
+
+
+    }
+
+    private fun hasStrongReason(reasons: Set<String>): Boolean{
+        return REASON_URGENCY_TITLE in reasons ||
+                REASON_URGENCY_SUMMARY in reasons ||
+                REASON_HIGH_IMPACT in reasons
+    }
+
     override fun evaluate(article: Article): BreakingNewsDecision {
         var score = 0
         val reasons = mutableSetOf<String>()
@@ -27,30 +46,15 @@ class KeywordBreakingNewsStrategy internal constructor(
         val summaryWords = words(article.summary)
         val allWords = titleWords + summaryWords
 
-        if (titleWords.containsAny(URGENCY_WORDS)) {
-            score += URGENCY_TITLE_SCORE
-            reasons += REASON_URGENCY_TITLE
-        }
+        score += checkAndGetScore(titleWords, BreakingNewsVocabulary.urgencyWords, REASON_URGENCY_TITLE,URGENCY_TITLE_SCORE,reasons)
 
-        if (summaryWords.containsAny(URGENCY_WORDS)) {
-            score += URGENCY_SUMMARY_SCORE
-            reasons += REASON_URGENCY_SUMMARY
-        }
+        score += checkAndGetScore(summaryWords, BreakingNewsVocabulary.urgencyWords,REASON_URGENCY_SUMMARY,URGENCY_SUMMARY_SCORE,reasons)
 
-        if (allWords.containsAny(HIGH_IMPACT_WORDS)) {
-            score += HIGH_IMPACT_SCORE
-            reasons += REASON_HIGH_IMPACT
-        }
+        score += checkAndGetScore(allWords, BreakingNewsVocabulary.highImpactWords,REASON_HIGH_IMPACT,HIGH_IMPACT_SCORE,reasons)
 
-        if (allWords.containsAny(ESCALATION_WORDS)) {
-            score += ESCALATION_SCORE
-            reasons += REASON_ESCALATION
-        }
+        score += checkAndGetScore(allWords, BreakingNewsVocabulary.escalationWords,REASON_ESCALATION,ESCALATION_SCORE,reasons)
 
-        if (allWords.containsAny(ANALYSIS_WORDS)) {
-            score += ANALYSIS_PENALTY
-            reasons += REASON_ANALYSIS
-        }
+        score += checkAndGetScore(allWords, BreakingNewsVocabulary.analysisWords,REASON_ANALYSIS,ANALYSIS_PENALTY,reasons)
 
         score += freshnessScore(article, reasons)
 
@@ -59,10 +63,7 @@ class KeywordBreakingNewsStrategy internal constructor(
             reasons += REASON_UPPERCASE_URGENCY
         }
 
-        val hasStrongSignal =
-            REASON_URGENCY_TITLE in reasons ||
-                REASON_URGENCY_SUMMARY in reasons ||
-                REASON_HIGH_IMPACT in reasons
+        val hasStrongSignal = hasStrongReason(reasons)
 
         return BreakingNewsDecision(
             isBreaking = score >= BREAKING_THRESHOLD && hasStrongSignal,
@@ -83,12 +84,15 @@ class KeywordBreakingNewsStrategy internal constructor(
             }
         }
 
+    //how relevante is article
     private fun freshnessScore(
         article: Article,
         reasons: MutableSet<String>,
     ): Int {
+
         val ageMillis =
             (currentTimeMillis() - article.publishedAtEpochMillis).coerceAtLeast(0)
+
         val ageMinutes = ageMillis / MILLIS_PER_MINUTE
 
         return when {
@@ -129,7 +133,7 @@ class KeywordBreakingNewsStrategy internal constructor(
 
         val firstNormalizedWord = textNormalizer.normalize(firstOriginalWord)
         return normalizedTitleWords.contains(firstNormalizedWord) &&
-            URGENCY_WORDS.any { keyword ->
+            BreakingNewsVocabulary.urgencyWords.any { keyword ->
                 wordComparator.areSame(firstNormalizedWord, keyword)
             }
     }
@@ -161,34 +165,5 @@ class KeywordBreakingNewsStrategy internal constructor(
         const val REASON_ANALYSIS = "analysis-or-opinion"
         const val REASON_STALE = "older-than-two-hours"
 
-        val URGENCY_WORDS = setOf(
-            "hitno",
-            "vanredno",
-            "upravo",
-            "najnovije",
-        )
-        val HIGH_IMPACT_WORDS = setOf(
-            "zemljotres",
-            "eksplozija",
-            "evakuacija",
-            "napad",
-            "poplava",
-            "pozar",
-            "pucnjava",
-            "nesreca",
-        )
-        val ESCALATION_WORDS = setOf(
-            "upozorenje",
-            "opasnost",
-            "obustavljen",
-            "zatvoren",
-            "blokiran",
-        )
-        val ANALYSIS_WORDS = setOf(
-            "analiza",
-            "komentar",
-            "intervju",
-            "retrospektiva",
-        )
     }
 }
