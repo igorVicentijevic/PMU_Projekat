@@ -24,7 +24,7 @@ class DataStoreUserPreferencesRepository @Inject constructor(
             darkThemeOverride = values[Keys.DarkTheme],
             compactLayout = values[Keys.CompactLayout] ?: false,
             refreshIntervalMinutes = values[Keys.RefreshIntervalMinutes] ?: 15,
-            breakingNewsEnabled = values[Keys.BreakingNewsEnabled] ?: true,
+            breakingNewsEnabled = values[Keys.BreakingNewsEnabled] ?: false,
             followedCategories = values[Keys.FollowedCategories]
                 ?.mapNotNull(categoryResIdByKey::get)
                 ?.toSet()

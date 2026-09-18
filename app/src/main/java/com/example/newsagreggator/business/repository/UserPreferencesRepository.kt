@@ -7,7 +7,7 @@ data class UserPreferences(
     val darkThemeOverride: Boolean? = null,
     val compactLayout: Boolean = false,
     val refreshIntervalMinutes: Int = 15,
-    val breakingNewsEnabled: Boolean = true,
+    val breakingNewsEnabled: Boolean = false,
     val followedCategories: Set<Int> = defaultFollowedCategories,
 )
 

@@ -46,7 +46,7 @@ data class TokUiState(
     val darkThemeOverride: Boolean? = null,
     val compactLayout: Boolean = false,
     val refreshIntervalMinutes: Int = 15,
-    val breakingNewsEnabled: Boolean = true,
+    val breakingNewsEnabled: Boolean = false,
     val searchQuery: String = "",
     val normalizedSearchQuery: String = "",
     val selectedCategory: Int = R.string.category_all,

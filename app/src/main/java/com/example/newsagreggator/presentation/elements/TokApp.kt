@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
@@ -93,6 +94,21 @@ fun TokApp(
     val speechController = remember(context) { ArticleSpeechController(context) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { permissionGranted ->
+        tokViewModel.setBreakingNewsEnabled(permissionGranted)
+        if (!permissionGranted) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = context.getString(
+                        R.string.notification_permission_denied
+                    ),
+                    withDismissAction = true,
+                )
+            }
+        }
+    }
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -124,6 +140,23 @@ fun TokApp(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                 )
+            )
+        }
+    }
+    val setBreakingNewsEnabled: (Boolean) -> Unit = { enabled ->
+        if (!enabled) {
+            tokViewModel.setBreakingNewsEnabled(false)
+        } else if (
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS,
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            tokViewModel.setBreakingNewsEnabled(true)
+        } else {
+            notificationPermissionLauncher.launch(
+                Manifest.permission.POST_NOTIFICATIONS
             )
         }
     }
@@ -395,7 +428,7 @@ fun TokApp(
                 onDarkThemeChange = tokViewModel::setDarkTheme,
                 onCompactLayoutChange = tokViewModel::setCompactLayout,
                 onRefreshIntervalChange = tokViewModel::setRefreshInterval,
-                onBreakingNewsChange = tokViewModel::setBreakingNewsEnabled,
+                onBreakingNewsChange = setBreakingNewsEnabled,
                 onToggleCategory = tokViewModel::toggleFollowedCategory,
                 modifier = Modifier.padding(innerPadding),
             )

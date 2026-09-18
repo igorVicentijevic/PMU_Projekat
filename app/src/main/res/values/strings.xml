@@ -7,6 +7,9 @@
     <string name="open_categories">Otvori kategorije</string>
     <string name="close_categories">Zatvori kategorije</string>
     <string name="notifications">Obaveštenja</string>
+    <string name="notification_channel_name">Obaveštenja</string>
+    <string name="notification_channel_description">Novosti koje aplikacija šalje na osnovu izabranih podešavanja.</string>
+    <string name="notification_permission_denied">Obaveštenja nisu uključena jer dozvola nije odobrena.</string>
     <string name="drawer_greeting">Zdravo!</string>
     <string name="drawer_subtitle">Izaberi svoj tok vesti</string>
     <string name="drawer_history">Istorija</string>
