@@ -8,9 +8,9 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.newsagreggator.presentation.elements.TokApp
-import com.example.newsagreggator.presentation.theme.NewsAgreggatorTheme
-import com.example.newsagreggator.presentation.viewmodel.TokViewModel
+import com.example.newsagreggator.ui.elements.TokApp
+import com.example.newsagreggator.ui.elements.theme.NewsAgreggatorTheme
+import com.example.newsagreggator.ui.stateholders.TokViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -1,12 +1,12 @@
 package com.example.newsagreggator.data.repository
 
-import com.example.newsagreggator.business.repository.ArticleState
-import com.example.newsagreggator.business.repository.ArticleStateRepository
-import com.example.newsagreggator.data.database.dao.ArticleStateDao
-import com.example.newsagreggator.data.database.entity.ArticleStateEntity
-import javax.inject.Inject
+import com.example.newsagreggator.data.room.dao.ArticleStateDao
+import com.example.newsagreggator.data.room.entity.ArticleStateEntity
+import com.example.newsagreggator.repository.ArticleState
+import com.example.newsagreggator.repository.ArticleStateRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 class RoomArticleStateRepository @Inject constructor(
     private val articleStateDao: ArticleStateDao,

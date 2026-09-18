@@ -3,8 +3,8 @@ package com.example.newsagreggator
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.example.newsagreggator.data.notification.BreakingNewsNotificationActivator
-import com.example.newsagreggator.data.notification.NotificationActivationObserver
+import com.example.newsagreggator.notification.BreakingNewsNotificationActivator
+import com.example.newsagreggator.notification.NotificationActivationObserver
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope

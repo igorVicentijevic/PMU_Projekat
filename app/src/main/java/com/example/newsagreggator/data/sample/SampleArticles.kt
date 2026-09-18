@@ -1,8 +1,8 @@
 package com.example.newsagreggator.data.sample
 
-import com.example.newsagreggator.business.model.Article
-import com.example.newsagreggator.business.model.NewsCategory
-import com.example.newsagreggator.data.text.SerbianTextNormalizer
+import com.example.newsagreggator.model.Article
+import com.example.newsagreggator.model.NewsCategory
+import com.example.newsagreggator.util.SerbianTextNormalizer
 
 private const val MINUTE_MILLIS = 60_000L
 private val textNormalizer = SerbianTextNormalizer()

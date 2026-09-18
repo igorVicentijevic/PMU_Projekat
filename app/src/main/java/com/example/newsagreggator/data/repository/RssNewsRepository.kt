@@ -1,13 +1,13 @@
 package com.example.newsagreggator.data.repository
 
-import com.example.newsagreggator.business.model.Article
-import com.example.newsagreggator.business.repository.NewsRepository
-import com.example.newsagreggator.business.repository.NewsSnapshot
-import com.example.newsagreggator.data.database.dao.ArticleDao
-import com.example.newsagreggator.data.database.entity.toDomain
-import com.example.newsagreggator.data.database.entity.toEntity
-import com.example.newsagreggator.data.remote.RemoteNewsDataSource
-import com.example.newsagreggator.di.InitialArticles
+import com.example.newsagreggator.data.retrofit.datasource.RemoteNewsDataSource
+import com.example.newsagreggator.data.room.dao.ArticleDao
+import com.example.newsagreggator.data.room.entity.toDomain
+import com.example.newsagreggator.data.room.entity.toEntity
+import com.example.newsagreggator.model.Article
+import com.example.newsagreggator.repository.NewsRepository
+import com.example.newsagreggator.repository.NewsSnapshot
+import com.example.newsagreggator.hilt.InitialArticles
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

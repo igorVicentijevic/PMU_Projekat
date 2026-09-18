@@ -1,7 +1,7 @@
 package com.example.newsagreggator.data.sample
 
-import com.example.newsagreggator.business.repository.NewsRepository
-import com.example.newsagreggator.business.repository.NewsSnapshot
+import com.example.newsagreggator.repository.NewsRepository
+import com.example.newsagreggator.repository.NewsSnapshot
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 
