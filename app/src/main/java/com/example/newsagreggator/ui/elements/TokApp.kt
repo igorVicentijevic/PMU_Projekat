@@ -49,6 +49,7 @@ import com.example.newsagreggator.data.sample.InMemoryNewsRefreshScheduler
 import com.example.newsagreggator.data.sample.InMemorySelectedCityRepository
 import com.example.newsagreggator.data.sample.InMemoryUserPreferencesRepository
 import com.example.newsagreggator.data.sample.SampleNewsRepository
+import com.example.newsagreggator.digest.strategy.FollowedCategoriesDailyDigestStrategy
 import com.example.newsagreggator.util.SerbianTextNormalizer
 import com.example.newsagreggator.ui.speech.ArticleSpeechController
 import com.example.newsagreggator.ui.speech.SpeechArticle
@@ -322,9 +323,7 @@ fun TokApp(
                     modifier = Modifier.padding(innerPadding),
                 )
             SecondaryScreen.Digest -> DigestScreen(
-                articles = uiState.articles
-                    .filter { it.categoryResId in uiState.followedCategories }
-                    .take(5),
+                articles = uiState.digestArticles,
                 savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
@@ -335,13 +334,7 @@ fun TokApp(
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
                 onToggleDigestSpeech = {
-                    toggleDigestSpeech(
-                        uiState.articles
-                            .filter {
-                                it.categoryResId in uiState.followedCategories
-                            }
-                            .take(5)
-                    )
+                    toggleDigestSpeech(uiState.digestArticles)
                 },
                 onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
@@ -526,6 +519,8 @@ private fun TokAppPreview() {
                 selectedCityRepository = selectedCityRepository,
                 cityResolver = cityResolver,
                 textNormalizer = textNormalizer,
+                dailyDigestStrategy =
+                    FollowedCategoriesDailyDigestStrategy(),
             ),
         )
     }

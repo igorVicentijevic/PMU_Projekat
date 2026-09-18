@@ -7,6 +7,7 @@ import com.example.newsagreggator.commands.DetectNearestCityResult
 import com.example.newsagreggator.commands.RefreshNewsCommand
 import com.example.newsagreggator.commands.ToggleFollowedCategoryCommand
 import com.example.newsagreggator.commands.UpdateRefreshIntervalCommand
+import com.example.newsagreggator.digest.strategy.DailyDigestStrategy
 import com.example.newsagreggator.repository.ArticleStateRepository
 import com.example.newsagreggator.repository.NewsRepository
 import com.example.newsagreggator.repository.SelectedCityRepository
@@ -39,6 +40,7 @@ class TokViewModel @Inject constructor(
     private val selectedCityRepository: SelectedCityRepository,
     private val cityResolver: CityResolver,
     private val textNormalizer: TextNormalizer,
+    private val dailyDigestStrategy: DailyDigestStrategy,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TokUiState())
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
@@ -46,11 +48,17 @@ class TokViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             newsRepository.news.collect { newsSnapshot ->
+                val articles = newsSnapshot.articles.map {
+                    it.toNewsCardUiModel()
+                }
                 _uiState.update { currentState ->
                     currentState.copy(
-                        articles = newsSnapshot.articles.map {
-                            it.toNewsCardUiModel()
-                        },
+                        articles = articles,
+                        digestArticles = dailyDigestStrategy.select(
+                            articles = articles,
+                            followedCategories =
+                                currentState.followedCategories,
+                        ),
                         lastSuccessfulRefreshEpochMillis =
                             newsSnapshot.lastSuccessfulRefreshEpochMillis,
                     )
@@ -72,6 +80,11 @@ class TokViewModel @Inject constructor(
                         refreshIntervalMinutes = refreshIntervalMinutes,
                         breakingNewsEnabled = preferences.breakingNewsEnabled,
                         followedCategories = preferences.followedCategories,
+                        digestArticles = dailyDigestStrategy.select(
+                            articles = currentState.articles,
+                            followedCategories =
+                                preferences.followedCategories,
+                        ),
                     )
                 }
             }
@@ -315,7 +328,13 @@ class TokViewModel @Inject constructor(
         )
         val followedCategories = toggleFollowedCategoryCommand.toggle(input)
         _uiState.update { currentState ->
-            currentState.copy(followedCategories = followedCategories)
+            currentState.copy(
+                followedCategories = followedCategories,
+                digestArticles = dailyDigestStrategy.select(
+                    articles = currentState.articles,
+                    followedCategories = followedCategories,
+                ),
+            )
         }
         viewModelScope.launch {
             toggleFollowedCategoryCommand(input)
