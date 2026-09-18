@@ -86,6 +86,7 @@ private val TokTab.iconResId: Int
 @Composable
 fun TokApp(
     darkTheme: Boolean,
+    ambientLightSensorAvailable: Boolean?,
     modifier: Modifier = Modifier,
     tokViewModel: TokViewModel,
 ) {
@@ -421,11 +422,15 @@ fun TokApp(
             )
             TokTab.Settings -> SettingsScreen(
                 darkTheme = darkTheme,
+                automaticThemeEnabled = uiState.automaticThemeEnabled,
+                ambientLightSensorAvailable = ambientLightSensorAvailable,
                 compactLayout = uiState.compactLayout,
                 followedCategories = uiState.followedCategories,
                 refreshIntervalMinutes = uiState.refreshIntervalMinutes,
                 breakingNewsEnabled = uiState.breakingNewsEnabled,
                 onDarkThemeChange = tokViewModel::setDarkTheme,
+                onAutomaticThemeChange =
+                    tokViewModel::setAutomaticThemeEnabled,
                 onCompactLayoutChange = tokViewModel::setCompactLayout,
                 onRefreshIntervalChange = tokViewModel::setRefreshInterval,
                 onBreakingNewsChange = setBreakingNewsEnabled,
@@ -493,6 +498,7 @@ private fun TokAppPreview() {
     NewsAgreggatorTheme(darkTheme = false) {
         TokApp(
             darkTheme = false,
+            ambientLightSensorAvailable = true,
             tokViewModel = TokViewModel(
                 newsRepository = newsRepository,
                 userPreferencesRepository = userPreferencesRepository,

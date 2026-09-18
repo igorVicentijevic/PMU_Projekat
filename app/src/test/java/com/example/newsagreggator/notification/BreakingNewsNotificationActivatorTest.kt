@@ -93,6 +93,10 @@ class BreakingNewsNotificationActivatorTest {
 
             override suspend fun setDarkThemeOverride(enabled: Boolean) = Unit
 
+            override suspend fun setAutomaticThemeEnabled(
+                enabled: Boolean,
+            ) = Unit
+
             override suspend fun setCompactLayout(enabled: Boolean) = Unit
 
             override suspend fun setRefreshInterval(minutes: Int) = Unit

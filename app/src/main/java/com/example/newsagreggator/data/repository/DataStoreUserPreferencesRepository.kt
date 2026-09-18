@@ -23,6 +23,7 @@ class DataStoreUserPreferencesRepository @Inject constructor(
     override val preferences: Flow<UserPreferences> = dataStore.data.map { values ->
         UserPreferences(
             darkThemeOverride = values[Keys.DarkTheme],
+            automaticThemeEnabled = values[Keys.AutomaticTheme] ?: false,
             compactLayout = values[Keys.CompactLayout] ?: false,
             refreshIntervalMinutes = values[Keys.RefreshIntervalMinutes] ?: 15,
             breakingNewsEnabled = values[Keys.BreakingNewsEnabled] ?: false,
@@ -36,6 +37,12 @@ class DataStoreUserPreferencesRepository @Inject constructor(
     override suspend fun setDarkThemeOverride(enabled: Boolean) {
         dataStore.edit { values ->
             values[Keys.DarkTheme] = enabled
+        }
+    }
+
+    override suspend fun setAutomaticThemeEnabled(enabled: Boolean) {
+        dataStore.edit { values ->
+            values[Keys.AutomaticTheme] = enabled
         }
     }
 
@@ -67,6 +74,7 @@ class DataStoreUserPreferencesRepository @Inject constructor(
 
     private object Keys {
         val DarkTheme = booleanPreferencesKey("dark_theme")
+        val AutomaticTheme = booleanPreferencesKey("automatic_theme")
         val CompactLayout = booleanPreferencesKey("compact_layout")
         val RefreshIntervalMinutes = intPreferencesKey("refresh_interval_minutes")
         val BreakingNewsEnabled = booleanPreferencesKey("breaking_news_enabled")

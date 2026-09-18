@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 data class UserPreferences(
     val darkThemeOverride: Boolean? = null,
+    val automaticThemeEnabled: Boolean = false,
     val compactLayout: Boolean = false,
     val refreshIntervalMinutes: Int = 15,
     val breakingNewsEnabled: Boolean = false,
@@ -21,6 +22,8 @@ interface UserPreferencesRepository {
     val preferences: Flow<UserPreferences>
 
     suspend fun setDarkThemeOverride(enabled: Boolean)
+
+    suspend fun setAutomaticThemeEnabled(enabled: Boolean)
 
     suspend fun setCompactLayout(enabled: Boolean)
 

@@ -43,6 +43,7 @@ data class TokUiState(
     val lastSuccessfulRefreshEpochMillis: Long? = null,
     val hasInternetConnection: Boolean = true,
     val darkThemeOverride: Boolean? = null,
+    val automaticThemeEnabled: Boolean = false,
     val compactLayout: Boolean = false,
     val refreshIntervalMinutes: Int = 15,
     val breakingNewsEnabled: Boolean = false,

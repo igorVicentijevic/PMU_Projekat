@@ -66,6 +66,8 @@ class TokViewModel @Inject constructor(
                 _uiState.update { currentState ->
                     currentState.copy(
                         darkThemeOverride = preferences.darkThemeOverride,
+                        automaticThemeEnabled =
+                            preferences.automaticThemeEnabled,
                         compactLayout = preferences.compactLayout,
                         refreshIntervalMinutes = refreshIntervalMinutes,
                         breakingNewsEnabled = preferences.breakingNewsEnabled,
@@ -132,6 +134,15 @@ class TokViewModel @Inject constructor(
         }
         viewModelScope.launch {
             userPreferencesRepository.setDarkThemeOverride(enabled)
+        }
+    }
+
+    fun setAutomaticThemeEnabled(enabled: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(automaticThemeEnabled = enabled)
+        }
+        viewModelScope.launch {
+            userPreferencesRepository.setAutomaticThemeEnabled(enabled)
         }
     }
 

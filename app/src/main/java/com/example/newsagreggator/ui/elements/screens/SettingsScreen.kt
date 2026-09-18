@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -48,11 +49,14 @@ import com.example.newsagreggator.ui.elements.theme.TokCoral
 @Composable
 fun SettingsScreen(
     darkTheme: Boolean,
+    automaticThemeEnabled: Boolean,
+    ambientLightSensorAvailable: Boolean?,
     compactLayout: Boolean,
     followedCategories: Set<Int>,
     refreshIntervalMinutes: Int,
     breakingNewsEnabled: Boolean,
     onDarkThemeChange: (Boolean) -> Unit,
+    onAutomaticThemeChange: (Boolean) -> Unit,
     onCompactLayoutChange: (Boolean) -> Unit,
     onRefreshIntervalChange: (Int) -> Unit,
     onBreakingNewsChange: (Boolean) -> Unit,
@@ -96,12 +100,30 @@ fun SettingsScreen(
         ) {
             Column {
                 SettingToggleRow(
+                    iconResId = R.drawable.ic_spark,
+                    titleResId = R.string.settings_automatic_theme,
+                    descriptionResId =
+                        if (ambientLightSensorAvailable == false) {
+                            R.string.settings_automatic_theme_unavailable
+                        } else {
+                            R.string.settings_automatic_theme_description
+                        },
+                    checked = automaticThemeEnabled,
+                    onCheckedChange = onAutomaticThemeChange,
+                    accentColor = MaterialTheme.colorScheme.primary,
+                )
+                HorizontalDivider(
+                    modifier = Modifier.padding(start = 72.dp),
+                    color = MaterialTheme.colorScheme.outline,
+                )
+                SettingToggleRow(
                     iconResId = R.drawable.ic_moon,
                     titleResId = R.string.settings_dark_theme,
                     descriptionResId = R.string.settings_dark_theme_description,
                     checked = darkTheme,
                     onCheckedChange = onDarkThemeChange,
                     accentColor = MaterialTheme.colorScheme.primary,
+                    enabled = !automaticThemeEnabled,
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(start = 72.dp),
@@ -305,10 +327,12 @@ private fun SettingToggleRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     accentColor: androidx.compose.ui.graphics.Color,
+    enabled: Boolean = true,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .alpha(if (enabled) 1f else 0.55f)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -342,6 +366,7 @@ private fun SettingToggleRow(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
+            enabled = enabled,
         )
     }
 }
@@ -353,6 +378,8 @@ private fun SettingsLightPreview() {
         Surface {
             SettingsScreen(
                 darkTheme = false,
+                automaticThemeEnabled = false,
+                ambientLightSensorAvailable = true,
                 compactLayout = false,
                 followedCategories = setOf(
                     R.string.category_serbia,
@@ -362,6 +389,7 @@ private fun SettingsLightPreview() {
                 refreshIntervalMinutes = 15,
                 breakingNewsEnabled = true,
                 onDarkThemeChange = {},
+                onAutomaticThemeChange = {},
                 onCompactLayoutChange = {},
                 onRefreshIntervalChange = {},
                 onBreakingNewsChange = {},
@@ -378,11 +406,14 @@ private fun SettingsDarkPreview() {
         Surface {
             SettingsScreen(
                 darkTheme = true,
+                automaticThemeEnabled = true,
+                ambientLightSensorAvailable = true,
                 compactLayout = true,
                 followedCategories = emptySet(),
                 refreshIntervalMinutes = 60,
                 breakingNewsEnabled = false,
                 onDarkThemeChange = {},
+                onAutomaticThemeChange = {},
                 onCompactLayoutChange = {},
                 onRefreshIntervalChange = {},
                 onBreakingNewsChange = {},

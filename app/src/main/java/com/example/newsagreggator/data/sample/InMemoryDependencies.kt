@@ -57,6 +57,10 @@ class InMemoryUserPreferencesRepository : UserPreferencesRepository {
         state.update { it.copy(darkThemeOverride = enabled) }
     }
 
+    override suspend fun setAutomaticThemeEnabled(enabled: Boolean) {
+        state.update { it.copy(automaticThemeEnabled = enabled) }
+    }
+
     override suspend fun setCompactLayout(enabled: Boolean) {
         state.update { it.copy(compactLayout = enabled) }
     }
