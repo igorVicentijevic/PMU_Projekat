@@ -50,6 +50,7 @@ import com.example.newsagreggator.data.sample.InMemorySelectedCityRepository
 import com.example.newsagreggator.data.sample.InMemoryUserPreferencesRepository
 import com.example.newsagreggator.data.sample.SampleNewsRepository
 import com.example.newsagreggator.digest.strategy.FollowedCategoriesDailyDigestStrategy
+import com.example.newsagreggator.digest.strategy.WordCountDigestReadingTimeStrategy
 import com.example.newsagreggator.util.SerbianTextNormalizer
 import com.example.newsagreggator.ui.speech.ArticleSpeechController
 import com.example.newsagreggator.ui.speech.SpeechArticle
@@ -324,6 +325,7 @@ fun TokApp(
                 )
             SecondaryScreen.Digest -> DigestScreen(
                 articles = uiState.digestArticles,
+                readingTimeMinutes = uiState.digestReadingTimeMinutes,
                 savedArticleIds = uiState.savedArticleIds,
                 readArticleIds = uiState.readArticleIds,
                 speakingArticleId = speechController.speakingArticleId,
@@ -521,6 +523,8 @@ private fun TokAppPreview() {
                 textNormalizer = textNormalizer,
                 dailyDigestStrategy =
                     FollowedCategoriesDailyDigestStrategy(),
+                digestReadingTimeStrategy =
+                    WordCountDigestReadingTimeStrategy(),
             ),
         )
     }

@@ -5,7 +5,9 @@ import com.example.newsagreggator.data.retrofit.datasource.RssNewsDataSource
 import com.example.newsagreggator.data.retrofit.newssource.NewsSource
 import com.example.newsagreggator.data.retrofit.newssource.NewsSources
 import com.example.newsagreggator.digest.strategy.DailyDigestStrategy
+import com.example.newsagreggator.digest.strategy.DigestReadingTimeStrategy
 import com.example.newsagreggator.digest.strategy.FollowedCategoriesDailyDigestStrategy
+import com.example.newsagreggator.digest.strategy.WordCountDigestReadingTimeStrategy
 import com.example.newsagreggator.repository.NewsRepository
 import com.example.newsagreggator.data.repository.RssNewsRepository
 import com.example.newsagreggator.data.sample.createSampleNewsArticles
@@ -37,6 +39,12 @@ abstract class NewsBindingsModule {
     abstract fun bindDailyDigestStrategy(
         strategy: FollowedCategoriesDailyDigestStrategy,
     ): DailyDigestStrategy
+
+    @Binds
+    @Singleton
+    abstract fun bindDigestReadingTimeStrategy(
+        strategy: WordCountDigestReadingTimeStrategy,
+    ): DigestReadingTimeStrategy
 }
 
 @Module

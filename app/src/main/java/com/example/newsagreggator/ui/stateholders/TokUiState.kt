@@ -44,6 +44,7 @@ sealed interface LocationUiState {
 data class TokUiState(
     val articles: List<NewsCardUiModel> = emptyList(),
     val digestArticles: List<NewsCardUiModel> = emptyList(),
+    val digestReadingTimeMinutes: Int = 0,
     val isRefreshing: Boolean = false,
     val articleRefreshFailed: Boolean = false,
     val lastSuccessfulRefreshEpochMillis: Long? = null,

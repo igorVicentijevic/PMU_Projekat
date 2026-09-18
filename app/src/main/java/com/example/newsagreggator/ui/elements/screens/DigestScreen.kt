@@ -41,6 +41,7 @@ import com.example.newsagreggator.ui.elements.theme.TokCoral
 @Composable
 fun DigestScreen(
     articles: List<NewsCardUiModel>,
+    readingTimeMinutes: Int,
     savedArticleIds: Set<String>,
     readArticleIds: Set<String>,
     speakingArticleId: String?,
@@ -85,6 +86,7 @@ fun DigestScreen(
         Spacer(modifier = Modifier.height(20.dp))
         DigestHero(
             articleCount = articles.size,
+            readingTimeMinutes = readingTimeMinutes,
             isSpeaking = isDigestSpeaking,
             onSpeechClick = onToggleDigestSpeech,
         )
@@ -125,6 +127,7 @@ fun DigestScreen(
 @Composable
 private fun DigestHero(
     articleCount: Int,
+    readingTimeMinutes: Int,
     isSpeaking: Boolean,
     onSpeechClick: () -> Unit,
 ) {
@@ -162,7 +165,10 @@ private fun DigestHero(
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = stringResource(R.string.digest_duration),
+                        text = stringResource(
+                            R.string.digest_duration,
+                            readingTimeMinutes,
+                        ),
                         color = TokCoral,
                         style = MaterialTheme.typography.labelSmall,
                     )
@@ -250,6 +256,7 @@ private fun DigestContentPreview() {
                 articles = createSampleNewsArticles().map {
                     it.toNewsCardUiModel()
                 },
+                readingTimeMinutes = 2,
                 savedArticleIds = setOf("1"),
                 readArticleIds = setOf("2"),
                 speakingArticleId = "1",
@@ -273,6 +280,7 @@ private fun DigestEmptyPreview() {
         Surface {
             DigestScreen(
                 articles = emptyList(),
+                readingTimeMinutes = 0,
                 savedArticleIds = emptySet(),
                 readArticleIds = emptySet(),
                 speakingArticleId = null,

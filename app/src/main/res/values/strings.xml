@@ -60,7 +60,7 @@
     <string name="digest_title">Dnevni pregled</string>
     <string name="digest_subtitle">Najvažnije iz tvojih omiljenih kategorija.</string>
     <string name="digest_story_count">%1$d priče</string>
-    <string name="digest_duration">ZA OKO 4 MINUTA</string>
+    <string name="digest_duration">ZA OKO %1$d MIN</string>
     <string name="digest_flow_title">Tvoj dnevni tok</string>
     <string name="digest_flow_body">Sažeto, mirno i prilagođeno tvojim interesovanjima.</string>
     <string name="digest_selection">Današnji izbor</string>

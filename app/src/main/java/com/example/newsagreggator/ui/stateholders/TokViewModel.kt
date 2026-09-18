@@ -8,6 +8,7 @@ import com.example.newsagreggator.commands.RefreshNewsCommand
 import com.example.newsagreggator.commands.ToggleFollowedCategoryCommand
 import com.example.newsagreggator.commands.UpdateRefreshIntervalCommand
 import com.example.newsagreggator.digest.strategy.DailyDigestStrategy
+import com.example.newsagreggator.digest.strategy.DigestReadingTimeStrategy
 import com.example.newsagreggator.repository.ArticleStateRepository
 import com.example.newsagreggator.repository.NewsRepository
 import com.example.newsagreggator.repository.SelectedCityRepository
@@ -41,6 +42,7 @@ class TokViewModel @Inject constructor(
     private val cityResolver: CityResolver,
     private val textNormalizer: TextNormalizer,
     private val dailyDigestStrategy: DailyDigestStrategy,
+    private val digestReadingTimeStrategy: DigestReadingTimeStrategy,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TokUiState())
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
@@ -52,13 +54,18 @@ class TokViewModel @Inject constructor(
                     it.toNewsCardUiModel()
                 }
                 _uiState.update { currentState ->
+                    val digestArticles = dailyDigestStrategy.select(
+                        articles = articles,
+                        followedCategories =
+                            currentState.followedCategories,
+                    )
                     currentState.copy(
                         articles = articles,
-                        digestArticles = dailyDigestStrategy.select(
-                            articles = articles,
-                            followedCategories =
-                                currentState.followedCategories,
-                        ),
+                        digestArticles = digestArticles,
+                        digestReadingTimeMinutes =
+                            digestReadingTimeStrategy.estimateMinutes(
+                                digestArticles
+                            ),
                         lastSuccessfulRefreshEpochMillis =
                             newsSnapshot.lastSuccessfulRefreshEpochMillis,
                     )
@@ -72,6 +79,11 @@ class TokViewModel @Inject constructor(
                         preferences.refreshIntervalMinutes
                     )
                 _uiState.update { currentState ->
+                    val digestArticles = dailyDigestStrategy.select(
+                        articles = currentState.articles,
+                        followedCategories =
+                            preferences.followedCategories,
+                    )
                     currentState.copy(
                         darkThemeOverride = preferences.darkThemeOverride,
                         automaticThemeEnabled =
@@ -80,11 +92,11 @@ class TokViewModel @Inject constructor(
                         refreshIntervalMinutes = refreshIntervalMinutes,
                         breakingNewsEnabled = preferences.breakingNewsEnabled,
                         followedCategories = preferences.followedCategories,
-                        digestArticles = dailyDigestStrategy.select(
-                            articles = currentState.articles,
-                            followedCategories =
-                                preferences.followedCategories,
-                        ),
+                        digestArticles = digestArticles,
+                        digestReadingTimeMinutes =
+                            digestReadingTimeStrategy.estimateMinutes(
+                                digestArticles
+                            ),
                     )
                 }
             }
@@ -328,12 +340,17 @@ class TokViewModel @Inject constructor(
         )
         val followedCategories = toggleFollowedCategoryCommand.toggle(input)
         _uiState.update { currentState ->
+            val digestArticles = dailyDigestStrategy.select(
+                articles = currentState.articles,
+                followedCategories = followedCategories,
+            )
             currentState.copy(
                 followedCategories = followedCategories,
-                digestArticles = dailyDigestStrategy.select(
-                    articles = currentState.articles,
-                    followedCategories = followedCategories,
-                ),
+                digestArticles = digestArticles,
+                digestReadingTimeMinutes =
+                    digestReadingTimeStrategy.estimateMinutes(
+                        digestArticles
+                    ),
             )
         }
         viewModelScope.launch {
