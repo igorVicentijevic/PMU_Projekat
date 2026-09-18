@@ -17,7 +17,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,12 +34,14 @@ import com.example.newsagreggator.data.sample.createSampleNewsArticles
 import com.example.newsagreggator.ui.elements.composables.NewsArticleCard
 import com.example.newsagreggator.ui.stateholders.NewsCardUiModel
 import com.example.newsagreggator.ui.stateholders.toNewsCardUiModel
+import com.example.newsagreggator.ui.stateholders.ForYouTab
 import com.example.newsagreggator.ui.stateholders.LocationUiState
 import com.example.newsagreggator.ui.elements.theme.NewsAgreggatorTheme
 
 @Composable
 fun ForYouScreen(
     articles: List<NewsCardUiModel>,
+    selectedTab: ForYouTab,
     followedCategories: Set<Int>,
     location: LocationUiState,
     savedArticleIds: Set<String>,
@@ -49,6 +53,7 @@ fun ForYouScreen(
     onToggleSpeech: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     onLocationAction: () -> Unit,
+    onTabSelected: (ForYouTab) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -67,7 +72,10 @@ fun ForYouScreen(
                 style = MaterialTheme.typography.headlineLarge,
             )
             Text(
-                text = if (location is LocationUiState.Selected) {
+                text = if (
+                    selectedTab == ForYouTab.Location &&
+                    location is LocationUiState.Selected
+                ) {
                     stringResource(
                         R.string.for_you_local_subtitle,
                         location.cityName,
@@ -79,19 +87,41 @@ fun ForYouScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(modifier = Modifier.height(18.dp))
-            LocalNewsLocationCard(
-                location = location,
-                onLocationAction = onLocationAction,
+            ForYouTabRow(
+                selectedTab = selectedTab,
+                onTabSelected = onTabSelected,
             )
             Spacer(modifier = Modifier.height(18.dp))
-            if (followedCategories.isNotEmpty()) {
-                FollowedCategoryChips(followedCategories)
-                Spacer(modifier = Modifier.height(18.dp))
+            when (selectedTab) {
+                ForYouTab.Location -> {
+                    LocalNewsLocationCard(
+                        location = location,
+                        onLocationAction = onLocationAction,
+                    )
+                    if (location is LocationUiState.Selected) {
+                        Spacer(modifier = Modifier.height(18.dp))
+                    }
+                }
+
+                ForYouTab.FavoriteCategories -> {
+                    if (followedCategories.isNotEmpty()) {
+                        FollowedCategoryChips(followedCategories)
+                        Spacer(modifier = Modifier.height(18.dp))
+                    }
+                }
             }
         }
-        if (articles.isEmpty()) {
-            item { ForYouEmptyState(location) }
-        } else {
+        val shouldShowArticleContent =
+            selectedTab == ForYouTab.FavoriteCategories ||
+                location is LocationUiState.Selected
+        if (shouldShowArticleContent && articles.isEmpty()) {
+            item {
+                ForYouEmptyState(
+                    selectedTab = selectedTab,
+                    location = location,
+                )
+            }
+        } else if (shouldShowArticleContent) {
             items(
                 items = articles,
                 key = NewsCardUiModel::url,
@@ -113,6 +143,41 @@ fun ForYouScreen(
             }
         }
         item { Spacer(modifier = Modifier.height(6.dp)) }
+    }
+}
+
+@Composable
+private fun ForYouTabRow(
+    selectedTab: ForYouTab,
+    onTabSelected: (ForYouTab) -> Unit,
+) {
+    val tabs = ForYouTab.entries
+
+    PrimaryTabRow(
+        selectedTabIndex = tabs.indexOf(selectedTab),
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.primary,
+    ) {
+        tabs.forEach { tab ->
+            Tab(
+                selected = tab == selectedTab,
+                onClick = { onTabSelected(tab) },
+                text = {
+                    Text(
+                        text = stringResource(
+                            when (tab) {
+                                ForYouTab.Location ->
+                                    R.string.for_you_tab_location
+
+                                ForYouTab.FavoriteCategories ->
+                                    R.string.for_you_tab_favorites
+                            }
+                        ),
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
+            )
+        }
     }
 }
 
@@ -219,7 +284,10 @@ private fun FollowedCategoryChips(categories: Set<Int>) {
 }
 
 @Composable
-private fun ForYouEmptyState(location: LocationUiState) {
+private fun ForYouEmptyState(
+    selectedTab: ForYouTab,
+    location: LocationUiState,
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(22.dp),
@@ -237,7 +305,10 @@ private fun ForYouEmptyState(location: LocationUiState) {
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = if (location is LocationUiState.Selected) {
+                text = if (
+                    selectedTab == ForYouTab.Location &&
+                    location is LocationUiState.Selected
+                ) {
                     stringResource(
                         R.string.for_you_local_empty_title,
                         location.cityName,
@@ -251,7 +322,10 @@ private fun ForYouEmptyState(location: LocationUiState) {
             Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = stringResource(
-                    if (location is LocationUiState.Selected) {
+                    if (
+                        selectedTab == ForYouTab.Location &&
+                        location is LocationUiState.Selected
+                    ) {
                         R.string.for_you_local_empty_body
                     } else {
                         R.string.for_you_empty_body
@@ -273,6 +347,7 @@ private fun ForYouScreenContentPreview() {
                 articles = createSampleNewsArticles().map {
                     it.toNewsCardUiModel()
                 },
+                selectedTab = ForYouTab.Location,
                 followedCategories = setOf(
                     R.string.category_serbia,
                     R.string.category_technology,
@@ -291,6 +366,7 @@ private fun ForYouScreenContentPreview() {
                 onToggleSpeech = {},
                 onShareArticle = {},
                 onLocationAction = {},
+                onTabSelected = {},
             )
         }
     }
@@ -303,6 +379,7 @@ private fun ForYouScreenEmptyPreview() {
         Surface {
             ForYouScreen(
                 articles = emptyList(),
+                selectedTab = ForYouTab.FavoriteCategories,
                 followedCategories = emptySet(),
                 location = LocationUiState.NotConfigured,
                 savedArticleIds = emptySet(),
@@ -314,6 +391,7 @@ private fun ForYouScreenEmptyPreview() {
                 onToggleSpeech = {},
                 onShareArticle = {},
                 onLocationAction = {},
+                onTabSelected = {},
             )
         }
     }

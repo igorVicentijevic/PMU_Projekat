@@ -25,6 +25,8 @@
     <string name="for_you_placeholder">Priče iz kategorija koje pratiš uskoro će biti prikazane ovde.</string>
     <string name="for_you_subtitle">Priče iz kategorija koje pratiš.</string>
     <string name="for_you_local_subtitle">Vesti povezane sa gradom %1$s.</string>
+    <string name="for_you_tab_location">Lokalne vesti</string>
+    <string name="for_you_tab_favorites">Omiljene kategorije</string>
     <string name="for_you_empty_title">Izaberi teme koje pratiš</string>
     <string name="for_you_empty_body">Kada izabereš omiljene kategorije, personalizovane vesti pojaviće se ovde.</string>
     <string name="for_you_local_empty_title">Trenutno nema vesti za %1$s</string>

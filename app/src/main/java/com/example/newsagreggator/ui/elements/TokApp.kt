@@ -61,6 +61,7 @@ import com.example.newsagreggator.ui.elements.screens.SettingsScreen
 import com.example.newsagreggator.ui.elements.screens.TokHomeScreen
 import com.example.newsagreggator.ui.stateholders.NewsCardUiModel
 import com.example.newsagreggator.ui.stateholders.LocationUiState
+import com.example.newsagreggator.ui.stateholders.ForYouTab
 import com.example.newsagreggator.ui.stateholders.SecondaryScreen
 import com.example.newsagreggator.ui.stateholders.TokTab
 import com.example.newsagreggator.ui.elements.theme.NewsAgreggatorTheme
@@ -378,22 +379,27 @@ fun TokApp(
             TokTab.ForYou -> {
                 val selectedLocation =
                     uiState.location as? LocationUiState.Selected
-                val articles = if (selectedLocation != null) {
-                    uiState.articles.filter { article ->
-                        selectedLocation.cityId in article.relatedCityIds
+                val articles = when (uiState.selectedForYouTab) {
+                    ForYouTab.Location -> {
+                        if (selectedLocation == null) {
+                            emptyList()
+                        } else {
+                            uiState.articles.filter { article ->
+                                selectedLocation.cityId in article.relatedCityIds
+                            }
+                        }
                     }
-                } else {
-                    uiState.articles.filter { article ->
-                        article.categoryResId in uiState.followedCategories
+
+                    ForYouTab.FavoriteCategories -> {
+                        uiState.articles.filter { article ->
+                            article.categoryResId in uiState.followedCategories
+                        }
                     }
                 }
                 ForYouScreen(
                     articles = articles,
-                    followedCategories = if (selectedLocation == null) {
-                        uiState.followedCategories
-                    } else {
-                        emptySet()
-                    },
+                    selectedTab = uiState.selectedForYouTab,
+                    followedCategories = uiState.followedCategories,
                     location = uiState.location,
                     savedArticleIds = uiState.savedArticleIds,
                     readArticleIds = uiState.readArticleIds,
@@ -404,6 +410,7 @@ fun TokApp(
                     onToggleSpeech = toggleSpeech,
                     onShareArticle = shareArticle,
                     onLocationAction = requestGpsLocation,
+                    onTabSelected = tokViewModel::selectForYouTab,
                     modifier = Modifier.padding(innerPadding),
                 )
             }

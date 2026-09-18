@@ -15,6 +15,11 @@ enum class TokTab {
     Settings,
 }
 
+enum class ForYouTab {
+    Location,
+    FavoriteCategories,
+}
+
 sealed interface LocationUiState {
     data object NotConfigured : LocationUiState
 
@@ -51,6 +56,7 @@ data class TokUiState(
     val normalizedSearchQuery: String = "",
     val selectedCategory: Int = R.string.category_all,
     val selectedTab: TokTab = TokTab.Home,
+    val selectedForYouTab: ForYouTab = ForYouTab.Location,
     val secondaryScreen: SecondaryScreen? = null,
     val savedArticleIds: Set<String> = emptySet(),
     val readArticleIds: Set<String> = emptySet(),

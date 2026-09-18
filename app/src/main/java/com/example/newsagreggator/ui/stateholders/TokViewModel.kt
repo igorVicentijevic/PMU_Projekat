@@ -255,6 +255,12 @@ class TokViewModel @Inject constructor(
         }
     }
 
+    fun selectForYouTab(tab: ForYouTab) {
+        _uiState.update { currentState ->
+            currentState.copy(selectedForYouTab = tab)
+        }
+    }
+
     fun openSecondaryScreen(screen: SecondaryScreen) {
         _uiState.update { currentState ->
             currentState.copy(secondaryScreen = screen)
