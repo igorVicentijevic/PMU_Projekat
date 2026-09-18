@@ -47,6 +47,7 @@ fun rememberAmbientThemeState(
         mutableStateOf<Boolean?>(null)
     }
 
+    //whenever of these two arguments change, lounch coroutine
     LaunchedEffect(automaticThemeEnabled, reading) {
         ambientDarkTheme = calculateAmbientDarkTheme(
             automaticThemeEnabled = automaticThemeEnabled,
@@ -55,6 +56,7 @@ fun rememberAmbientThemeState(
             ambientThemeDecider = ambientThemeDecider,
         )
     }
+
 
     return AmbientThemeState(
         darkTheme = resolveDarkTheme(
