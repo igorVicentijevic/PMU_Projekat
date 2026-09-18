@@ -7,6 +7,7 @@ import com.example.newsagreggator.repository.NewsRepository
 import com.example.newsagreggator.repository.NewsSnapshot
 import com.example.newsagreggator.repository.UserPreferences
 import com.example.newsagreggator.repository.UserPreferencesRepository
+import com.example.newsagreggator.notification.strategy.BreakingNewsDecision
 import com.example.newsagreggator.notification.NotificationActivationPoint
 import com.example.newsagreggator.notification.BreakingNewsNotificationActivator
 import kotlinx.coroutines.CompletableDeferred
@@ -39,7 +40,12 @@ class BreakingNewsNotificationActivatorTest {
             newsRepository = fakeNewsRepository(news),
             userPreferencesRepository = enabledPreferencesRepository(),
             breakingNewsStrategy = { article ->
-                article.id == breakingArticle.id
+                val isBreaking = article.id == breakingArticle.id
+                BreakingNewsDecision(
+                    isBreaking = isBreaking,
+                    score = if (isBreaking) 100 else 0,
+                    reasons = setOf("test"),
+                )
             },
             notificationActivationPoint = object :
                 NotificationActivationPoint {

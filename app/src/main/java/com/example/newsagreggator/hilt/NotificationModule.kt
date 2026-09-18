@@ -5,7 +5,7 @@ import com.example.newsagreggator.notification.NotificationActivationPoint
 import com.example.newsagreggator.notification.NotificationPublisher
 import com.example.newsagreggator.notification.AndroidNotificationPublisher
 import com.example.newsagreggator.notification.FlowNotificationActivationPoint
-import com.example.newsagreggator.notification.strategy.RandomBreakingNewsStrategy
+import com.example.newsagreggator.notification.strategy.KeywordBreakingNewsStrategy
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -30,6 +30,6 @@ abstract class NotificationModule {
     @Binds
     @Singleton
     abstract fun bindBreakingNewsStrategy(
-        strategy: RandomBreakingNewsStrategy,
+        strategy: KeywordBreakingNewsStrategy,
     ): BreakingNewsStrategy
 }

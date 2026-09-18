@@ -10,6 +10,12 @@ class RandomBreakingNewsStrategy internal constructor(
     @Inject
     constructor() : this(Random.Default)
 
-    override fun isBreaking(article: Article): Boolean =
-        random.nextBoolean()
+    override fun evaluate(article: Article): BreakingNewsDecision {
+        val isBreaking = random.nextBoolean()
+        return BreakingNewsDecision(
+            isBreaking = isBreaking,
+            score = if (isBreaking) 100 else 0,
+            reasons = setOf("random"),
+        )
+    }
 }
