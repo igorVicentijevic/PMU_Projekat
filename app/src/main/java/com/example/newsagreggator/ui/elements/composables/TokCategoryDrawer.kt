@@ -119,42 +119,47 @@ fun TokCategoryDrawer(
                         ),
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    newsCategoryResIds.drop(1).forEach { category ->
-                        val selected = category in followedCategories
-                        NavigationDrawerItem(
-                            label = {
-                                Text(
-                                    text = stringResource(category),
-                                    fontWeight = if (selected) {
-                                        FontWeight.Bold
-                                    } else {
-                                        FontWeight.Medium
-                                    },
-                                )
-                            },
-                            selected = selected,
-                            onClick = { onToggleCategory(category) },
-                            icon = {
-                                Box(
-                                    modifier = Modifier
-                                        .size(9.dp)
-                                        .clip(CircleShape)
-                                        .background(
-                                            if (selected) {
-                                                MaterialTheme.colorScheme.primary
-                                            } else {
-                                                MaterialTheme.colorScheme.outline
-                                            }
-                                        )
-                                )
-                            },
-                            shape = RoundedCornerShape(14.dp),
-                            colors = NavigationDrawerItemDefaults.colors(
-                                selectedContainerColor =
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                                selectedTextColor = MaterialTheme.colorScheme.primary,
-                            ),
-                        )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        newsCategoryResIds.drop(1).forEach { category ->
+                            val selected = category in followedCategories
+                            NavigationDrawerItem(
+                                label = {
+                                    Text(
+                                        text = stringResource(category),
+                                        fontWeight = if (selected) {
+                                            FontWeight.Bold
+                                        } else {
+                                            FontWeight.Medium
+                                        },
+                                    )
+                                },
+                                selected = selected,
+                                onClick = { onToggleCategory(category) },
+                                icon = {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(9.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                if (selected) {
+                                                    MaterialTheme.colorScheme.primary
+                                                } else {
+                                                    MaterialTheme.colorScheme.outline
+                                                }
+                                            )
+                                    )
+                                },
+                                shape = RoundedCornerShape(14.dp),
+                                colors = NavigationDrawerItemDefaults.colors(
+                                    selectedContainerColor =
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                    selectedTextColor =
+                                        MaterialTheme.colorScheme.primary,
+                                ),
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     if (isOffline) {
