@@ -2,6 +2,7 @@ package com.example.newsagreggator.ui.elements
 
 import android.Manifest
 import android.content.ActivityNotFoundException
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -107,11 +108,18 @@ fun TokApp(
     var pendingPdfArticleId by rememberSaveable {
         mutableStateOf<String?>(null)
     }
+
+
     var isExportingPdf by remember { mutableStateOf(false) }
+
+    //launcher for picking a destination of a generated pdf
     val pdfDocumentLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument(PDF_MIME_TYPE)
     ) { destination ->
+
+        //get the article Id on which is clicked
         val articleId = pendingPdfArticleId
+
         pendingPdfArticleId = null
         if (
             destination == null ||
@@ -121,10 +129,14 @@ fun TokApp(
             return@rememberLauncherForActivityResult
         }
 
+        //getting article object from viewmodel
         val article = tokViewModel.uiState.value.articles.firstOrNull {
             it.id == articleId
         }
+
         if (article == null) {
+
+            //notifying user throught snackbar if export has failed
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(
                     message = context.getString(R.string.pdf_export_failed),
@@ -134,19 +146,47 @@ fun TokApp(
             return@rememberLauncherForActivityResult
         }
 
+
+        //starting pdf export
         isExportingPdf = true
         coroutineScope.launch {
+
             val result = try {
+                //exporting the file
                 articlePdfService.export(article, destination)
             } finally {
                 isExportingPdf = false
             }
-            snackbarHostState.showSnackbar(
-                message = context.getString(result.messageResId),
-                withDismissAction = result != PdfExportResult.Success,
-            )
+
+            if (result == PdfExportResult.Success) {
+                
+                //if the file is succesfully exported, lounching snackbar notification
+                val snackbarResult = snackbarHostState.showSnackbar(
+                    message = context.getString(R.string.pdf_export_success),
+                    actionLabel = context.getString(R.string.open),
+                    withDismissAction = true,
+                )
+                if (
+                    snackbarResult == SnackbarResult.ActionPerformed &&
+                    !launchPdfViewer(context, destination)
+                ) {
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(
+                            R.string.pdf_open_failed
+                        ),
+                        withDismissAction = true,
+                    )
+                }
+            } else {
+                snackbarHostState.showSnackbar(
+                    message = context.getString(result.messageResId),
+                    withDismissAction = true,
+                )
+            }
         }
     }
+
+
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { permissionGranted ->
@@ -162,6 +202,8 @@ fun TokApp(
             }
         }
     }
+
+
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -556,6 +598,25 @@ private fun launchShareChooser(
     )
 }
 
+private fun launchPdfViewer(
+    context: Context,
+    destination: Uri,
+): Boolean {
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(destination, PDF_MIME_TYPE)
+        clipData = ClipData.newRawUri(PDF_CLIP_LABEL, destination)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    return try {
+        context.startActivity(intent)
+        true
+    } catch (_: ActivityNotFoundException) {
+        false
+    } catch (_: SecurityException) {
+        false
+    }
+}
+
 private val PdfExportResult.messageResId: Int
     get() = when (this) {
         PdfExportResult.Success -> R.string.pdf_export_success
@@ -566,6 +627,7 @@ private val PdfExportResult.messageResId: Int
     }
 
 private const val PDF_MIME_TYPE = "application/pdf"
+private const val PDF_CLIP_LABEL = "Saved PDF"
 
 @Preview(name = "Tok aplikacija", showBackground = true)
 @Composable

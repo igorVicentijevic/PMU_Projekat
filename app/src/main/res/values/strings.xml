@@ -132,6 +132,7 @@
     <string name="article_saved">Vest je sačuvana</string>
     <string name="article_removed_from_saved">Vest je uklonjena</string>
     <string name="undo">Poništi</string>
+    <string name="open">Otvori</string>
     <string name="read_article">Pročitaj</string>
     <string name="article_open_failed">Nije moguće otvoriti originalnu vest.</string>
     <string name="share_article">Podeli vest</string>
@@ -146,6 +147,7 @@
     <string name="pdf_export_invalid_content">Vest nema dovoljno podataka za PDF.</string>
     <string name="pdf_destination_unavailable">Izabrana lokacija nije dostupna.</string>
     <string name="pdf_export_failed">Nije moguće sačuvati PDF.</string>
+    <string name="pdf_open_failed">Nije pronađena aplikacija koja može da otvori PDF.</string>
     <string name="speak_article">Čitaj naglas</string>
     <string name="stop_speaking">Zaustavi čitanje</string>
     <string name="tts_initializing">Čitač teksta se još pokreće.</string>
