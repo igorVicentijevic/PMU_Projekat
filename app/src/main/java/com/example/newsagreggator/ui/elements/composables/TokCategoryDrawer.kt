@@ -43,6 +43,7 @@ fun TokCategoryDrawer(
     followedCategories: Set<Int>,
     isOffline: Boolean,
     onToggleCategory: (Int) -> Unit,
+    onArticleGroupsClick: () -> Unit,
     onDigestClick: () -> Unit,
     onHistoryClick: () -> Unit,
     onClose: () -> Unit,
@@ -66,6 +67,25 @@ fun TokCategoryDrawer(
                     Spacer(modifier = Modifier.height(24.dp))
                     DrawerGreeting()
                     Spacer(modifier = Modifier.height(20.dp))
+                    NavigationDrawerItem(
+                        label = {
+                            Text(
+                                text = stringResource(
+                                    R.string.drawer_article_groups
+                                ),
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        selected = false,
+                        onClick = onArticleGroupsClick,
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_cards),
+                                contentDescription = null,
+                            )
+                        },
+                        shape = RoundedCornerShape(14.dp),
+                    )
                     NavigationDrawerItem(
                         label = {
                             Text(

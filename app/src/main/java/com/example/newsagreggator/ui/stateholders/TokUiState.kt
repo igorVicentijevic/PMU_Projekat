@@ -3,9 +3,16 @@ package com.example.newsagreggator.ui.stateholders
 import com.example.newsagreggator.R
 import com.example.newsagreggator.repository.defaultFollowedCategories
 
-enum class SecondaryScreen {
-    History,
-    Digest,
+sealed interface SecondaryScreen {
+    data object History : SecondaryScreen
+
+    data object Digest : SecondaryScreen
+
+    data object ArticleGroups : SecondaryScreen
+
+    data class ArticleGroupDetails(
+        val groupId: String,
+    ) : SecondaryScreen
 }
 
 enum class TokTab {
@@ -43,6 +50,7 @@ sealed interface LocationUiState {
 
 data class TokUiState(
     val articles: List<NewsCardUiModel> = emptyList(),
+    val articleGroups: List<ArticleGroupUiModel> = emptyList(),
     val digestArticles: List<NewsCardUiModel> = emptyList(),
     val digestReadingTimeMinutes: Int = 0,
     val isRefreshing: Boolean = false,

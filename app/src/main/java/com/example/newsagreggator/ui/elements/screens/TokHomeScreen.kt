@@ -67,6 +67,7 @@ fun TokHomeScreen(
     onToggleSpeech: (NewsCardUiModel) -> Unit,
     onExportPdf: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
+    onOpenArticleGroups: () -> Unit,
     onOpenHistory: () -> Unit,
     onOpenDigest: () -> Unit,
     onRefreshArticles: () -> Unit,
@@ -93,6 +94,12 @@ fun TokHomeScreen(
         followedCategories = followedCategories,
         isOffline = isOffline,
         onToggleCategory = onToggleFollowedCategory,
+        onArticleGroupsClick = {
+            coroutineScope.launch {
+                drawerState.close()
+                onOpenArticleGroups()
+            }
+        },
         onDigestClick = {
             coroutineScope.launch {
                 drawerState.close()
@@ -300,6 +307,7 @@ private fun TokHomeScreenPreview() {
                 onToggleSpeech = {},
                 onExportPdf = {},
                 onShareArticle = {},
+                onOpenArticleGroups = {},
                 onOpenHistory = {},
                 onOpenDigest = {},
                 onRefreshArticles = {},

@@ -2,6 +2,7 @@ package com.example.newsagreggator.ui.stateholders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.newsagreggator.articlegrouping.ArticleGroupingService
 import com.example.newsagreggator.commands.DetectNearestCityCommand
 import com.example.newsagreggator.commands.DetectNearestCityResult
 import com.example.newsagreggator.commands.RefreshNewsCommand
@@ -45,6 +46,7 @@ class TokViewModel @Inject constructor(
     private val dailyDigestStrategy: DailyDigestStrategy,
     private val digestReadingTimeStrategy: DigestReadingTimeStrategy,
     private val articleToneService: ArticleToneService,
+    private val articleGroupingService: ArticleGroupingService,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TokUiState())
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
@@ -52,9 +54,25 @@ class TokViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             newsRepository.news.collect { newsSnapshot ->
+                val articleGroups =
+                    articleGroupingService.getGroups(newsSnapshot.articles)
                 val articles = newsSnapshot.articles.map { article ->
                     article.toNewsCardUiModel(
                         toneDistribution = articleToneService.getTone(article)
+                    )
+                }
+                val articlesById = articles.associateBy(NewsCardUiModel::id)
+                val articleGroupUiModels = articleGroups.map { group ->
+                    ArticleGroupUiModel(
+                        id = group.id,
+                        title = group.title,
+                        articles = group.articles.map { article ->
+                            articlesById[article.id]
+                                ?: article.toNewsCardUiModel(
+                                    toneDistribution =
+                                        articleToneService.getTone(article)
+                                )
+                        },
                     )
                 }
                 _uiState.update { currentState ->
@@ -65,6 +83,7 @@ class TokViewModel @Inject constructor(
                     )
                     currentState.copy(
                         articles = articles,
+                        articleGroups = articleGroupUiModels,
                         digestArticles = digestArticles,
                         digestReadingTimeMinutes =
                             digestReadingTimeStrategy.estimateMinutes(

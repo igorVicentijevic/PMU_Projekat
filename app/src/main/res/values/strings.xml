@@ -14,6 +14,7 @@
     <string name="drawer_subtitle">Izaberi svoj tok vesti</string>
     <string name="drawer_history">Istorija</string>
     <string name="drawer_digest">Dnevni pregled</string>
+    <string name="drawer_article_groups">Slične priče</string>
     <string name="drawer_categories">OMILJENE KATEGORIJE</string>
     <string name="drawer_categories_description">Izaberi teme za sekciju „Za vas“ i dnevni pregled.</string>
     <string name="drawer_offline_title">Offline režim</string>
@@ -66,6 +67,17 @@
     <string name="digest_selection">Današnji izbor</string>
     <string name="digest_empty_title">Nema priča za dnevni pregled</string>
     <string name="digest_empty_body">Izaberi omiljene kategorije u podešavanjima da pripremimo tvoj dnevni tok.</string>
+    <string name="article_groups_kicker">POVEZANE TEME</string>
+    <string name="article_groups_title">Slične priče</string>
+    <string name="article_groups_subtitle">Istraži grupe vesti koje obrađuju povezane teme.</string>
+    <string name="article_groups_empty_title">Još nema grupa vesti</string>
+    <string name="article_groups_empty_body">Grupe će se pojaviti kada budu dostupne nove vesti.</string>
+    <string name="article_group_details_kicker">GRUPA PRIČA</string>
+    <plurals name="article_group_details_subtitle">
+        <item quantity="one">%1$d slična priča za listanje.</item>
+        <item quantity="few">%1$d slične priče za listanje.</item>
+        <item quantity="other">%1$d sličnih priča za listanje.</item>
+    </plurals>
     <string name="navigate_back">Nazad</string>
     <string name="settings_kicker">PO TVOM RITMU</string>
     <string name="settings_placeholder">Podešavanja izgleda i sadržaja biće dodata u sledećim koracima.</string>

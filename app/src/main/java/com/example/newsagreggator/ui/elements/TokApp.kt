@@ -41,6 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.newsagreggator.R
+import com.example.newsagreggator.articlegrouping.ArticleGroupingService
+import com.example.newsagreggator.articlegrouping.MockArticleGroupingStrategy
 import com.example.newsagreggator.commands.DetectNearestCityCommand
 import com.example.newsagreggator.commands.RefreshNewsCommand
 import com.example.newsagreggator.commands.ToggleFollowedCategoryCommand
@@ -62,6 +64,8 @@ import com.example.newsagreggator.ui.speech.ArticleSpeechController
 import com.example.newsagreggator.ui.speech.SpeechArticle
 import com.example.newsagreggator.ui.speech.SpeechActionResult
 import com.example.newsagreggator.ui.elements.screens.ForYouScreen
+import com.example.newsagreggator.ui.elements.screens.ArticleGroupDetailsScreen
+import com.example.newsagreggator.ui.elements.screens.ArticleGroupsScreen
 import com.example.newsagreggator.ui.elements.screens.DigestScreen
 import com.example.newsagreggator.ui.elements.screens.HistoryScreen
 import com.example.newsagreggator.ui.elements.screens.SavedScreen
@@ -132,9 +136,13 @@ fun TokApp(
         }
 
         //getting article object from viewmodel
-        val article = tokViewModel.uiState.value.articles.firstOrNull {
+        val currentUiState = tokViewModel.uiState.value
+        val article = currentUiState.articles.firstOrNull {
             it.id == articleId
-        }
+        } ?: currentUiState.articleGroups
+            .asSequence()
+            .flatMap { group -> group.articles.asSequence() }
+            .firstOrNull { groupedArticle -> groupedArticle.id == articleId }
 
         if (article == null) {
 
@@ -413,7 +421,7 @@ fun TokApp(
             }
         },
     ) { innerPadding ->
-        when (uiState.secondaryScreen) {
+        when (val secondaryScreen = uiState.secondaryScreen) {
             SecondaryScreen.History -> HistoryScreen(
                     articles = uiState.articles.filter {
                         it.id in uiState.readArticleIds
@@ -448,6 +456,52 @@ fun TokApp(
                 onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )
+            SecondaryScreen.ArticleGroups -> ArticleGroupsScreen(
+                groups = uiState.articleGroups,
+                onBack = tokViewModel::closeSecondaryScreen,
+                onOpenGroup = { groupId ->
+                    tokViewModel.openSecondaryScreen(
+                        SecondaryScreen.ArticleGroupDetails(groupId)
+                    )
+                },
+                modifier = Modifier.padding(innerPadding),
+            )
+            is SecondaryScreen.ArticleGroupDetails -> {
+                val group = uiState.articleGroups.firstOrNull {
+                    it.id == secondaryScreen.groupId
+                }
+                if (group == null) {
+                    ArticleGroupsScreen(
+                        groups = uiState.articleGroups,
+                        onBack = tokViewModel::closeSecondaryScreen,
+                        onOpenGroup = { groupId ->
+                            tokViewModel.openSecondaryScreen(
+                                SecondaryScreen.ArticleGroupDetails(groupId)
+                            )
+                        },
+                        modifier = Modifier.padding(innerPadding),
+                    )
+                } else {
+                    ArticleGroupDetailsScreen(
+                        group = group,
+                        savedArticleIds = uiState.savedArticleIds,
+                        readArticleIds = uiState.readArticleIds,
+                        speakingArticleId = speechController.speakingArticleId,
+                        compactLayout = uiState.compactLayout,
+                        onBack = {
+                            tokViewModel.openSecondaryScreen(
+                                SecondaryScreen.ArticleGroups
+                            )
+                        },
+                        onToggleSaved = toggleSaved,
+                        onReadArticle = readArticle,
+                        onToggleSpeech = toggleSpeech,
+                        onExportPdf = exportPdf,
+                        onShareArticle = shareArticle,
+                        modifier = Modifier.padding(innerPadding),
+                    )
+                }
+            }
             null -> when (uiState.selectedTab) {
             TokTab.Home -> TokHomeScreen(
                 articles = uiState.articles,
@@ -468,6 +522,11 @@ fun TokApp(
                 onToggleSpeech = toggleSpeech,
                 onExportPdf = exportPdf,
                 onShareArticle = shareArticle,
+                onOpenArticleGroups = {
+                    tokViewModel.openSecondaryScreen(
+                        SecondaryScreen.ArticleGroups
+                    )
+                },
                 onOpenHistory = {
                     tokViewModel.openSecondaryScreen(SecondaryScreen.History)
                 },
@@ -670,6 +729,9 @@ private fun TokAppPreview() {
                     WordCountDigestReadingTimeStrategy(),
                 articleToneService = ArticleToneService(
                     SampleArticleToneAnalysisStrategy()
+                ),
+                articleGroupingService = ArticleGroupingService(
+                    MockArticleGroupingStrategy()
                 ),
             ),
         )
