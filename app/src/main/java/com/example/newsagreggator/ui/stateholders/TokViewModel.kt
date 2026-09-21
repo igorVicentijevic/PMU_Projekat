@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 @HiltViewModel
 class TokViewModel @Inject constructor(
@@ -51,7 +52,9 @@ class TokViewModel @Inject constructor(
         viewModelScope.launch {
             newsRepository.news.collect { newsSnapshot ->
                 val articles = newsSnapshot.articles.map {
-                    it.toNewsCardUiModel()
+                    it.toNewsCardUiModel(
+                        toneDistribution = sampleToneDistribution(it.id)
+                    )
                 }
                 _uiState.update { currentState ->
                     val digestArticles = dailyDigestStrategy.select(
@@ -397,5 +400,22 @@ class TokViewModel @Inject constructor(
         _uiState.update { currentState ->
             currentState.copy(location = LocationUiState.PermissionDenied)
         }
+    }
+
+    private fun sampleToneDistribution(
+        articleId: String,
+    ): ArticleToneDistribution {
+        val random = Random(articleId.hashCode())
+        val firstCut = random.nextInt(from = 10, until = 61)
+        val secondCut = random.nextInt(
+            from = firstCut + 10,
+            until = 91,
+        )
+
+        return ArticleToneDistribution(
+            negative = firstCut,
+            neutral = secondCut - firstCut,
+            positive = 100 - secondCut,
+        )
     }
 }

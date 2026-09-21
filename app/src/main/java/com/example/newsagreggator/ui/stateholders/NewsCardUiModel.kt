@@ -18,10 +18,14 @@ data class NewsCardUiModel(
     val url: String,
     val normalizedText: String,
     val relatedCityIds: Set<String>,
+    val toneDistribution: ArticleToneDistribution =
+        ArticleToneDistribution.Sample,
 )
 
 fun Article.toNewsCardUiModel(
     currentTimeMillis: Long = System.currentTimeMillis(),
+    toneDistribution: ArticleToneDistribution =
+        ArticleToneDistribution.Sample,
 ): NewsCardUiModel {
     val minutesAgo = (
         (currentTimeMillis - publishedAtEpochMillis)
@@ -39,7 +43,22 @@ fun Article.toNewsCardUiModel(
         url = articleUrl,
         normalizedText = normalizedText,
         relatedCityIds = relatedCityIds,
+        toneDistribution = toneDistribution,
     )
+}
+
+data class ArticleToneDistribution(
+    val negative: Int,
+    val neutral: Int,
+    val positive: Int,
+) {
+    companion object {
+        val Sample = ArticleToneDistribution(
+            negative = 20,
+            neutral = 40,
+            positive = 40,
+        )
+    }
 }
 
 private fun Long.toRelativeTime(): String {

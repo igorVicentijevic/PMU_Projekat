@@ -34,12 +34,15 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
 import com.example.newsagreggator.data.sample.createSampleNewsArticles
+import com.example.newsagreggator.ui.stateholders.ArticleToneDistribution
 import com.example.newsagreggator.ui.stateholders.NewsCardUiModel
 import com.example.newsagreggator.ui.stateholders.toNewsCardUiModel
 import com.example.newsagreggator.ui.elements.theme.NewsAgreggatorTheme
@@ -144,6 +147,8 @@ private fun StandardCardContent(
                 onPdfClick = onPdfClick,
                 onShareClick = onShareClick,
             )
+            Spacer(modifier = Modifier.height(4.dp))
+            ArticleToneBar(distribution = article.toneDistribution)
         }
     }
 }
@@ -159,61 +164,70 @@ private fun CompactCardContent(
     onPdfClick: () -> Unit,
     onShareClick: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(132.dp)
-    ) {
-        Row(modifier = Modifier.matchParentSize()) {
-            ArticleImage(
-                article = article,
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(132.dp)
+        ) {
+            Row(modifier = Modifier.matchParentSize()) {
+                ArticleImage(
+                    article = article,
+                    compact = true,
+                    showBookmark = false,
+                    isSaved = isSaved,
+                    onSaveClick = onSaveClick,
+                    modifier = Modifier
+                        .width(112.dp)
+                        .height(132.dp),
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(start = 12.dp, end = 8.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(top = 12.dp, end = 48.dp),
+                    ) {
+                        ArticleMetadata(article)
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = article.title,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.align(Alignment.BottomStart),
+                    ) {
+                        ArticleActions(
+                            compact = true,
+                            isSpeaking = isSpeaking,
+                            onReadClick = onReadClick,
+                            onSpeechClick = onSpeechClick,
+                            onPdfClick = onPdfClick,
+                            onShareClick = onShareClick,
+                        )
+                        ArticleToneBar(
+                            distribution = article.toneDistribution
+                        )
+                        Spacer(modifier = Modifier.height(7.dp))
+                    }
+                }
+            }
+            BookmarkButton(
                 compact = true,
-                showBookmark = false,
                 isSaved = isSaved,
                 onSaveClick = onSaveClick,
                 modifier = Modifier
-                    .width(112.dp)
-                    .height(132.dp),
+                    .align(Alignment.TopEnd)
+                    .padding(top = 8.dp, end = 8.dp),
             )
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .padding(start = 12.dp, end = 8.dp),
-            ) {
-                Column(
-                    modifier = Modifier.padding(top = 12.dp, end = 48.dp),
-                ) {
-                    ArticleMetadata(article)
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = article.title,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                ArticleActions(
-                    compact = true,
-                    isSpeaking = isSpeaking,
-                    onReadClick = onReadClick,
-                    onSpeechClick = onSpeechClick,
-                    onPdfClick = onPdfClick,
-                    onShareClick = onShareClick,
-                    modifier = Modifier.align(Alignment.BottomStart),
-                )
-            }
         }
-        BookmarkButton(
-            compact = true,
-            isSaved = isSaved,
-            onSaveClick = onSaveClick,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 8.dp, end = 8.dp),
-        )
     }
 }
 
@@ -316,6 +330,52 @@ private fun ArticleImage(
         }
     }
 }
+
+@Composable
+private fun ArticleToneBar(
+    distribution: ArticleToneDistribution,
+    modifier: Modifier = Modifier,
+) {
+    val description = stringResource(
+        R.string.article_tone_distribution,
+        distribution.negative,
+        distribution.neutral,
+        distribution.positive,
+    )
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(3.dp)
+            .clip(RoundedCornerShape(50))
+            .semantics {
+                contentDescription = description
+            },
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(distribution.negative.toFloat())
+                .fillMaxHeight()
+                .background(NegativeToneColor)
+        )
+        Box(
+            modifier = Modifier
+                .weight(distribution.neutral.toFloat())
+                .fillMaxHeight()
+                .background(NeutralToneColor)
+        )
+        Box(
+            modifier = Modifier
+                .weight(distribution.positive.toFloat())
+                .fillMaxHeight()
+                .background(PositiveToneColor)
+        )
+    }
+}
+
+private val NegativeToneColor = Color(0xFFCF6A6A)
+private val NeutralToneColor = Color(0xFFB0B0B0)
+private val PositiveToneColor = Color(0xFF68A97F)
 
 
 @Composable

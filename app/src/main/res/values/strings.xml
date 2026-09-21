@@ -134,6 +134,7 @@
     <string name="undo">Poništi</string>
     <string name="open">Otvori</string>
     <string name="read_article">Pročitaj</string>
+    <string name="article_tone_distribution">Ton vesti: %1$d%% negativan, %2$d%% neutralan, %3$d%% pozitivan</string>
     <string name="article_open_failed">Nije moguće otvoriti originalnu vest.</string>
     <string name="share_article">Podeli vest</string>
     <string name="share_article_chooser">Podeli vest preko</string>
