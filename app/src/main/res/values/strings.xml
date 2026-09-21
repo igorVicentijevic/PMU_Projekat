@@ -142,6 +142,10 @@
     <string name="pdf_saved_with_app">Sadržaj je sačuvan pomoću aplikacije Tok.</string>
     <string name="pdf_page">Strana</string>
     <string name="pdf_summary_unavailable">Sažetak nije dostupan.</string>
+    <string name="pdf_export_success">PDF je sačuvan.</string>
+    <string name="pdf_export_invalid_content">Vest nema dovoljno podataka za PDF.</string>
+    <string name="pdf_destination_unavailable">Izabrana lokacija nije dostupna.</string>
+    <string name="pdf_export_failed">Nije moguće sačuvati PDF.</string>
     <string name="speak_article">Čitaj naglas</string>
     <string name="stop_speaking">Zaustavi čitanje</string>
     <string name="tts_initializing">Čitač teksta se još pokreće.</string>

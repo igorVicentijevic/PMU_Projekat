@@ -27,8 +27,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -51,6 +54,8 @@ import com.example.newsagreggator.data.sample.InMemoryUserPreferencesRepository
 import com.example.newsagreggator.data.sample.SampleNewsRepository
 import com.example.newsagreggator.digest.strategy.FollowedCategoriesDailyDigestStrategy
 import com.example.newsagreggator.digest.strategy.WordCountDigestReadingTimeStrategy
+import com.example.newsagreggator.pdf.exporter.PdfExportResult
+import com.example.newsagreggator.pdf.service.ArticlePdfService
 import com.example.newsagreggator.util.SerbianTextNormalizer
 import com.example.newsagreggator.ui.speech.ArticleSpeechController
 import com.example.newsagreggator.ui.speech.SpeechArticle
@@ -92,12 +97,56 @@ fun TokApp(
     ambientLightSensorAvailable: Boolean?,
     modifier: Modifier = Modifier,
     tokViewModel: TokViewModel,
+    articlePdfService: ArticlePdfService? = null,
 ) {
     val uiState by tokViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val speechController = remember(context) { ArticleSpeechController(context) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    var pendingPdfArticleId by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+    var isExportingPdf by remember { mutableStateOf(false) }
+    val pdfDocumentLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument(PDF_MIME_TYPE)
+    ) { destination ->
+        val articleId = pendingPdfArticleId
+        pendingPdfArticleId = null
+        if (
+            destination == null ||
+            articleId == null ||
+            articlePdfService == null
+        ) {
+            return@rememberLauncherForActivityResult
+        }
+
+        val article = tokViewModel.uiState.value.articles.firstOrNull {
+            it.id == articleId
+        }
+        if (article == null) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = context.getString(R.string.pdf_export_failed),
+                    withDismissAction = true,
+                )
+            }
+            return@rememberLauncherForActivityResult
+        }
+
+        isExportingPdf = true
+        coroutineScope.launch {
+            val result = try {
+                articlePdfService.export(article, destination)
+            } finally {
+                isExportingPdf = false
+            }
+            snackbarHostState.showSnackbar(
+                message = context.getString(result.messageResId),
+                withDismissAction = result != PdfExportResult.Success,
+            )
+        }
+    }
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { permissionGranted ->
@@ -204,7 +253,18 @@ fun TokApp(
     val shareArticle: (NewsCardUiModel) -> Unit = { article ->
         launchShareChooser(context, article)
     }
-    val exportPdf: (NewsCardUiModel) -> Unit = {}
+    val exportPdf: (NewsCardUiModel) -> Unit = { article ->
+        if (
+            articlePdfService != null &&
+            pendingPdfArticleId == null &&
+            !isExportingPdf
+        ) {
+            pendingPdfArticleId = article.id
+            pdfDocumentLauncher.launch(
+                articlePdfService.suggestedFilename(article)
+            )
+        }
+    }
     val showSpeechError: (SpeechActionResult) -> Unit = { result ->
         val messageResId = when (result) {
             SpeechActionResult.Initializing -> R.string.tts_initializing
@@ -487,6 +547,7 @@ private fun launchShareChooser(
             "${article.title}\n${article.url}",
         )
     }
+
     context.startActivity(
         Intent.createChooser(
             shareIntent,
@@ -494,6 +555,17 @@ private fun launchShareChooser(
         )
     )
 }
+
+private val PdfExportResult.messageResId: Int
+    get() = when (this) {
+        PdfExportResult.Success -> R.string.pdf_export_success
+        PdfExportResult.InvalidContent -> R.string.pdf_export_invalid_content
+        is PdfExportResult.DestinationUnavailable ->
+            R.string.pdf_destination_unavailable
+        is PdfExportResult.WriteFailed -> R.string.pdf_export_failed
+    }
+
+private const val PDF_MIME_TYPE = "application/pdf"
 
 @Preview(name = "Tok aplikacija", showBackground = true)
 @Composable
@@ -508,6 +580,7 @@ private fun TokAppPreview() {
         TokApp(
             darkTheme = false,
             ambientLightSensorAvailable = true,
+            articlePdfService = null,
             tokViewModel = TokViewModel(
                 newsRepository = newsRepository,
                 userPreferencesRepository = userPreferencesRepository,

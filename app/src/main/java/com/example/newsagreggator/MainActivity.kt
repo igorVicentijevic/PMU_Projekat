@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.newsagreggator.appearance.AmbientLightMonitor
 import com.example.newsagreggator.appearance.AmbientThemeDecider
+import com.example.newsagreggator.pdf.service.ArticlePdfService
 import com.example.newsagreggator.ui.elements.TokApp
 import com.example.newsagreggator.ui.elements.theme.NewsAgreggatorTheme
 import com.example.newsagreggator.ui.elements.theme.rememberAmbientThemeState
@@ -25,6 +26,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var ambientThemeDecider: AmbientThemeDecider
+
+    @Inject
+    lateinit var articlePdfService: ArticlePdfService
 
     override fun onResume() {
         super.onResume()
@@ -49,6 +53,7 @@ class MainActivity : ComponentActivity() {
                     ambientLightSensorAvailable =
                         themeState.sensorAvailable,
                     tokViewModel = tokViewModel,
+                    articlePdfService = articlePdfService,
                 )
             }
         }
