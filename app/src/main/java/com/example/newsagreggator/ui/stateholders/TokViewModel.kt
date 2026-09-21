@@ -13,6 +13,7 @@ import com.example.newsagreggator.repository.ArticleStateRepository
 import com.example.newsagreggator.repository.NewsRepository
 import com.example.newsagreggator.repository.SelectedCityRepository
 import com.example.newsagreggator.repository.UserPreferencesRepository
+import com.example.newsagreggator.toneanalyzer.ArticleToneService
 import com.example.newsagreggator.location.CityResolver
 import com.example.newsagreggator.network.NetworkMonitor
 import com.example.newsagreggator.background.NewsRefreshScheduler
@@ -26,7 +27,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 @HiltViewModel
 class TokViewModel @Inject constructor(
@@ -44,6 +44,7 @@ class TokViewModel @Inject constructor(
     private val textNormalizer: TextNormalizer,
     private val dailyDigestStrategy: DailyDigestStrategy,
     private val digestReadingTimeStrategy: DigestReadingTimeStrategy,
+    private val articleToneService: ArticleToneService,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TokUiState())
     val uiState: StateFlow<TokUiState> = _uiState.asStateFlow()
@@ -51,9 +52,9 @@ class TokViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             newsRepository.news.collect { newsSnapshot ->
-                val articles = newsSnapshot.articles.map {
-                    it.toNewsCardUiModel(
-                        toneDistribution = sampleToneDistribution(it.id)
+                val articles = newsSnapshot.articles.map { article ->
+                    article.toNewsCardUiModel(
+                        toneDistribution = articleToneService.getTone(article)
                     )
                 }
                 _uiState.update { currentState ->
@@ -402,20 +403,4 @@ class TokViewModel @Inject constructor(
         }
     }
 
-    private fun sampleToneDistribution(
-        articleId: String,
-    ): ArticleToneDistribution {
-        val random = Random(articleId.hashCode())
-        val firstCut = random.nextInt(from = 10, until = 61)
-        val secondCut = random.nextInt(
-            from = firstCut + 10,
-            until = 91,
-        )
-
-        return ArticleToneDistribution(
-            negative = firstCut,
-            neutral = secondCut - firstCut,
-            positive = 100 - secondCut,
-        )
-    }
 }

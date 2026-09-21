@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import com.example.newsagreggator.R
 import com.example.newsagreggator.model.Article
 import com.example.newsagreggator.model.NewsCategory
+import com.example.newsagreggator.toneanalyzer.ArticleToneDistribution
 
 data class NewsCardUiModel(
     val id: String,
@@ -45,20 +46,6 @@ fun Article.toNewsCardUiModel(
         relatedCityIds = relatedCityIds,
         toneDistribution = toneDistribution,
     )
-}
-
-data class ArticleToneDistribution(
-    val negative: Int,
-    val neutral: Int,
-    val positive: Int,
-) {
-    companion object {
-        val Sample = ArticleToneDistribution(
-            negative = 20,
-            neutral = 40,
-            positive = 40,
-        )
-    }
 }
 
 private fun Long.toRelativeTime(): String {

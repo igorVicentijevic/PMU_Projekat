@@ -42,7 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.newsagreggator.R
 import com.example.newsagreggator.data.sample.createSampleNewsArticles
-import com.example.newsagreggator.ui.stateholders.ArticleToneDistribution
+import com.example.newsagreggator.toneanalyzer.ArticleToneDistribution
 import com.example.newsagreggator.ui.stateholders.NewsCardUiModel
 import com.example.newsagreggator.ui.stateholders.toNewsCardUiModel
 import com.example.newsagreggator.ui.elements.theme.NewsAgreggatorTheme

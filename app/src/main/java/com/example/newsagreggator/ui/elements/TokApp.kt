@@ -74,6 +74,8 @@ import com.example.newsagreggator.ui.stateholders.SecondaryScreen
 import com.example.newsagreggator.ui.stateholders.TokTab
 import com.example.newsagreggator.ui.elements.theme.NewsAgreggatorTheme
 import com.example.newsagreggator.ui.stateholders.TokViewModel
+import com.example.newsagreggator.toneanalyzer.ArticleToneService
+import com.example.newsagreggator.toneanalyzer.SampleArticleToneAnalysisStrategy
 import kotlinx.coroutines.launch
 
 private val TokTab.labelResId: Int
@@ -666,6 +668,9 @@ private fun TokAppPreview() {
                     FollowedCategoriesDailyDigestStrategy(),
                 digestReadingTimeStrategy =
                     WordCountDigestReadingTimeStrategy(),
+                articleToneService = ArticleToneService(
+                    SampleArticleToneAnalysisStrategy()
+                ),
             ),
         )
     }
