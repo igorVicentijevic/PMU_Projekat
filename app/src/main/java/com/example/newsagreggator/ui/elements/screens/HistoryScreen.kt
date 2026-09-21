@@ -48,6 +48,7 @@ fun HistoryScreen(
     onClearHistory: () -> Unit,
     onToggleSaved: (String) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
+    onExportPdf: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -139,6 +140,7 @@ fun HistoryScreen(
                     onSaveClick = { onToggleSaved(article.id) },
                     onReadClick = {},
                     onSpeechClick = { onToggleSpeech(article) },
+                    onPdfClick = { onExportPdf(article) },
                     onShareClick = { onShareArticle(article) },
                     modifier = Modifier.padding(
                         bottom = if (compactLayout) 10.dp else 18.dp
@@ -200,6 +202,7 @@ private fun HistoryContentPreview() {
                 onClearHistory = {},
                 onToggleSaved = {},
                 onToggleSpeech = {},
+                onExportPdf = {},
                 onShareArticle = {},
             )
         }
@@ -220,6 +223,7 @@ private fun HistoryEmptyPreview() {
                 onClearHistory = {},
                 onToggleSaved = {},
                 onToggleSpeech = {},
+                onExportPdf = {},
                 onShareArticle = {},
             )
         }

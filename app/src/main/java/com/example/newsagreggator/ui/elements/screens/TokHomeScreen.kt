@@ -65,6 +65,7 @@ fun TokHomeScreen(
     onToggleSaved: (String) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
+    onExportPdf: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     onOpenHistory: () -> Unit,
     onOpenDigest: () -> Unit,
@@ -218,6 +219,7 @@ fun TokHomeScreen(
                     onSaveClick = { onToggleSaved(article.id) },
                     onReadClick = { onReadArticle(article) },
                     onSpeechClick = { onToggleSpeech(article) },
+                    onPdfClick = { onExportPdf(article) },
                     onShareClick = { onShareArticle(article) },
                     modifier = Modifier.padding(
                         bottom = if (compactLayout) 10.dp else 18.dp
@@ -296,6 +298,7 @@ private fun TokHomeScreenPreview() {
                 onToggleSaved = {},
                 onReadArticle = {},
                 onToggleSpeech = {},
+                onExportPdf = {},
                 onShareArticle = {},
                 onOpenHistory = {},
                 onOpenDigest = {},

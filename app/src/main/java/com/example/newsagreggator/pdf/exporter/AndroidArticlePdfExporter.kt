@@ -19,11 +19,13 @@ class AndroidArticlePdfExporter @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val renderer: ArticlePdfRenderer,
 ) : ArticlePdfExporter {
+
     override suspend fun export(
         destination: Uri,
         content: ArticlePdfContent,
         heroImage: Bitmap?,
     ): PdfExportResult = withContext(Dispatchers.IO) {
+
         if (content.title.isBlank() || content.originalUrl.isBlank()) {
             return@withContext PdfExportResult.InvalidContent
         }

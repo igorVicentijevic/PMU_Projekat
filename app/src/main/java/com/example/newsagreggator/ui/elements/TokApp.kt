@@ -204,6 +204,7 @@ fun TokApp(
     val shareArticle: (NewsCardUiModel) -> Unit = { article ->
         launchShareChooser(context, article)
     }
+    val exportPdf: (NewsCardUiModel) -> Unit = {}
     val showSpeechError: (SpeechActionResult) -> Unit = { result ->
         val messageResId = when (result) {
             SpeechActionResult.Initializing -> R.string.tts_initializing
@@ -320,6 +321,7 @@ fun TokApp(
                     onClearHistory = tokViewModel::clearReadingHistory,
                     onToggleSaved = toggleSaved,
                     onToggleSpeech = toggleSpeech,
+                    onExportPdf = exportPdf,
                     onShareArticle = shareArticle,
                     modifier = Modifier.padding(innerPadding),
                 )
@@ -338,6 +340,7 @@ fun TokApp(
                 onToggleDigestSpeech = {
                     toggleDigestSpeech(uiState.digestArticles)
                 },
+                onExportPdf = exportPdf,
                 onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )
@@ -359,6 +362,7 @@ fun TokApp(
                 onToggleSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
+                onExportPdf = exportPdf,
                 onShareArticle = shareArticle,
                 onOpenHistory = {
                     tokViewModel.openSecondaryScreen(SecondaryScreen.History)
@@ -406,6 +410,7 @@ fun TokApp(
                     onToggleSaved = toggleSaved,
                     onReadArticle = readArticle,
                     onToggleSpeech = toggleSpeech,
+                    onExportPdf = exportPdf,
                     onShareArticle = shareArticle,
                     onLocationAction = requestGpsLocation,
                     onTabSelected = tokViewModel::selectForYouTab,
@@ -422,6 +427,7 @@ fun TokApp(
                 onRemoveSaved = toggleSaved,
                 onReadArticle = readArticle,
                 onToggleSpeech = toggleSpeech,
+                onExportPdf = exportPdf,
                 onShareArticle = shareArticle,
                 modifier = Modifier.padding(innerPadding),
             )

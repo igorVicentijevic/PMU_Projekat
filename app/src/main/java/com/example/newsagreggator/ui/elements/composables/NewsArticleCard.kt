@@ -55,6 +55,7 @@ fun NewsArticleCard(
     onSaveClick: () -> Unit,
     onReadClick: () -> Unit,
     onSpeechClick: () -> Unit,
+    onPdfClick: () -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -79,6 +80,7 @@ fun NewsArticleCard(
                 onSaveClick = onSaveClick,
                 onReadClick = onReadClick,
                 onSpeechClick = onSpeechClick,
+                onPdfClick = onPdfClick,
                 onShareClick = onShareClick,
             )
         } else {
@@ -89,6 +91,7 @@ fun NewsArticleCard(
                 onSaveClick = onSaveClick,
                 onReadClick = onReadClick,
                 onSpeechClick = onSpeechClick,
+                onPdfClick = onPdfClick,
                 onShareClick = onShareClick,
             )
         }
@@ -103,6 +106,7 @@ private fun StandardCardContent(
     onSaveClick: () -> Unit,
     onReadClick: () -> Unit,
     onSpeechClick: () -> Unit,
+    onPdfClick: () -> Unit,
     onShareClick: () -> Unit,
 ) {
     Column {
@@ -137,6 +141,7 @@ private fun StandardCardContent(
                 isSpeaking = isSpeaking,
                 onReadClick = onReadClick,
                 onSpeechClick = onSpeechClick,
+                onPdfClick = onPdfClick,
                 onShareClick = onShareClick,
             )
         }
@@ -151,6 +156,7 @@ private fun CompactCardContent(
     onSaveClick: () -> Unit,
     onReadClick: () -> Unit,
     onSpeechClick: () -> Unit,
+    onPdfClick: () -> Unit,
     onShareClick: () -> Unit,
 ) {
     Box(
@@ -194,6 +200,7 @@ private fun CompactCardContent(
                     isSpeaking = isSpeaking,
                     onReadClick = onReadClick,
                     onSpeechClick = onSpeechClick,
+                    onPdfClick = onPdfClick,
                     onShareClick = onShareClick,
                     modifier = Modifier.align(Alignment.BottomStart),
                 )
@@ -317,6 +324,7 @@ private fun ArticleActions(
     isSpeaking: Boolean,
     onReadClick: () -> Unit,
     onSpeechClick: () -> Unit,
+    onPdfClick: () -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -378,6 +386,19 @@ private fun ArticleActions(
                 )
             }
             IconButton(
+                onClick = onPdfClick,
+                modifier = Modifier.size(if (compact) 28.dp else 36.dp),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_pdf),
+                    contentDescription = stringResource(
+                        R.string.export_article_pdf
+                    ),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(if (compact) 15.dp else 18.dp),
+                )
+            }
+            IconButton(
                 onClick = onShareClick,
                 modifier = Modifier.size(if (compact) 28.dp else 36.dp),
             ) {
@@ -433,6 +454,7 @@ private fun StandardNewsCardPreview() {
                 onSaveClick = {},
                 onReadClick = {},
                 onSpeechClick = {},
+                onPdfClick = {},
                 onShareClick = {},
             )
         }
@@ -453,6 +475,7 @@ private fun CompactNewsCardPreview() {
                 onSaveClick = {},
                 onReadClick = {},
                 onSpeechClick = {},
+                onPdfClick = {},
                 onShareClick = {},
             )
         }

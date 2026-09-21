@@ -136,6 +136,7 @@
     <string name="article_open_failed">Nije moguće otvoriti originalnu vest.</string>
     <string name="share_article">Podeli vest</string>
     <string name="share_article_chooser">Podeli vest preko</string>
+    <string name="export_article_pdf">Sačuvaj vest kao PDF</string>
     <string name="pdf_original_article">Originalna vest</string>
     <string name="pdf_exported_at">Sačuvano:</string>
     <string name="pdf_saved_with_app">Sadržaj je sačuvan pomoću aplikacije Tok.</string>

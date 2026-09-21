@@ -51,6 +51,7 @@ fun ForYouScreen(
     onToggleSaved: (String) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
+    onExportPdf: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     onLocationAction: () -> Unit,
     onTabSelected: (ForYouTab) -> Unit,
@@ -135,6 +136,7 @@ fun ForYouScreen(
                     onSaveClick = { onToggleSaved(article.id) },
                     onReadClick = { onReadArticle(article) },
                     onSpeechClick = { onToggleSpeech(article) },
+                    onPdfClick = { onExportPdf(article) },
                     onShareClick = { onShareArticle(article) },
                     modifier = Modifier.padding(
                         bottom = if (compactLayout) 10.dp else 18.dp
@@ -364,6 +366,7 @@ private fun ForYouScreenContentPreview() {
                 onToggleSaved = {},
                 onReadArticle = {},
                 onToggleSpeech = {},
+                onExportPdf = {},
                 onShareArticle = {},
                 onLocationAction = {},
                 onTabSelected = {},
@@ -389,6 +392,7 @@ private fun ForYouScreenEmptyPreview() {
                 onToggleSaved = {},
                 onReadArticle = {},
                 onToggleSpeech = {},
+                onExportPdf = {},
                 onShareArticle = {},
                 onLocationAction = {},
                 onTabSelected = {},

@@ -52,6 +52,7 @@ fun DigestScreen(
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
     onToggleDigestSpeech: () -> Unit,
+    onExportPdf: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -115,6 +116,7 @@ fun DigestScreen(
                         onSaveClick = { onToggleSaved(article.id) },
                         onReadClick = { onReadArticle(article) },
                         onSpeechClick = { onToggleSpeech(article) },
+                        onPdfClick = { onExportPdf(article) },
                         onShareClick = { onShareArticle(article) },
                     )
                 }
@@ -267,6 +269,7 @@ private fun DigestContentPreview() {
                 onReadArticle = {},
                 onToggleSpeech = {},
                 onToggleDigestSpeech = {},
+                onExportPdf = {},
                 onShareArticle = {},
             )
         }
@@ -291,6 +294,7 @@ private fun DigestEmptyPreview() {
                 onReadArticle = {},
                 onToggleSpeech = {},
                 onToggleDigestSpeech = {},
+                onExportPdf = {},
                 onShareArticle = {},
             )
         }

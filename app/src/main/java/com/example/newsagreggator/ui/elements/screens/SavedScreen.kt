@@ -41,6 +41,7 @@ fun SavedScreen(
     onRemoveSaved: (String) -> Unit,
     onReadArticle: (NewsCardUiModel) -> Unit,
     onToggleSpeech: (NewsCardUiModel) -> Unit,
+    onExportPdf: (NewsCardUiModel) -> Unit,
     onShareArticle: (NewsCardUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -107,6 +108,7 @@ fun SavedScreen(
                     onSaveClick = { onRemoveSaved(article.id) },
                     onReadClick = { onReadArticle(article) },
                     onSpeechClick = { onToggleSpeech(article) },
+                    onPdfClick = { onExportPdf(article) },
                     onShareClick = { onShareArticle(article) },
                     modifier = Modifier.padding(
                         bottom = if (compactLayout) 10.dp else 18.dp
