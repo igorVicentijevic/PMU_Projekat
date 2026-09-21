@@ -731,6 +731,7 @@ private fun TokAppPreview() {
                     SampleArticleToneAnalysisStrategy()
                 ),
                 articleGroupingService = ArticleGroupingService(
+                    newsRepository = newsRepository,
                     MockArticleGroupingStrategy()
                 ),
             ),
