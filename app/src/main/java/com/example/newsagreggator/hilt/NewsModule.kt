@@ -9,7 +9,7 @@ import com.example.newsagreggator.digest.strategy.DigestReadingTimeStrategy
 import com.example.newsagreggator.digest.strategy.FollowedCategoriesDailyDigestStrategy
 import com.example.newsagreggator.digest.strategy.WordCountDigestReadingTimeStrategy
 import com.example.newsagreggator.repository.NewsRepository
-import com.example.newsagreggator.data.repository.RssNewsRepository
+import com.example.newsagreggator.repository.RssNewsRepository
 import com.example.newsagreggator.data.sample.createSampleNewsArticles
 import com.example.newsagreggator.model.Article
 import dagger.Binds

@@ -1,12 +1,10 @@
-package com.example.newsagreggator.data.repository
+package com.example.newsagreggator.repository
 
 import com.example.newsagreggator.data.retrofit.datasource.RemoteNewsDataSource
 import com.example.newsagreggator.data.room.dao.ArticleDao
 import com.example.newsagreggator.data.room.entity.toDomain
 import com.example.newsagreggator.data.room.entity.toEntity
 import com.example.newsagreggator.model.Article
-import com.example.newsagreggator.repository.NewsRepository
-import com.example.newsagreggator.repository.NewsSnapshot
 import com.example.newsagreggator.hilt.InitialArticles
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow

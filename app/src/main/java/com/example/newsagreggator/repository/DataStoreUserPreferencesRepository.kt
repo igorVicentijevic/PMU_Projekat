@@ -1,4 +1,4 @@
-package com.example.newsagreggator.data.repository
+package com.example.newsagreggator.repository
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -7,9 +7,6 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.example.newsagreggator.R
 import com.example.newsagreggator.data.preferences.userPreferencesDataStore
-import com.example.newsagreggator.repository.UserPreferences
-import com.example.newsagreggator.repository.UserPreferencesRepository
-import com.example.newsagreggator.repository.defaultFollowedCategories
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow

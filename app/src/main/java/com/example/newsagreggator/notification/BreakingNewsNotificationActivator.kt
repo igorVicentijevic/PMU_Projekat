@@ -1,8 +1,8 @@
 package com.example.newsagreggator.notification
 
+import com.example.newsagreggator.notification.strategy.BreakingNewsStrategy
 import com.example.newsagreggator.repository.NewsRepository
 import com.example.newsagreggator.repository.UserPreferencesRepository
-import com.example.newsagreggator.notification.strategy.BreakingNewsStrategy
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -14,7 +14,7 @@ class BreakingNewsNotificationActivator @Inject constructor(
     private val newsRepository: NewsRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val breakingNewsStrategy: BreakingNewsStrategy,
-    private val notificationActivationPoint: NotificationActivationPoint,
+    private val notificationPublisher: NotificationPublisher,
 ) {
     private var started = false
 
@@ -46,13 +46,12 @@ class BreakingNewsNotificationActivator @Inject constructor(
                 }
 
                 snapshot.articles.forEach { article ->
-                    //filtering articles that are not duplicates and that are not breaking news
+                    //Only new articles accepted by the strategy are published.
                     if (
                         article.id !in previousArticleIds &&
                         breakingNewsStrategy.isBreaking(article)
                     ) {
-                        //emitting notification for breaking news
-                        notificationActivationPoint.activate(
+                        notificationPublisher.publish(
                             AppNotification(
                                 id = article.id.hashCode(),
                                 title = article.title,

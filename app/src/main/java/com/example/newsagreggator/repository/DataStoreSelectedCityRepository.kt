@@ -1,10 +1,9 @@
-package com.example.newsagreggator.data.repository
+package com.example.newsagreggator.repository
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.newsagreggator.data.preferences.userPreferencesDataStore
-import com.example.newsagreggator.repository.SelectedCityRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow

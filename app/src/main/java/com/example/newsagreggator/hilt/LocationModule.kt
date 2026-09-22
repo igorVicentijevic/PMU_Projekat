@@ -8,7 +8,7 @@ import com.example.newsagreggator.location.CurrentLocationProvider
 import com.example.newsagreggator.location.AliasArticleLocationDetectionStrategy
 import com.example.newsagreggator.location.AndroidGpsLocationProvider
 import com.example.newsagreggator.location.SerbianCityResolver
-import com.example.newsagreggator.data.repository.DataStoreSelectedCityRepository
+import com.example.newsagreggator.repository.DataStoreSelectedCityRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

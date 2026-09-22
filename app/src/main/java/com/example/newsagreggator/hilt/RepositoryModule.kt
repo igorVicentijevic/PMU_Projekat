@@ -2,8 +2,8 @@ package com.example.newsagreggator.hilt
 
 import com.example.newsagreggator.repository.ArticleStateRepository
 import com.example.newsagreggator.repository.UserPreferencesRepository
-import com.example.newsagreggator.data.repository.DataStoreUserPreferencesRepository
-import com.example.newsagreggator.data.repository.RoomArticleStateRepository
+import com.example.newsagreggator.repository.DataStoreUserPreferencesRepository
+import com.example.newsagreggator.repository.RoomArticleStateRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

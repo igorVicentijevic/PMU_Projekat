@@ -1,10 +1,8 @@
 package com.example.newsagreggator.hilt
 
-import com.example.newsagreggator.notification.strategy.BreakingNewsStrategy
-import com.example.newsagreggator.notification.NotificationActivationPoint
-import com.example.newsagreggator.notification.NotificationPublisher
 import com.example.newsagreggator.notification.AndroidNotificationPublisher
-import com.example.newsagreggator.notification.FlowNotificationActivationPoint
+import com.example.newsagreggator.notification.NotificationPublisher
+import com.example.newsagreggator.notification.strategy.BreakingNewsStrategy
 import com.example.newsagreggator.notification.strategy.KeywordBreakingNewsStrategy
 import dagger.Binds
 import dagger.Module
@@ -20,12 +18,6 @@ abstract class NotificationModule {
     abstract fun bindNotificationPublisher(
         publisher: AndroidNotificationPublisher,
     ): NotificationPublisher
-
-    @Binds
-    @Singleton
-    abstract fun bindNotificationActivationPoint(
-        activationPoint: FlowNotificationActivationPoint,
-    ): NotificationActivationPoint
 
     @Binds
     @Singleton

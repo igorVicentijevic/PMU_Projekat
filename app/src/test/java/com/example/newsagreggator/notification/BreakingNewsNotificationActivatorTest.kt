@@ -1,15 +1,12 @@
 package com.example.newsagreggator.notification
 
-import com.example.newsagreggator.notification.AppNotification
 import com.example.newsagreggator.model.Article
 import com.example.newsagreggator.model.NewsCategory
+import com.example.newsagreggator.notification.strategy.BreakingNewsDecision
 import com.example.newsagreggator.repository.NewsRepository
 import com.example.newsagreggator.repository.NewsSnapshot
 import com.example.newsagreggator.repository.UserPreferences
 import com.example.newsagreggator.repository.UserPreferencesRepository
-import com.example.newsagreggator.notification.strategy.BreakingNewsDecision
-import com.example.newsagreggator.notification.NotificationActivationPoint
-import com.example.newsagreggator.notification.BreakingNewsNotificationActivator
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +14,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
@@ -26,7 +22,7 @@ import org.junit.Test
 
 class BreakingNewsNotificationActivatorTest {
     @Test
-    fun emitsNewArticleAcceptedByStrategy() = runBlocking {
+    fun publishesNewArticleAcceptedByStrategy() = runBlocking {
         val existingArticle = article("existing")
         val breakingArticle = article("breaking")
         val news = MutableStateFlow(
@@ -35,7 +31,7 @@ class BreakingNewsNotificationActivatorTest {
                 lastSuccessfulRefreshEpochMillis = 1L,
             )
         )
-        val activatedNotification = CompletableDeferred<AppNotification>()
+        val publishedNotification = CompletableDeferred<AppNotification>()
         val activator = BreakingNewsNotificationActivator(
             newsRepository = fakeNewsRepository(news),
             userPreferencesRepository = enabledPreferencesRepository(),
@@ -47,22 +43,15 @@ class BreakingNewsNotificationActivatorTest {
                     reasons = setOf("test"),
                 )
             },
-            notificationActivationPoint = object :
-                NotificationActivationPoint {
-                override fun notificationFlow():
-                        Flow<AppNotification> = emptyFlow()
-
-                override suspend fun activate(
-                    notification: AppNotification,
-                ) {
-                    activatedNotification.complete(notification)
-                }
+            notificationPublisher = NotificationPublisher { notification ->
+                publishedNotification.complete(notification)
+                NotificationPublishResult.Published
             },
         )
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
 
         activator.start(scope)
-        assertFalse(activatedNotification.isCompleted)
+        assertFalse(publishedNotification.isCompleted)
 
         news.value = NewsSnapshot(
             articles = listOf(breakingArticle, existingArticle),
@@ -71,7 +60,7 @@ class BreakingNewsNotificationActivatorTest {
 
         assertEquals(
             breakingArticle.title,
-            withTimeout(1_000L) { activatedNotification.await() }.title,
+            withTimeout(1_000L) { publishedNotification.await() }.title,
         )
         scope.cancel()
     }

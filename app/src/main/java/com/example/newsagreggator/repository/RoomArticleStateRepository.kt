@@ -1,9 +1,7 @@
-package com.example.newsagreggator.data.repository
+package com.example.newsagreggator.repository
 
 import com.example.newsagreggator.data.room.dao.ArticleStateDao
 import com.example.newsagreggator.data.room.entity.ArticleStateEntity
-import com.example.newsagreggator.repository.ArticleState
-import com.example.newsagreggator.repository.ArticleStateRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
