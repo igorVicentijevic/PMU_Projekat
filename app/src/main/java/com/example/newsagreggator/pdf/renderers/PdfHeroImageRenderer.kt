@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
-import com.example.newsagreggator.pdf.PdfPageSession
 import com.example.newsagreggator.pdf.util.PdfDocumentStyle
 import kotlin.math.max
 

@@ -3,7 +3,6 @@ package com.example.newsagreggator.pdf.renderers
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
-import com.example.newsagreggator.pdf.PdfPageSession
 import com.example.newsagreggator.pdf.util.PdfDocumentStyle
 import com.example.newsagreggator.pdf.util.PdfPagePlanner
 

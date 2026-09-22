@@ -1,10 +1,9 @@
-package com.example.newsagreggator.pdf
+package com.example.newsagreggator.pdf.renderers
 
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.pdf.PdfDocument
 import com.example.newsagreggator.pdf.data.ArticlePdfContent
-import com.example.newsagreggator.pdf.renderers.PdfHeaderFooterRenderer
 import com.example.newsagreggator.pdf.util.PdfDocumentStyle
 
 internal class PdfPageSession(

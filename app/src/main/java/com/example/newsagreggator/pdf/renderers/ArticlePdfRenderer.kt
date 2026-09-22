@@ -3,12 +3,13 @@ package com.example.newsagreggator.pdf.renderers
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfDocument
 import android.text.TextPaint
-import com.example.newsagreggator.pdf.PdfPageSession
 import com.example.newsagreggator.pdf.data.ArticlePdfContent
 import com.example.newsagreggator.pdf.util.PdfDocumentStyle
 import java.io.OutputStream
 import javax.inject.Inject
 
+
+//Main, orchestration renderer
 class ArticlePdfRenderer @Inject constructor() {
     fun write(
         content: ArticlePdfContent,
@@ -21,6 +22,7 @@ class ArticlePdfRenderer @Inject constructor() {
             session.start()
 
             heroImage?.let { PdfHeroImageRenderer.draw(session, it) }
+
             drawArticle(session, content)
 
             session.finish()

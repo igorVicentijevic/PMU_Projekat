@@ -1,4 +1,4 @@
-package com.example.newsagreggator.model
+package com.example.newsagreggator.hilt
 
 import com.example.newsagreggator.pdf.exporter.AndroidArticlePdfExporter
 import com.example.newsagreggator.pdf.exporter.ArticlePdfExporter
