@@ -245,7 +245,16 @@ private fun LocalNewsLocationCard(
                         strokeWidth = 3.dp,
                     )
                 }
-                is LocationUiState.Selected -> Unit
+                is LocationUiState.Selected -> {
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Button(onClick = onLocationAction) {
+                        Text(
+                            text = stringResource(
+                                R.string.for_you_location_refresh
+                            )
+                        )
+                    }
+                }
                 else -> {
                     Spacer(modifier = Modifier.height(14.dp))
                     Button(onClick = onLocationAction) {

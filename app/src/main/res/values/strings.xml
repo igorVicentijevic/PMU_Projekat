@@ -44,6 +44,7 @@
     <string name="for_you_location_retry">Pokušaj ponovo</string>
     <string name="for_you_location_selected_title">Najbliži grad: %1$s</string>
     <string name="for_you_location_selected_body">Grad je sačuvan za lokalnu sekciju. Precizna lokacija nije sačuvana.</string>
+    <string name="for_you_location_refresh">Osveži lokaciju</string>
     <string name="saved_kicker">TVOJA BIBLIOTEKA</string>
     <string name="saved_placeholder">Vesti koje sačuvaš uskoro će biti dostupne ovde.</string>
     <string name="saved_subtitle">Dostupno i bez interneta.</string>
