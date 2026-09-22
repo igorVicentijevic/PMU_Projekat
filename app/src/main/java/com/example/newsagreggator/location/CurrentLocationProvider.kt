@@ -2,6 +2,7 @@ package com.example.newsagreggator.location
 
 import com.example.newsagreggator.model.Coordinates
 
+//entry point for location service; Its called from command
 interface CurrentLocationProvider {
     suspend fun getCurrentLocation(): CurrentLocationResult
 }

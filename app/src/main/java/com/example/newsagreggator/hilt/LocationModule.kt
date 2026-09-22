@@ -1,11 +1,11 @@
 package com.example.newsagreggator.hilt
 
 import com.example.newsagreggator.repository.SelectedCityRepository
-import com.example.newsagreggator.location.ArticleLocationDetectionStrategy
+import com.example.newsagreggator.location.strategy.ArticleLocationDetectionStrategy
 import com.example.newsagreggator.location.CityCatalog
 import com.example.newsagreggator.location.CityResolver
 import com.example.newsagreggator.location.CurrentLocationProvider
-import com.example.newsagreggator.location.AliasArticleLocationDetectionStrategy
+import com.example.newsagreggator.location.strategy.AliasArticleLocationDetectionStrategy
 import com.example.newsagreggator.location.AndroidGpsLocationProvider
 import com.example.newsagreggator.location.SerbianCityResolver
 import com.example.newsagreggator.repository.DataStoreSelectedCityRepository

@@ -1,5 +1,6 @@
 package com.example.newsagreggator.location
 
+import com.example.newsagreggator.location.strategy.ArticleLocationDetectionStrategy
 import com.example.newsagreggator.model.Article
 import javax.inject.Inject
 

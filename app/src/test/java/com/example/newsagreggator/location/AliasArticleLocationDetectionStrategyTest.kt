@@ -2,8 +2,7 @@ package com.example.newsagreggator.location
 
 import com.example.newsagreggator.model.Article
 import com.example.newsagreggator.model.NewsCategory
-import com.example.newsagreggator.location.AliasArticleLocationDetectionStrategy
-import com.example.newsagreggator.location.SerbianCityResolver
+import com.example.newsagreggator.location.strategy.AliasArticleLocationDetectionStrategy
 import com.example.newsagreggator.util.SerbianTextNormalizer
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

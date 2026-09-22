@@ -1,4 +1,4 @@
-package com.example.newsagreggator.location
+package com.example.newsagreggator.location.strategy
 
 import com.example.newsagreggator.model.Article
 

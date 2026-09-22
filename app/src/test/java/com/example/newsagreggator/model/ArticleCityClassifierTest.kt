@@ -1,7 +1,7 @@
 package com.example.newsagreggator.model
 
 import com.example.newsagreggator.location.ArticleCityClassifier
-import com.example.newsagreggator.location.ArticleLocationDetectionStrategy
+import com.example.newsagreggator.location.strategy.ArticleLocationDetectionStrategy
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
