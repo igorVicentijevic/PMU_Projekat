@@ -7,4 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="tok_green">#FF185C48</color>
+    <color name="tok_coral">#FFFF795A</color>
+    <color name="tok_icon_background">#FFF8F8F4</color>
 </resources>

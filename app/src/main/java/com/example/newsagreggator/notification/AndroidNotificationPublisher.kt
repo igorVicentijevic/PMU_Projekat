@@ -12,6 +12,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.example.newsagreggator.MainActivity
 import com.example.newsagreggator.R
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,6 +22,15 @@ class AndroidNotificationPublisher @Inject constructor(
     @param:ApplicationContext private val context: Context,
 ) : NotificationPublisher {
     private val notificationManager = NotificationManagerCompat.from(context)
+    private val largeIcon by lazy {
+        ContextCompat.getDrawable(
+            context,
+            R.drawable.ic_launcher_foreground,
+        )?.toBitmap(
+            width = LARGE_ICON_SIZE_PX,
+            height = LARGE_ICON_SIZE_PX,
+        )
+    }
 
     override fun publish(
         notification: AppNotification,
@@ -37,7 +47,11 @@ class AndroidNotificationPublisher @Inject constructor(
             notificationManager.notify(
                 notification.id,
                 NotificationCompat.Builder(context, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_notification)
+                    .setSmallIcon(R.drawable.ic_notification_tok)
+                    .setLargeIcon(largeIcon)
+                    .setColor(
+                        ContextCompat.getColor(context, R.color.tok_green)
+                    )
                     .setContentTitle(notification.title)
                     .setContentText(notification.message)
                     .setStyle(
@@ -103,5 +117,6 @@ class AndroidNotificationPublisher @Inject constructor(
 
     private companion object {
         const val CHANNEL_ID = "general_notifications"
+        const val LARGE_ICON_SIZE_PX = 192
     }
 }

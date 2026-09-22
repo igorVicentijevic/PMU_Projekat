@@ -5,14 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.newsagreggator.appearance.AmbientLightMonitor
-import com.example.newsagreggator.appearance.AmbientThemeDecider
 import com.example.newsagreggator.pdf.service.ArticlePdfService
 import com.example.newsagreggator.ui.elements.TokApp
 import com.example.newsagreggator.ui.elements.theme.NewsAgreggatorTheme
-import com.example.newsagreggator.ui.elements.theme.rememberAmbientThemeState
+import com.example.newsagreggator.ui.stateholders.AppearanceViewModel
 import com.example.newsagreggator.ui.stateholders.TokViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -20,12 +19,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val tokViewModel: TokViewModel by viewModels()
-
-    @Inject
-    lateinit var ambientLightMonitor: AmbientLightMonitor
-
-    @Inject
-    lateinit var ambientThemeDecider: AmbientThemeDecider
+    private val appearanceViewModel: AppearanceViewModel by viewModels()
 
     @Inject
     lateinit var articlePdfService: ArticlePdfService
@@ -40,18 +34,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val uiState by tokViewModel.uiState.collectAsStateWithLifecycle()
-            val themeState = rememberAmbientThemeState(
-                automaticThemeEnabled = uiState.automaticThemeEnabled,
-                darkThemeOverride = uiState.darkThemeOverride,
-                ambientLightMonitor = ambientLightMonitor,
-                ambientThemeDecider = ambientThemeDecider,
-            )
+            val appearanceState by
+                appearanceViewModel.uiState.collectAsStateWithLifecycle()
+            val darkTheme =
+                appearanceState.darkTheme ?: isSystemInDarkTheme()
 
-            NewsAgreggatorTheme(darkTheme = themeState.darkTheme) {
+            NewsAgreggatorTheme(darkTheme = darkTheme) {
                 TokApp(
-                    darkTheme = themeState.darkTheme,
+                    darkTheme = darkTheme,
                     ambientLightSensorAvailable =
-                        themeState.sensorAvailable,
+                        appearanceState.ambientLightSensorAvailable,
                     tokViewModel = tokViewModel,
                     articlePdfService = articlePdfService,
                 )
